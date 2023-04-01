@@ -29,86 +29,100 @@ const Rect = styled.rect`
 `;
 
 export default function Report() {
+  const X_START_AXIS: number = 50;
+  const X_END_AXIS: number = 1000;
+  const Y_START_AXIS: number = 50;
+  const Y_END_AXIS: number = 550;
+  const HEIGHT_PER_QTY: number = 5;
+
   return (
     <Svg>
       {/* <!-- X軸 --> */}
-      <Line x1="50" y1="500" x2="1000" y2="500" />
+      <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
 
       {/* <!-- X軸標籤 --> */}
-      <XTag x="100" y="530">
+      <XTag x="100" y="570">
         Jan
       </XTag>
-      <XTag x="175" y="530">
+      <XTag x="175" y="570">
         Feb
       </XTag>
-      <XTag x="250" y="530">
+      <XTag x="250" y="570">
         Mar
       </XTag>
-      <XTag x="325" y="530">
+      <XTag x="325" y="570">
         Apr
       </XTag>
-      <XTag x="400" y="530">
+      <XTag x="400" y="570">
         May
       </XTag>
-      <XTag x="475" y="530">
+      <XTag x="475" y="570">
         Jun
       </XTag>
-      <XTag x="550" y="530">
+      <XTag x="550" y="570">
         Jul
       </XTag>
-      <XTag x="625" y="530">
+      <XTag x="625" y="570">
         Aug
       </XTag>
-      <XTag x="700" y="530">
+      <XTag x="700" y="570">
         Sep
       </XTag>
-      <XTag x="775" y="530">
+      <XTag x="775" y="570">
         Oct
       </XTag>
-      <XTag x="850" y="530">
+      <XTag x="850" y="570">
         Nov
       </XTag>
-      <XTag x="925" y="530">
+      <XTag x="925" y="570">
         Dec
       </XTag>
 
       {/* <!-- Y軸 --> */}
-      <Line x1="50" y1="50" x2="50" y2="500" />
+      <Line
+        x1={X_START_AXIS}
+        y1={Y_START_AXIS}
+        x2={X_START_AXIS}
+        y2={Y_END_AXIS}
+      />
 
       {/* <!-- Y軸標籤 --> */}
-      <YTag x="30" y="500">
+      <YTag x="30" y="550">
         0
       </YTag>
-      <YTag x="30" y="450">
+      <YTag x="30" y="500">
         10
       </YTag>
-      <YTag x="30" y="400">
+      <YTag x="30" y="450">
         20
       </YTag>
-      <YTag x="30" y="350">
+      <YTag x="30" y="400">
         30
       </YTag>
-      <YTag x="30" y="300">
+      <YTag x="30" y="350">
         40
       </YTag>
-      <YTag x="30" y="250">
+      <YTag x="30" y="300">
         50
       </YTag>
-      <YTag x="30" y="200">
+      <YTag x="30" y="250">
         60
       </YTag>
-      <YTag x="30" y="150">
+      <YTag x="30" y="200">
         70
       </YTag>
-      <YTag x="30" y="100">
+      <YTag x="30" y="150">
         80
       </YTag>
-      <YTag x="30" y="50">
+      <YTag x="30" y="100">
         90
+      </YTag>
+      <YTag x="30" y="50">
+        100
       </YTag>
 
       {/* <!--Bar --> y從哪邊長下來 */}
-      <Rect x="100" y="400" height="100" />
+      <Rect x="100" y="525" height="25" />
       <Rect x="175" y="200" height="300" />
       <Rect x="250" y="150" height="350" />
       <Rect x="325" y="450" height="50" />
