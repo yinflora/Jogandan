@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import styled from 'styled-components';
+// import { getProcessedItems } from '../../utils/firebase';
 
 const Svg = styled.svg`
   display: block;
@@ -28,12 +30,40 @@ const Rect = styled.rect`
   fill: #7e807c;
 `;
 
+type month = string;
+type quantity = number;
+
+const MONTHS: month[] = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+const QUANTITY: quantity[] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
 export default function Report() {
+  // const [filteredItems, setFilteredItems] = useState([]);
   const X_START_AXIS: number = 50;
   const X_END_AXIS: number = 1000;
   const Y_START_AXIS: number = 50;
   const Y_END_AXIS: number = 550;
-  const HEIGHT_PER_QTY: number = 5;
+  const XTAG_START_AXIS: number = 100;
+  const XTAG_SPACE: number = 75;
+  const XTAG_Y_AXIS: number = 570;
+  const YTAG_START_AXIS: number = 550;
+  const YTAG_SPACE: number = 50;
+  const YTAG_X_AXIS: number = 30;
+  // const HEIGHT_PER_QTY: number = 5;
+
+  // getProcessedItems();
 
   return (
     <Svg>
@@ -41,42 +71,15 @@ export default function Report() {
       <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
 
       {/* <!-- X軸標籤 --> */}
-      <XTag x="100" y="570">
-        Jan
-      </XTag>
-      <XTag x="175" y="570">
-        Feb
-      </XTag>
-      <XTag x="250" y="570">
-        Mar
-      </XTag>
-      <XTag x="325" y="570">
-        Apr
-      </XTag>
-      <XTag x="400" y="570">
-        May
-      </XTag>
-      <XTag x="475" y="570">
-        Jun
-      </XTag>
-      <XTag x="550" y="570">
-        Jul
-      </XTag>
-      <XTag x="625" y="570">
-        Aug
-      </XTag>
-      <XTag x="700" y="570">
-        Sep
-      </XTag>
-      <XTag x="775" y="570">
-        Oct
-      </XTag>
-      <XTag x="850" y="570">
-        Nov
-      </XTag>
-      <XTag x="925" y="570">
-        Dec
-      </XTag>
+      {MONTHS.map((item: month, index: number) => (
+        <XTag
+          key={item}
+          x={XTAG_START_AXIS + index * XTAG_SPACE}
+          y={XTAG_Y_AXIS}
+        >
+          {item}
+        </XTag>
+      ))}
 
       {/* <!-- Y軸 --> */}
       <Line
@@ -87,39 +90,15 @@ export default function Report() {
       />
 
       {/* <!-- Y軸標籤 --> */}
-      <YTag x="30" y="550">
-        0
-      </YTag>
-      <YTag x="30" y="500">
-        10
-      </YTag>
-      <YTag x="30" y="450">
-        20
-      </YTag>
-      <YTag x="30" y="400">
-        30
-      </YTag>
-      <YTag x="30" y="350">
-        40
-      </YTag>
-      <YTag x="30" y="300">
-        50
-      </YTag>
-      <YTag x="30" y="250">
-        60
-      </YTag>
-      <YTag x="30" y="200">
-        70
-      </YTag>
-      <YTag x="30" y="150">
-        80
-      </YTag>
-      <YTag x="30" y="100">
-        90
-      </YTag>
-      <YTag x="30" y="50">
-        100
-      </YTag>
+      {QUANTITY.map((item: quantity, index: number) => (
+        <YTag
+          key={item}
+          x={YTAG_X_AXIS}
+          y={YTAG_START_AXIS - index * YTAG_SPACE}
+        >
+          {item}
+        </YTag>
+      ))}
 
       {/* <!--Bar --> y從哪邊長下來 */}
       <Rect x="100" y="525" height="25" />
