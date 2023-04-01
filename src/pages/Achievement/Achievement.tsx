@@ -1,7 +1,12 @@
+import Gallery from './Gallery';
+import Report from './Report';
+
 function Achievement() {
   return (
     <>
-      <p>Hello!</p>
+      <h1>Achievement</h1>
+      {/* <Gallery /> */}
+      <Report />
     </>
   );
 }

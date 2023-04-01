@@ -10,6 +10,12 @@ const GlobalStyle = createGlobalStyle`
   body {
     font-family: 'Noto Sans TC', sans-serif;
   }
+
+  #root {
+    min-height: 100vh;
+    padding: 140px 50px 115px;
+    position: relative;
+  }
 `;
 
 function App() {
