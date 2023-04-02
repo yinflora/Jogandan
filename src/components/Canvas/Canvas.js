@@ -1,7 +1,8 @@
 import { useOnDraw } from '../../utils/Hooks/useOnDraw';
 
 export default function Canvas({ width, height }) {
-  const setCanvasRef = useOnDraw(onDraw);
+  const { setCanvasRef, onMouseDown } = useOnDraw(onDraw);
+  // const setCanvasRef = useOnDraw(onDraw);
 
   function onDraw(ctx, point, prevPoint) {
     // ctx.fillStyle = '#000';
@@ -31,6 +32,7 @@ export default function Canvas({ width, height }) {
     <canvas
       width={width}
       height={height}
+      onMouseDown={() => onMouseDown()}
       style={canvasStyle}
       ref={setCanvasRef}
     />
