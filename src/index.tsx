@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import App from './App';
 import Achievement from './pages/Achievement/Achievement';
+import Compose from './pages/Compose/Compose';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -14,6 +15,7 @@ root.render(
       <Route path="/" element={<App />}>
         {/* <Route index element={<Home />} /> */}
         <Route path="achievement" element={<Achievement />} />
+        <Route path="compose" element={<Compose />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
