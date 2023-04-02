@@ -2,14 +2,20 @@ import { useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import styled, { css } from 'styled-components';
 
+import Previous from '../../components/Button/Previos';
+import Next from '../../components/Button/Next';
+
 const Container = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ImageContainer = styled.div`
   position: relative;
   width: 1000px;
 `;
 
 const ItemWrapper = styled.ul`
-  /* max-width: 1000px; */
-  /* width: 1000px; */
   width: 100%;
   display: flex;
   flex-wrap: nowrap;
@@ -82,12 +88,9 @@ export default function CatFriends() {
   }
 
   return (
-    <>
-      <nav>
-        <button onClick={() => handlePrevious()}>Previous</button>
-        <button onClick={() => handleNext()}>Next</button>
-      </nav>
-      <Container>
+    <Container>
+      <Previous onClick={() => handlePrevious()} />
+      <ImageContainer>
         <ItemWrapper>
           {catList.map((cat, i) => (
             <Item
@@ -108,8 +111,9 @@ export default function CatFriends() {
           ))}
         </ItemWrapper>
         <Timeline />
-      </Container>
-    </>
+      </ImageContainer>
+      <Next onClick={() => handleNext()} />
+    </Container>
   );
 }
 
@@ -117,7 +121,6 @@ const catList = [];
 for (let i = 0; i < 10; i++) {
   catList.push({
     id: i,
-    // time: new Date(),
     imageUrl: 'https://placekitten.com/250/200?image=' + i,
   });
 }
