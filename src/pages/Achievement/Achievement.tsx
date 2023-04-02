@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 import Gallery from './Gallery';
-// import Report from './Report';
+import Report from './Report';
 
 const Title = styled.h1`
   font-size: 4rem;
@@ -10,6 +10,8 @@ const Title = styled.h1`
 
 function Achievement() {
   const [period, setPeriod] = useState({ start: '', end: '' });
+  const [galleryMode, setGalleryMode] = useState(true);
+
   return (
     <>
       <Title>Achievement</Title>
@@ -25,10 +27,9 @@ function Achievement() {
         value={period.end}
         onChange={(e) => setPeriod({ ...period, end: e.target.value })}
       />
-      <button>Gallery</button>
-      <button>Report</button>
-      <Gallery />
-      {/* <Report /> */}
+      <button onClick={() => setGalleryMode(true)}>Gallery</button>
+      <button onClick={() => setGalleryMode(false)}>Report</button>
+      {galleryMode ? <Gallery /> : <Report />}
     </>
   );
 }
