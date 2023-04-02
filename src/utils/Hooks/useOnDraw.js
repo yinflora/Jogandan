@@ -6,6 +6,7 @@ export function useOnDraw(onDraw) {
   const mouseMoveListenerRef = useRef(null);
   const mouseDownListenerRef = useRef(null);
   const mouseUpListenerRef = useRef(null);
+  const prevPointRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -37,7 +38,8 @@ export function useOnDraw(onDraw) {
       if (isDrawingRef.current) {
         const point = computePointInCanvas(e.clientX, e.clientY);
         const ctx = canvasRef.current.getContext('2d');
-        if (onDraw) onDraw(ctx, point);
+        if (onDraw) onDraw(ctx, point, prevPointRef.current);
+        prevPointRef.current = point;
         console.log(point);
       }
     };
@@ -48,6 +50,7 @@ export function useOnDraw(onDraw) {
   function initMouseUpListener() {
     const mouseUpListener = () => {
       isDrawingRef.current = false;
+      prevPointRef.current = null; //解決下一次畫畫時從上一個結束的點開始
     };
     mouseUpListenerRef.current = mouseUpListener; //用於clean up
     window.addEventListener('mouseup', mouseUpListener); //在canvas外放開滑鼠也要視為停止作畫，所以將監聽器裝在window
