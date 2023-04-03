@@ -1,4 +1,4 @@
-import { useOnDraw } from '../../utils/Hooks/useOnDraw';
+import { useOnDraw } from '../../utils/useOnDraw';
 
 export default function Canvas({ width, height }) {
   const { setCanvasRef, onMouseDown } = useOnDraw(onDraw);
