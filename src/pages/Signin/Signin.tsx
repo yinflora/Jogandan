@@ -1,7 +1,9 @@
+import { useContext } from 'react';
 import {
   signInWithGooglePopup,
   createUserDocumentFromAuth,
 } from '../../utils/firebase';
+import { AuthContext } from '../../context/authContext';
 import { Navigate } from 'react-router-dom';
 
 export default function Signin() {

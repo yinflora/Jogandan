@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import App from './App';
+import Home from './pages/Home/Home';
 import Achievement from './pages/Achievement/Achievement';
 import Compose from './pages/Compose/Compose';
 // import Profile from './pages/Profile/Profile';
@@ -15,7 +16,7 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />}>
-        {/* <Route index element={<Home />} /> */}
+        <Route index element={<Home />} />
         {/* <Route path="profile" element={<Profile />} /> */}
         <Route path="signin" element={<Signin />} />
         <Route path="achievement" element={<Achievement />} />
