@@ -11,7 +11,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: 'Raleway', sans-serif;
   }
 
   button {
