@@ -1,7 +1,9 @@
 import { Outlet } from 'react-router-dom';
-import { createGlobalStyle } from 'styled-components';
 import { Reset } from 'styled-reset';
+import { createGlobalStyle } from 'styled-components';
 import { AuthContextProvider } from './context/authContext';
+
+import Header from './components/Header/Header';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -10,6 +12,11 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  button {
+    border: 0;
+    background-color: transparent;
   }
 
   #root {
@@ -25,6 +32,7 @@ function App() {
       <Reset />
       <GlobalStyle />
       <AuthContextProvider>
+        <Header />
         <Outlet />
       </AuthContextProvider>
     </>

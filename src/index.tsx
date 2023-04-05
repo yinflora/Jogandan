@@ -6,8 +6,8 @@ import App from './App';
 import Home from './pages/Home/Home';
 import Achievement from './pages/Achievement/Achievement';
 import Compose from './pages/Compose/Compose';
-// import Profile from './pages/Profile/Profile';
-import Signin from './pages/Signin/Signin';
+import Profile from './pages/Profile/Profile';
+import Login from './pages/Login/Login';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -17,8 +17,8 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
-        {/* <Route path="profile" element={<Profile />} /> */}
-        <Route path="signin" element={<Signin />} />
+        <Route path="login" element={<Login />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="achievement" element={<Achievement />} />
         <Route path="compose" element={<Compose />} />
         <Route path="*" element={<Navigate to="/" replace />} />

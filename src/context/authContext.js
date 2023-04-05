@@ -1,8 +1,9 @@
 import { useState, createContext } from 'react';
+import { signin, signout } from '../utils/firebase';
 
-const AuthContext = createContext({
+export const AuthContext = createContext({
   isLogin: false,
-  // user: {},
+  user: {},
   // loading: false,
   // jwtToken: '',
   login: () => {},
@@ -11,13 +12,17 @@ const AuthContext = createContext({
 
 export const AuthContextProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(false);
+  const [user, setUser] = useState({});
 
   const login = () => {
-    setIsLogin(false);
+    setUser(() => signin());
+    setIsLogin(true);
   };
 
   const logout = () => {
-    setIsLogin(true);
+    signout();
+    setUser({});
+    setIsLogin(false);
   };
 
   return (
@@ -25,6 +30,7 @@ export const AuthContextProvider = ({ children }) => {
       // 記得提供 context 給 Provider
       value={{
         isLogin,
+        user,
         login,
         logout,
       }}
