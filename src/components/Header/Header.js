@@ -13,14 +13,14 @@ const Container = styled.section`
 
 const Logo = styled.span`
   margin-right: auto;
-  font-size: 2rem;
+  font-size: 1.5rem;
 `;
 
 const MenuBtn = styled.button`
   display: flex;
   width: 50px;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 `;
 
 const Line = styled.span`

@@ -65,6 +65,23 @@ const Timeline = styled.div`
   background-color: #acaea9;
 `;
 
+type month = string;
+
+const MONTHS: month[] = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 export default function CatFriends({ items }) {
   const selectedRef = useRef(null);
   const [index, setIndex] = useState(0);
@@ -105,12 +122,12 @@ export default function CatFriends({ items }) {
               isLast={index === items.length - 1}
             >
               <Image src={item.image} />
-              <Time>{item.processedDate.seconds}</Time>
-              <p>{item.name}</p>
+              {/* <Time>{item.processedDate.seconds}</Time>
+              <p>{item.name}</p> */}
             </Item>
           ))}
         </ItemWrapper>
-        <Timeline />
+        {/* <Timeline /> */}
       </ImageContainer>
       <Next onClick={() => handleNext()} />
     </Container>

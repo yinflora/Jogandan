@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { getProcessedItems } from '../../utils/firebase';
+import styled from 'styled-components';
 
 import Gallery from './Gallery';
 import Report from './Report';
@@ -10,7 +10,8 @@ const Title = styled.h1`
 `;
 
 function Achievement() {
-  const [period, setPeriod] = useState({ start: '', end: '' });
+  // const [period, setPeriod] = useState({ start: '', end: '' });
+  const [selectedYear, setSelectedYear] = useState(null);
   const [galleryMode, setGalleryMode] = useState(true);
   const [items, setItems] = useState(null);
 
@@ -31,7 +32,7 @@ function Achievement() {
     return (
       <>
         <Title>Achievement</Title>
-        <input
+        {/* <input
           type="date"
           id="start"
           value={period.start}
@@ -42,7 +43,12 @@ function Achievement() {
           id="end"
           value={period.end}
           onChange={(e) => setPeriod({ ...period, end: e.target.value })}
-        />
+        /> */}
+        <select onChange={(e) => setSelectedYear(e.target.value)}>
+          <option value="year">year</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+        </select>
         <button onClick={() => setGalleryMode(true)}>Gallery</button>
         <button onClick={() => setGalleryMode(false)}>Report</button>
         {galleryMode ? <Gallery items={items} /> : <Report />}
