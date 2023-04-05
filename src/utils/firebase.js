@@ -37,7 +37,8 @@ export const auth = getAuth();
 
 export async function signin() {
   const response = await signInWithPopup(auth, provider);
-  const userProfile = await createUser(response.user);
+  const userProfile = response.user;
+  await createUser(userProfile);
   return userProfile;
 }
 
