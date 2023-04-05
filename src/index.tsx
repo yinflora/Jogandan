@@ -8,6 +8,7 @@ import Achievement from './pages/Achievement/Achievement';
 import Compose from './pages/Compose/Compose';
 import Profile from './pages/Profile/Profile';
 import Login from './pages/Login/Login';
+import Upload from './pages/Upload/Upload';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -19,6 +20,7 @@ root.render(
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="upload" element={<Upload />} />
         <Route path="achievement" element={<Achievement />} />
         <Route path="compose" element={<Compose />} />
         <Route path="*" element={<Navigate to="/" replace />} />
