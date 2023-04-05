@@ -14,8 +14,9 @@ export const AuthContextProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState({});
 
-  const login = () => {
-    setUser(() => signin());
+  const login = async () => {
+    const response = await signin();
+    setUser(response);
     setIsLogin(true);
   };
 

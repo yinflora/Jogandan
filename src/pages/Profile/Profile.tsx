@@ -1,5 +1,7 @@
-// import { useContext } from 'react';
-// import { AuthContext } from '../../context/authContext';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/authContext';
+import { Navigate } from 'react-router-dom';
+
 import styled from 'styled-components';
 
 const Title = styled.h1`
@@ -31,22 +33,28 @@ const Information = styled.span`
 `;
 
 export default function Profile() {
-  return (
-    <>
-      <Title>Profile</Title>
-      <Wrapper>
-        <Image />
-        <InformationWrapper>
-          <div>
-            <Label>Name</Label>
-            <Information>尹兆慈</Information>
-          </div>
-          <div>
-            <Label>Email</Label>
-            <Information>flora@gmail.com</Information>
-          </div>
-        </InformationWrapper>
-      </Wrapper>
-    </>
-  );
+  const { user, isLogin, logout } = useContext(AuthContext);
+
+  if (isLogin) {
+    return (
+      <>
+        <Title>Profile</Title>
+        <Wrapper>
+          <Image src={user.photoURL} />
+          <InformationWrapper>
+            <div>
+              <Label>Name</Label>
+              <Information>{user.displayName}</Information>
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Information>{user.email}</Information>
+            </div>
+            <button onClick={logout}>登出</button>
+          </InformationWrapper>
+        </Wrapper>
+      </>
+    );
+  }
+  return <Navigate to="/login" />;
 }
