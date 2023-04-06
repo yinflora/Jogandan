@@ -11,6 +11,7 @@ import {
   query,
   where,
   serverTimestamp,
+  onSnapshot,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -144,7 +145,7 @@ export async function uploadItems(id, form) {
       joinGiveaway,
       created: serverTimestamp(),
       description,
-      images: images,
+      images,
       isGifted: '',
       processedDate: '',
     });
@@ -163,6 +164,38 @@ export async function getProcessedItems() {
   );
   const itemsQuery = query(itemsRef, where('status', '==', '已處理'));
   // const itemsQuery = query(itemsRef, where('status', '==', '保留'));
+  const items = [];
+
+  const querySnapshot = await getDocs(itemsQuery);
+  querySnapshot.forEach((document) => {
+    // doc.data() is never undefined for query doc snapshots
+    // console.log(doc.id, ' => ', doc.data());
+    items.push(document.data());
+  });
+  return items;
+}
+
+// export function getItems() {
+//   const itemsRef = query(
+//     collection(db, 'users', 'q1khIAOnt2ewvY4SQw1z65roVPD2', 'items')
+//   );
+//   const items = [];
+
+//   onSnapshot(itemsRef, (query) => {
+//     query.forEach((doc) => items.push(doc.data()));
+//   });
+
+//   return items;
+// }
+
+export async function getItems() {
+  const itemsRef = collection(
+    db,
+    'users',
+    'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    'items'
+  );
+  const itemsQuery = query(itemsRef);
   const items = [];
 
   const querySnapshot = await getDocs(itemsQuery);

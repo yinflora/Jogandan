@@ -9,6 +9,7 @@ import Compose from './pages/Compose/Compose';
 import Profile from './pages/Profile/Profile';
 import Login from './pages/Login/Login';
 import Upload from './pages/Upload/Upload';
+import Inventory from './pages/Inventory/Inventory';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -21,6 +22,7 @@ root.render(
         <Route path="login" element={<Login />} />
         <Route path="profile" element={<Profile />} />
         <Route path="upload" element={<Upload />} />
+        <Route path="inventory" element={<Inventory />} />
         <Route path="achievement" element={<Achievement />} />
         <Route path="compose" element={<Compose />} />
         <Route path="*" element={<Navigate to="/" replace />} />
