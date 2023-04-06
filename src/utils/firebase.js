@@ -4,11 +4,13 @@ import {
   getFirestore,
   getDoc,
   getDocs,
+  addDoc,
   setDoc,
   collection,
   doc,
   query,
   where,
+  serverTimestamp,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -93,37 +95,63 @@ async function createUser(userAuth) {
   return userDocRef;
 }
 
-export async function createUserDocumentFromAuth(userAuth) {
-  // 建立一個 document 實例
-  const userDocRef = doc(db, 'users', userAuth.uid);
+// export async function createUserDocumentFromAuth(userAuth) {
+//   // 建立一個 document 實例
+//   const userDocRef = doc(db, 'users', userAuth.uid);
 
-  // 將 document 實例的資料取出來
-  const userSnapshot = await getDoc(userDocRef);
-  console.log(userSnapshot);
-  console.log(userSnapshot.exists());
+//   // 將 document 實例的資料取出來
+//   const userSnapshot = await getDoc(userDocRef);
+//   console.log(userSnapshot);
+//   console.log(userSnapshot.exists());
 
-  // 如果使用者不存在
-  if (!userSnapshot.exists()) {
-    const { displayName, email, photoURL } = userAuth;
-    const createdAt = new Date();
-    // 就把資料寫進 Firestore
-    try {
-      await setDoc(userDocRef, {
-        name: displayName,
-        email,
-        image: photoURL,
-        createdAt,
-        period: { start: null, end: null },
-        processedItems: null,
-      });
-      console.log('建立使用者成功' + displayName);
-    } catch (error) {
-      console.log('建立使用者失敗' + error.message);
-    }
+//   // 如果使用者不存在
+//   if (!userSnapshot.exists()) {
+//     const { displayName, email, photoURL } = userAuth;
+//     const createdAt = new Date();
+//     // 就把資料寫進 Firestore
+//     try {
+//       await setDoc(userDocRef, {
+//         name: displayName,
+//         email,
+//         image: photoURL,
+//         createdAt,
+//         period: { start: null, end: null },
+//         processedItems: null,
+//       });
+//       console.log('建立使用者成功' + displayName);
+//     } catch (error) {
+//       console.log('建立使用者失敗' + error.message);
+//     }
+//   }
+
+//   // 如果使用者存在直接回傳 userDocRef
+//   return userDocRef;
+// }
+
+export async function uploadItems(id, form) {
+  try {
+    const { name, category, status, joinGiveaway, description, images } = form;
+    const itemDocRef = collection(
+      db,
+      'users',
+      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      'items'
+    );
+    const docRef = await addDoc(itemDocRef, {
+      name,
+      category,
+      status,
+      joinGiveaway,
+      created: serverTimestamp(),
+      description,
+      // images,
+      isGifted: '',
+      processedDate: '',
+    });
+    console.log('Item uploaded with ID: ', docRef.id);
+  } catch (e) {
+    console.error('Error uploading article: ', e);
   }
-
-  // 如果使用者存在直接回傳 userDocRef
-  return userDocRef;
 }
 
 export async function getProcessedItems() {
