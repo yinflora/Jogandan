@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { getItems, getFilteredItems } from '../../utils/firebase';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const Title = styled.h1`
   font-size: 4rem;
@@ -53,7 +53,7 @@ const SubFilterWrapper = styled.p`
 `;
 
 const SubTitle = styled.p`
-  color: #acaea9;
+  color: ${({ isSelected }) => (isSelected ? 'red' : '#acaea9')};
 `;
 
 const SUBCATEGORY = [
@@ -74,7 +74,9 @@ const SUBCATEGORY = [
 const SUBSTATUS = ['保留', '處理中', '已處理'];
 
 export default function Inventory() {
+  const itemsRef = useRef(null);
   const [items, setItems] = useState(null);
+  const [filter, setfilter] = useState({ category: '', status: '' });
 
   useEffect(() => {
     // const itemList = getItems();
@@ -82,33 +84,65 @@ export default function Inventory() {
     // console.log(itemList);
     async function fetchData() {
       const itemList = await getItems();
+      itemsRef.current = itemList;
       setItems(itemList);
     }
     fetchData();
   }, []);
 
-  console.log(items);
+  console.log(itemsRef.current);
 
-  async function handleFilter(field, value) {
-    const filteredItems = await getFilteredItems(field, value);
-    setItems(filteredItems);
-    // getFilteredItems(field, value);
-  }
+  useEffect(() => {
+    function handleFilter() {
+      let filteredItems;
+      if (filter.category !== '' && filter.status !== '') {
+        filteredItems = items.filter(
+          (item) =>
+            item.category === filter.category && item.status === filter.status
+        );
+      } else if (filter.category !== '') {
+        filteredItems = items.filter(
+          (item) => item.category === filter.category
+        );
+      } else if (filter.status !== '') {
+        filteredItems = items.filter((item) => item.status === filter.status);
+      }
+      console.log(filteredItems);
+      setItems(filteredItems);
+    }
+    handleFilter();
+  }, [filter]);
+
+  console.log(filter);
+
+  // console.log(items.filter((item) => item.status === '已處理').length);
+
+  // async function handleFilter(field, value) {
+  //   const filteredItems = await getFilteredItems(field, value);
+  //   setItems(filteredItems);
+  //   // getFilteredItems(field, value);
+  // }
 
   return (
     <>
       <Title>Inventory</Title>
       <Container>
         <FilterWrapper>
-          <FilterTitle>All({items ? items.length : 0})</FilterTitle>
+          <FilterTitle>All({items ? itemsRef.current.length : 0})</FilterTitle>
           <FilterTitle>Category</FilterTitle>
           <SubFilterWrapper>
             {SUBCATEGORY.map((category) => (
               <SubTitle
                 key={category}
-                onClick={() => handleFilter('category', category)}
+                // onClick={() => handleFilter('category', category)}
+                onClick={() => setfilter({ ...filter, category })}
+                isSelected={filter.category === category}
               >
-                {category}
+                {/* {category} */}
+                {`${category}(${
+                  items &&
+                  items.filter((item) => item.category === category).length
+                })`}
               </SubTitle>
             ))}
           </SubFilterWrapper>
@@ -117,9 +151,13 @@ export default function Inventory() {
             {SUBSTATUS.map((status) => (
               <SubTitle
                 key={status}
-                onClick={() => handleFilter('status', status)}
+                // onClick={() => handleFilter('status', status)}
+                onClick={() => setfilter({ ...filter, status })}
+                isSelected={filter.status === status}
               >
-                {status}
+                {`${status}(${
+                  items && items.filter((item) => item.status === status).length
+                })`}
               </SubTitle>
             ))}
           </SubFilterWrapper>
