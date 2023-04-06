@@ -44,7 +44,16 @@ const Image = styled.img`
 
 const Name = styled.p``;
 
+const TitleWrapper = styled.div`
+  display: flex;
+`;
+
 const FilterTitle = styled.p`
+  width: 100px;
+  color: #acaea9;
+`;
+
+const FilterButton = styled.button`
   color: #acaea9;
 `;
 
@@ -90,22 +99,25 @@ export default function Inventory() {
     fetchData();
   }, []);
 
-  console.log(itemsRef.current);
+  // console.log(itemsRef.current);
 
   useEffect(() => {
     function handleFilter() {
-      let filteredItems;
+      console.log('hello');
+      let filteredItems = itemsRef.current;
       if (filter.category !== '' && filter.status !== '') {
-        filteredItems = items.filter(
+        filteredItems = itemsRef.current.filter(
           (item) =>
             item.category === filter.category && item.status === filter.status
         );
       } else if (filter.category !== '') {
-        filteredItems = items.filter(
+        filteredItems = itemsRef.current.filter(
           (item) => item.category === filter.category
         );
       } else if (filter.status !== '') {
-        filteredItems = items.filter((item) => item.status === filter.status);
+        filteredItems = itemsRef.current.filter(
+          (item) => item.status === filter.status
+        );
       }
       console.log(filteredItems);
       setItems(filteredItems);
@@ -113,7 +125,7 @@ export default function Inventory() {
     handleFilter();
   }, [filter]);
 
-  console.log(filter);
+  // console.log(filter);
 
   // console.log(items.filter((item) => item.status === '已處理').length);
 
@@ -123,42 +135,96 @@ export default function Inventory() {
   //   // getFilteredItems(field, value);
   // }
 
+  function handleClearCategory() {
+    if (filter.status === '') {
+      setItems(itemsRef.current);
+    }
+    setfilter({ ...filter, category: '' });
+  }
+
+  function handleClearStatus() {
+    if (filter.category === '') {
+      setItems(itemsRef.current);
+    }
+    setfilter({ ...filter, status: '' });
+  }
+
   return (
     <>
       <Title>Inventory</Title>
+      <p>Total: {items ? itemsRef.current.length : 0}</p>
+      <p>
+        {!Object.values(filter).includes('')
+          ? `共${
+              items &&
+              items.filter(
+                (item) =>
+                  item.category === filter.category &&
+                  item.status === filter.status
+              ).length
+            }件符合${filter.category}+${filter.status}的物品`
+          : filter.category !== ''
+          ? `共${
+              items &&
+              items.filter((item) => item.category === filter.category).length
+            }件符合${filter.category}的物品`
+          : `共${
+              items &&
+              items.filter((item) => item.status === filter.status).length
+            }件符合${filter.status}的物品`}
+      </p>
       <Container>
         <FilterWrapper>
-          <FilterTitle>All({items ? itemsRef.current.length : 0})</FilterTitle>
+          <FilterTitle onClick={() => setItems(itemsRef.current)}>
+            All
+          </FilterTitle>
           <FilterTitle>Category</FilterTitle>
+          {/* <TitleWrapper>
+            <FilterTitle>
+              {filter.category !== '' ? filter.category : 'Category'}
+            </FilterTitle>
+            <FilterButton>{filter.category !== '' ? 'X' : '+'}</FilterButton>
+          </TitleWrapper> */}
           <SubFilterWrapper>
             {SUBCATEGORY.map((category) => (
-              <SubTitle
-                key={category}
-                // onClick={() => handleFilter('category', category)}
-                onClick={() => setfilter({ ...filter, category })}
-                isSelected={filter.category === category}
-              >
-                {/* {category} */}
-                {`${category}(${
+              <TitleWrapper>
+                <SubTitle
+                  key={category}
+                  // onClick={() => handleFilter('category', category)}
+                  onClick={() => setfilter({ ...filter, category })}
+                  isSelected={filter.category === category}
+                >
+                  {category}
+                  {/* {`${category}(${
                   items &&
                   items.filter((item) => item.category === category).length
-                })`}
-              </SubTitle>
+                })`} */}
+                </SubTitle>
+                {filter.category === category && (
+                  <FilterButton onClick={handleClearCategory}>X</FilterButton>
+                )}
+              </TitleWrapper>
             ))}
           </SubFilterWrapper>
           <FilterTitle>Status</FilterTitle>
           <SubFilterWrapper>
             {SUBSTATUS.map((status) => (
-              <SubTitle
-                key={status}
-                // onClick={() => handleFilter('status', status)}
-                onClick={() => setfilter({ ...filter, status })}
-                isSelected={filter.status === status}
-              >
-                {`${status}(${
+              <TitleWrapper>
+                <SubTitle
+                  key={status}
+                  // onClick={() => handleFilter('status', status)}
+                  onClick={() => setfilter({ ...filter, status })}
+                  isSelected={filter.status === status}
+                >
+                  {status}
+                  {/* {`${status}(${
                   items && items.filter((item) => item.status === status).length
-                })`}
-              </SubTitle>
+                })`} */}
+                </SubTitle>
+                {filter.status === status && (
+                  <FilterButton onClick={handleClearStatus}>X</FilterButton>
+                )}
+              </TitleWrapper>
             ))}
           </SubFilterWrapper>
         </FilterWrapper>
