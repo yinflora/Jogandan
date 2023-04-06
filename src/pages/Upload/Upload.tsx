@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { storage } from '../../utils/firebase';
+import { storage, uploadItems } from '../../utils/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-
 // import styled from 'styled-component';
 
 const formInputs = [
@@ -10,6 +9,7 @@ const formInputs = [
     label: '物品類別',
     key: 'category',
     option: [
+      '請選擇類別',
       '居家生活',
       '服飾配件',
       '美妝保養',
@@ -24,8 +24,17 @@ const formInputs = [
       '其他',
     ],
   },
-  { label: '物品狀態', key: 'status', option: ['保留', '處理中', '已處理'] },
-  { label: '加入贈物', key: 'joinGiveaway', option: ['YES', 'NO'] },
+  {
+    label: '物品狀態',
+    key: 'status',
+    option: ['請選擇狀態', '保留', '處理中', '已處理'],
+  },
+  {
+    label: '加入贈物',
+    key: 'joinGiveaway',
+    option: ['請選擇是否加入', 'YES', 'NO'],
+  },
+  { label: '備註', key: 'description' },
 ];
 
 export default function Upload() {
@@ -35,56 +44,90 @@ export default function Upload() {
     status: '',
     joinGiveaway: '',
     // created: '',
-    // description: '',
-    // images: [],
+    description: '',
+    images: [],
     // isGifted: '',
     // processedDate: '',
   });
-  const [file, setFile] = useState('');
-  // const [input, setInput] = useState({});
+  const [urls, setUrls] = useState([]);
+  // const [file, setFile] = useState('');
 
-  function handlefile(e) {
-    setFile(e.target.files[0]);
-  }
+  // // console.log(form);
 
-  function handleUpload() {
-    if (!file) {
-      alert('Please choose a file first!');
+  // function handlefile(e) {
+  //   setFile(e.target.files);
+  // }
+
+  // console.log(file);
+
+  // function handleUpload() {
+  //   // if (!file) {
+  //   //   alert('Please choose a file first!');
+  //   // }
+  //   const storageRef = ref(storage, `/files/${file.name}`);
+  //   const uploadTask = uploadBytesResumable(storageRef, file);
+
+  //   uploadTask.on(
+  //     'state_changed',
+  //     // (snapshot) => {
+  //     //   const percent = Math.round(
+  //     //     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+  //     //   ); // update progress
+  //     //   setPercent(percent);
+  //     // },
+  //     null,
+  //     (err) => console.log(err),
+  //     () => {
+  //       // download url
+  //       getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+  //         console.log(url);
+  //       });
+  //     }
+  //   );
+  // }
+
+  function handleFileUpload(e) {
+    const files = e.target.files;
+    const storageRef = ref(storage, '/q1khIAOnt2ewvY4SQw1z65roVPD2/images/');
+    const urlList = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const imageRef = ref(storageRef, `${file.name}`);
+      const uploadTask = uploadBytesResumable(imageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        null,
+        (err) => console.log(err),
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            // setUrls((prevUrls) => [...prevUrls, url]);
+            // setForm({ ...form, images: [...form.images, url] });
+            urlList.push(url);
+            urlList.length === files.length &&
+              setForm({ ...form, images: urlList });
+          });
+        }
+      );
     }
-    const storageRef = ref(storage, `/files/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      'state_changed',
-      // (snapshot) => {
-      //   const percent = Math.round(
-      //     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-      //   ); // update progress
-      //   setPercent(percent);
-      // },
-      null,
-      (err) => console.log(err),
-      () => {
-        // download url
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          console.log(url);
-        });
-      }
-    );
   }
+  console.log(form);
 
-  console.log(file);
   return (
     <div>
       <input
         type="file"
         accept="image/*"
-        onChange={(e) => handlefile(e)}
+        onChange={(e) => handleFileUpload(e)}
         multiple
       />
-      <button onClick={handleUpload}>Upload to Firebase</button>
+      {/* <button onClick={handleUpload}>Upload to Firebase</button> */}
+      {urls.map((image) => (
+        <img src={image} />
+      ))}
       <form>
-        {formInputs.map((input) => (
+        {/* {formInputs.map((input) => (
           <div>
             <label key={input.key}>{input.label}</label>
             <input
@@ -94,13 +137,54 @@ export default function Upload() {
               }
             />
           </div>
-        ))}
-        {/* <input
+        ))} */}
+        {formInputs.map((input) => {
+          if (input.option) {
+            return (
+              <div>
+                <label key={input.key}>{input.label}</label>
+                <select
+                  onChange={(e) =>
+                    setForm({ ...form, [input.key]: e.target.value })
+                  }
+                >
+                  {input.option.map((option) => (
+                    <option value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+            );
+          } else if (input.key === 'description') {
+            return (
+              <div>
+                <label key={input.key}>{input.label}</label>
+                <textarea
+                  value={form[input.key]}
+                  onChange={(e) =>
+                    setForm({ ...form, [input.key]: e.target.value })
+                  }
+                />
+              </div>
+            );
+          }
+          return (
+            <div>
+              <label key={input.key}>{input.label}</label>
+              <input
+                value={form[input.key]}
+                onChange={(e) =>
+                  setForm({ ...form, [input.key]: e.target.value })
+                }
+              />
+            </div>
+          );
+        })}
+        <input
           type="button"
-          value="Send Message"
+          value="上傳物品"
           disabled={Object.values(form).includes('')}
-          onClick={handleSendMessage}
-        /> */}
+          onClick={() => uploadItems(null, form)}
+        />
       </form>
     </div>
   );
