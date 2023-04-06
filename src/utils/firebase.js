@@ -206,3 +206,22 @@ export async function getItems() {
   });
   return items;
 }
+
+export async function getFilteredItems(field, value) {
+  const itemsRef = collection(
+    db,
+    'users',
+    'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    'items'
+  );
+  const itemsQuery = query(itemsRef, where(field, '==', value));
+  const items = [];
+
+  const querySnapshot = await getDocs(itemsQuery);
+  querySnapshot.forEach((document) => {
+    // doc.data() is never undefined for query doc snapshots
+    // console.log(doc.id, ' => ', doc.data());
+    items.push(document.data());
+  });
+  return items;
+}

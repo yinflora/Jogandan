@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { getItems } from '../../utils/firebase';
+import { getItems, getFilteredItems } from '../../utils/firebase';
 import { useEffect, useState } from 'react';
 
 const Title = styled.h1`
@@ -44,6 +44,35 @@ const Image = styled.img`
 
 const Name = styled.p``;
 
+const FilterTitle = styled.p`
+  color: #acaea9;
+`;
+
+const SubFilterWrapper = styled.p`
+  color: #acaea9;
+`;
+
+const SubTitle = styled.p`
+  color: #acaea9;
+`;
+
+const SUBCATEGORY = [
+  '居家生活',
+  '服飾配件',
+  '美妝保養',
+  '3C產品',
+  '影音產品',
+  '書報雜誌',
+  '體育器材',
+  '寵物用品',
+  '食物及飲料',
+  '興趣及遊戲',
+  '紀念意義',
+  '其他',
+];
+
+const SUBSTATUS = ['保留', '處理中', '已處理'];
+
 export default function Inventory() {
   const [items, setItems] = useState(null);
 
@@ -60,11 +89,41 @@ export default function Inventory() {
 
   console.log(items);
 
+  async function handleFilter(field, value) {
+    const filteredItems = await getFilteredItems(field, value);
+    setItems(filteredItems);
+    // getFilteredItems(field, value);
+  }
+
   return (
     <>
       <Title>Inventory</Title>
       <Container>
-        <FilterWrapper>aaaaaaa</FilterWrapper>
+        <FilterWrapper>
+          <FilterTitle>All({items ? items.length : 0})</FilterTitle>
+          <FilterTitle>Category</FilterTitle>
+          <SubFilterWrapper>
+            {SUBCATEGORY.map((category) => (
+              <SubTitle
+                key={category}
+                onClick={() => handleFilter('category', category)}
+              >
+                {category}
+              </SubTitle>
+            ))}
+          </SubFilterWrapper>
+          <FilterTitle>Status</FilterTitle>
+          <SubFilterWrapper>
+            {SUBSTATUS.map((status) => (
+              <SubTitle
+                key={status}
+                onClick={() => handleFilter('status', status)}
+              >
+                {status}
+              </SubTitle>
+            ))}
+          </SubFilterWrapper>
+        </FilterWrapper>
         <ItemWrapper>
           {items &&
             items.map((item) => (
