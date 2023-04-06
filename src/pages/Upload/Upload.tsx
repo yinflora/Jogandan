@@ -49,7 +49,7 @@ export default function Upload() {
     // isGifted: '',
     // processedDate: '',
   });
-  const [urls, setUrls] = useState([]);
+  // const [urls, setUrls] = useState([]);
   // const [file, setFile] = useState('');
 
   // // console.log(form);
@@ -102,8 +102,6 @@ export default function Upload() {
         (err) => console.log(err),
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            // setUrls((prevUrls) => [...prevUrls, url]);
-            // setForm({ ...form, images: [...form.images, url] });
             urlList.push(url);
             urlList.length === files.length &&
               setForm({ ...form, images: urlList });
@@ -123,7 +121,7 @@ export default function Upload() {
         multiple
       />
       {/* <button onClick={handleUpload}>Upload to Firebase</button> */}
-      {urls.map((image) => (
+      {form.images.map((image) => (
         <img src={image} />
       ))}
       <form>
