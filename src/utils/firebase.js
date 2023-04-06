@@ -144,7 +144,7 @@ export async function uploadItems(id, form) {
       joinGiveaway,
       created: serverTimestamp(),
       description,
-      // images,
+      images: images,
       isGifted: '',
       processedDate: '',
     });
