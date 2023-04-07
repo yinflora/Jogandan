@@ -1,6 +1,9 @@
 import { Outlet } from 'react-router-dom';
-import { createGlobalStyle } from 'styled-components';
 import { Reset } from 'styled-reset';
+import { createGlobalStyle } from 'styled-components';
+import { AuthContextProvider } from './context/authContext';
+
+import Header from './components/Header/Header';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -8,12 +11,17 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  button {
+    border: 0;
+    background-color: transparent;
   }
 
   #root {
     min-height: 100vh;
-    padding: 140px 50px 115px;
+    padding: 140px 50px 50px;
     position: relative;
   }
 `;
@@ -23,7 +31,10 @@ function App() {
     <>
       <Reset />
       <GlobalStyle />
-      <Outlet />
+      <AuthContextProvider>
+        <Header />
+        <Outlet />
+      </AuthContextProvider>
     </>
   );
 }

@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+// import { getProcessedItems } from '../../utils/firebase';
+import { useState } from 'react';
 
 const Svg = styled.svg`
   display: block;
@@ -50,18 +52,28 @@ const QUANTITY: quantity[] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
 const Items: data = [5, 23, 20, 15, 60, 78, 100, 96, 3, 34, 66, 12];
 
+const X_START_AXIS: number = 50;
+const X_END_AXIS: number = 1000;
+const Y_START_AXIS: number = 50;
+const Y_END_AXIS: number = 550;
+const XTAG_START_AXIS: number = 100;
+const XTAG_SPACE: number = 75;
+const XTAG_Y_AXIS: number = 570;
+const YTAG_START_AXIS: number = 550;
+const YTAG_SPACE: number = 50;
+const YTAG_X_AXIS: number = 30;
+const HEIGHT_PER_QTY: number = 5;
+
 export default function Report() {
-  const X_START_AXIS: number = 50;
-  const X_END_AXIS: number = 1000;
-  const Y_START_AXIS: number = 50;
-  const Y_END_AXIS: number = 550;
-  const XTAG_START_AXIS: number = 100;
-  const XTAG_SPACE: number = 75;
-  const XTAG_Y_AXIS: number = 570;
-  const YTAG_START_AXIS: number = 550;
-  const YTAG_SPACE: number = 50;
-  const YTAG_X_AXIS: number = 30;
-  const HEIGHT_PER_QTY: number = 5;
+  // const [items, setItems] = useState(null);
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const processedItems = await getProcessedItems();
+  //     // console.log(items);
+  //     setItems(processedItems);
+  //   }
+  //   fetchData();
+  // }, []);
 
   return (
     <Svg>

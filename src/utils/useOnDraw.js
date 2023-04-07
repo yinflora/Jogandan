@@ -4,6 +4,7 @@ export function useOnDraw(onDraw) {
   const canvasRef = useRef(null);
   const prevPointRef = useRef(null);
   const isDrawingRef = useRef(false);
+  const mouseDownPointRef = useRef(null); // 新增
 
   const mouseMoveListenerRef = useRef(null);
   const mouseUpListenerRef = useRef(null);
@@ -14,9 +15,16 @@ export function useOnDraw(onDraw) {
         if (isDrawingRef.current) {
           const point = computePointInCanvas(e.clientX, e.clientY);
           const ctx = canvasRef.current.getContext('2d');
-          if (onDraw) onDraw(ctx, point, prevPointRef.current);
-          prevPointRef.current = point;
-          console.log(point);
+          // if (onDraw) onDraw(ctx, point, prevPointRef.current);
+          // prevPointRef.current = point;
+          // console.log(point);
+          if (!mouseDownPointRef.current) {
+            // 新增
+            mouseDownPointRef.current = point;
+          }
+          if (onDraw) {
+            onDraw(ctx, mouseDownPointRef.current, point); // 修改
+          }
         }
       };
       mouseMoveListenerRef.current = mouseMoveListener; //用於clean up
@@ -27,11 +35,13 @@ export function useOnDraw(onDraw) {
       const mouseUpListener = () => {
         isDrawingRef.current = false;
         prevPointRef.current = null; //解決下一次畫畫時從上一個結束的點開始
+        mouseDownPointRef.current = null; // 新增
       };
       mouseUpListenerRef.current = mouseUpListener; //用於clean up
       window.addEventListener('mouseup', mouseUpListener); //在canvas外放開滑鼠也要視為停止作畫，所以將監聽器裝在window
     }
 
+    //畫布座標
     function computePointInCanvas(clientX, clientY) {
       if (canvasRef.current) {
         const boundingRect = canvasRef.current.getBoundingClientRect();

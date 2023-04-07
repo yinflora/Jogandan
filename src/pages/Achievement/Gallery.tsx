@@ -34,6 +34,7 @@ const Item = styled.li`
       width: 500px;
       margin-left: ${isFirst ? '250px' : 0};
       margin-right: ${isLast ? '250px' : 0};
+      /* transform: translateX(${isFirst ? '-250px' : isLast ? '250px' : 0}); */
 
       & > {
         border: '1px solid red';
@@ -43,6 +44,9 @@ const Item = styled.li`
 
 const Image = styled.img`
   width: 100%;
+  object-fit: cover;
+  object-position: center;
+  aspect-ratio: 1/1;
 `;
 
 const Time = styled.p`
@@ -61,9 +65,28 @@ const Timeline = styled.div`
   background-color: #acaea9;
 `;
 
-export default function CatFriends() {
+type month = string;
+
+const MONTHS: month[] = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+export default function CatFriends({ items }) {
   const selectedRef = useRef(null);
   const [index, setIndex] = useState(0);
+
+  console.log(items);
 
   function ScrollIntoImage() {
     selectedRef.current.scrollIntoView({
@@ -74,16 +97,14 @@ export default function CatFriends() {
   }
 
   function handlePrevious() {
-    flushSync(() => {
-      index > 0 ? setIndex(index - 1) : setIndex(catList.length - 1);
-    });
+    const nextIndex = index > 0 ? index - 1 : items.length - 1;
+    flushSync(() => setIndex(nextIndex));
     ScrollIntoImage();
   }
 
   function handleNext() {
-    flushSync(() => {
-      index < catList.length - 1 ? setIndex(index + 1) : setIndex(0);
-    });
+    const nextIndex = index < items.length - 1 ? index + 1 : 0;
+    flushSync(() => setIndex(nextIndex));
     ScrollIntoImage();
   }
 
@@ -92,35 +113,31 @@ export default function CatFriends() {
       <Previous onClick={() => handlePrevious()} />
       <ImageContainer>
         <ItemWrapper>
-          {catList.map((cat, i) => (
+          {items.map((item, i) => (
             <Item
-              key={cat.id}
+              key={i}
               ref={index === i ? selectedRef : null}
               isSelected={index === i}
               isFirst={index === 0}
-              isLast={index === catList.length - 1}
+              isLast={index === items.length - 1}
             >
-              {/* <p>{cat.id}</p> */}
-              <Image
-                // className={index === i ? 'active' : ''}
-                src={cat.imageUrl}
-                alt={'Cat #' + cat.id}
-              />
-              <Time>2023/04/01</Time>
+              <Image src={item.image} />
+              {/* <Time>{item.processedDate.seconds}</Time>
+              <p>{item.name}</p> */}
             </Item>
           ))}
         </ItemWrapper>
-        <Timeline />
+        {/* <Timeline /> */}
       </ImageContainer>
       <Next onClick={() => handleNext()} />
     </Container>
   );
 }
 
-const catList = [];
-for (let i = 0; i < 10; i++) {
-  catList.push({
-    id: i,
-    imageUrl: 'https://placekitten.com/250/200?image=' + i,
-  });
-}
+// const catList = [];
+// for (let i = 0; i < 10; i++) {
+//   catList.push({
+//     id: i,
+//     imageUrl: 'https://placekitten.com/250/200?image=' + i,
+//   });
+// }

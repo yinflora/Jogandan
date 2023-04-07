@@ -9,7 +9,8 @@ export default function Canvas({ width, height }) {
     // ctx.beginPath();
     // ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI); //Draw a circle
     // ctx.fill();
-    drawLine(prevPoint, point, ctx, '#000', 5);
+    // drawLine(prevPoint, point, ctx, '#000', 5);
+    drawRect(prevPoint, point, ctx, '#000', 5);
   }
 
   function drawLine(start, end, ctx, color, width) {
@@ -26,6 +27,14 @@ export default function Canvas({ width, height }) {
     ctx.beginPath();
     ctx.arc(start.x, start.y, 2, 0, 2 * Math.PI);
     ctx.fill();
+  }
+
+  function drawRect(start, end, ctx, color, width) {
+    start = start ?? { ...end };
+    ctx.clearRect(0, 0, 1000, 1000); //Fixme
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.strokeRect(start.x, start.y, end.x - start.x, end.y - start.y);
   }
 
   return (
