@@ -214,17 +214,31 @@ export default function Canvas() {
     reader.onload = () => {
       const img = new Image();
       img.onload = () => {
-        const imgScale = img.width / img.height;
-        // canvas.width = 700;
-        // canvas.height = 700;
+        // const imgScale = img.width / img.height;
+        // // canvas.width = 700;
+        // // canvas.height = 700;
 
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          canvas.width * 0.3,
-          (canvas.height * 0.3) / imgScale
-        );
+        // ctx.drawImage(
+        //   img,
+        //   0,
+        //   0,
+        //   canvas.width * 0.3,
+        //   (canvas.height * 0.3) / imgScale
+        // );
+
+        // Calculate image width and height based on original aspect ratio
+        let imgWidth, imgHeight;
+        const aspectRatio = img.width / img.height;
+        if (aspectRatio > 1) {
+          imgWidth = canvas.width * 0.5;
+          imgHeight = (canvas.width * 0.5) / aspectRatio;
+        } else {
+          imgWidth = canvas.height * 0.5 * aspectRatio;
+          imgHeight = canvas.height * 0.5;
+        }
+
+        // Draw image on canvas at top-left corner
+        ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
       };
       img.src = reader.result;
     };
