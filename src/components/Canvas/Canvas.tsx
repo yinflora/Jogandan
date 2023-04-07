@@ -1,17 +1,20 @@
 import { useRef, useEffect, useState } from 'react';
 
 export default function Canvas() {
+  const [tool, setTool] = useState<string>(null);
   const [color, setColor] = useState<string>('#000');
   const [lineWidth, setLineWidth] = useState<number>(5);
+  const [shape, setShape] = useState<string | null>(null);
+  // const [file, setFile] = useState(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // const lineWidthRef = useRef<number>(5);
-  // const colorRef = useRef<string>('#000');
   const isDrawingRef = useRef<boolean>(false);
   const startPointRef = useRef<object>({ x: 0, y: 0 });
   const lastPointRef = useRef<object>({ x: 0, y: 0 });
   const lineRef = useRef<Array>([]);
   const distanceMovedRef = useRef<number>(0);
+
+  // console.log(file);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -53,18 +56,21 @@ export default function Canvas() {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     };
-    console.log(
-      `start point - x: ${startPointRef.current.x},
-      y: ${startPointRef.current.y}`
-    );
+    // console.log(
+    //   `start point - x: ${startPointRef.current.x},
+    //   y: ${startPointRef.current.y}`
+    // );
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     isDrawingRef.current = true;
-    ctx.strokeStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+
+    if (tool === 'draw') {
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    }
   }
 
   function draw(e) {
@@ -103,6 +109,68 @@ export default function Canvas() {
     ];
   }
 
+  function drawShape(e) {
+    if (!isDrawingRef.current) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除畫布
+    // ctx.fillStyle = 'white'; // 將背景設置為白色
+    // ctx.fillRect(0, 0, canvas.width, canvas.height); // 填充白色背景
+    // renderLines(); // 重新繪製線條
+
+    ctx.fillStyle = color;
+    ctx.lineWidth = lineWidth;
+
+    const startX = startPointRef.current.x;
+    const startY = startPointRef.current.y;
+    const radius = Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2));
+
+    switch (shape) {
+      case 'circle':
+        ctx.beginPath();
+        ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
+        ctx.fill();
+        break;
+      case 'rectangle':
+        ctx.beginPath();
+        ctx.rect(
+          Math.min(x, startX),
+          Math.min(y, startY),
+          Math.abs(x - startX),
+          Math.abs(y - startY)
+        );
+        ctx.fill();
+        break;
+      case 'triangle':
+        ctx.beginPath();
+        ctx.moveTo(startX, startY - Math.abs(y - startY));
+        ctx.lineTo(
+          startX - Math.abs(x - startX) / 2,
+          startY + Math.abs(y - startY)
+        );
+        ctx.lineTo(
+          startX + Math.abs(x - startX) / 2,
+          startY + Math.abs(y - startY)
+        );
+        ctx.closePath();
+        ctx.fill();
+        break;
+      default:
+        break;
+    }
+
+    lastPointRef.current = { x: e.clientX, y: e.clientY };
+  }
+
   function endDrawing() {
     isDrawingRef.current = false;
 
@@ -113,11 +181,53 @@ export default function Canvas() {
     // const endX = lastPointRef.current.x - rect.left;
     // const endY = lastPointRef.current.y - rect.top;
 
-    // if (lineRef.current.length > 0 && distanceMovedRef.current >= 5) {
+    if (lineRef.current.length > 0 && distanceMovedRef.current >= 5) {
+      lineRef.current = [];
+      distanceMovedRef.current = 0;
+    }
 
-    // }
-    lineRef.current = [];
-    distanceMovedRef.current = 0;
+    switch (tool) {
+      case 'draw':
+        lineRef.current = [];
+        distanceMovedRef.current = 0;
+        break;
+      case 'shape':
+        console.log('畫完圖形囉');
+        break;
+      default:
+        break;
+    }
+  }
+
+  function drawImage(e) {
+    const file = e.target.files[0];
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file); //使用 FileReader API 將圖片讀取為 Data URL
+
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const imgScale = img.width / img.height;
+        // canvas.width = 700;
+        // canvas.height = 700;
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          canvas.width * 0.3,
+          (canvas.height * 0.3) / imgScale
+        );
+      };
+      img.src = reader.result;
+    };
   }
 
   return (
@@ -125,11 +235,27 @@ export default function Canvas() {
       <canvas
         ref={canvasRef}
         onMouseDown={(e) => startDrawing(e)}
-        onMouseMove={(e) => draw(e)}
+        onMouseMove={(e) => {
+          if (tool) {
+            tool === 'draw' && draw(e);
+            tool === 'shape' && drawShape(e);
+          }
+        }}
         onMouseUp={endDrawing}
         onMouseOut={endDrawing}
       />
       <div>
+        <div>
+          <label>Tool:</label>
+          <select value={tool} onChange={(e) => setTool(e.target.value)}>
+            <option>---</option>
+            <option value="draw">Draw</option>
+            <option value="shape">Shape</option>
+            <option value="image">Image</option>
+          </select>
+          <input type="file" accept="image/*" onChange={(e) => drawImage(e)} />
+        </div>
+
         <div>
           <label>Color:</label>
           <input
@@ -149,20 +275,18 @@ export default function Canvas() {
           />
         </div>
         {/* <button onClick={handleClearCanvas}>Clear</button> */}
-        <button>Clear</button>
       </div>
       <div>
         <label>Shape:</label>
-        <select
-        // value={shape || ''} onChange={(e) => setShape(e.target.value)}
-        >
-          <option value="">Free Draw</option>
+        <select value={shape || ''} onChange={(e) => setShape(e.target.value)}>
+          <option>---</option>
           <option value="circle">Circle</option>
           <option value="rectangle">Rectangle</option>
           <option value="triangle">Triangle</option>
-          {/* <option value="move">Move</option> */}
         </select>
       </div>
+      <button>Clear</button>
+      <button>Done</button>
     </div>
   );
 }
