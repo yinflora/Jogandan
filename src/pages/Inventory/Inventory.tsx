@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { getItems, getFilteredItems } from '../../utils/firebase';
+import { getItems } from '../../utils/firebase';
 import { useEffect, useRef, useState } from 'react';
 
 const Title = styled.h1`
