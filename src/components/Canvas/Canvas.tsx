@@ -36,7 +36,7 @@ export default function Canvas() {
     storageId && renderBoard(storageId);
 
     !storageId && getBoardId();
-  }, []);
+  }, [boardId]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -403,6 +403,22 @@ export default function Canvas() {
     resetBoard(boardId);
   }
 
+  function handleDone() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'gray';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    localStorage.removeItem('boardId');
+    setBoardId(null);
+  }
+
   return (
     <div>
       <canvas
@@ -466,7 +482,7 @@ export default function Canvas() {
         </select>
       </div>
       <button onClick={handleClear}>Clear</button>
-      <button>Done</button>
+      <button onClick={handleDone}>Done</button>
     </div>
   );
 }
