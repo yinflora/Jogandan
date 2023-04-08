@@ -1,20 +1,29 @@
 import { useRef, useEffect, useState } from 'react';
+import { createBoard, updateLines } from '../../utils/firebase';
 
 export default function Canvas() {
-  const [tool, setTool] = useState<string>(null);
+  const [tool, setTool] = useState<string | null>(null);
   const [color, setColor] = useState<string>('#000');
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [shape, setShape] = useState<string | null>(null);
   // const [file, setFile] = useState(null);
+  const [text, setText] = useState<string | null>(null);
+  const [boardId, setBoardId] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef<boolean>(false);
   const startPointRef = useRef<object>({ x: 0, y: 0 });
   const lastPointRef = useRef<object>({ x: 0, y: 0 });
-  const lineRef = useRef<Array>([]);
+  const lineRef = useRef<Object[]>([]);
   const distanceMovedRef = useRef<number>(0);
 
-  // console.log(file);
+  useEffect(() => {
+    async function getBoardId() {
+      const id = await createBoard();
+      setBoardId(id);
+    }
+    getBoardId();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -177,17 +186,20 @@ export default function Canvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    console.log(lineRef.current);
+
     // const rect = canvas.getBoundingClientRect();
     // const endX = lastPointRef.current.x - rect.left;
     // const endY = lastPointRef.current.y - rect.top;
 
-    if (lineRef.current.length > 0 && distanceMovedRef.current >= 5) {
-      lineRef.current = [];
-      distanceMovedRef.current = 0;
-    }
+    // if (lineRef.current.length > 0 && distanceMovedRef.current >= 5) {
+    //   lineRef.current = [];
+    //   distanceMovedRef.current = 0;
+    // }
 
     switch (tool) {
       case 'draw':
+        updateLines(boardId, lineRef.current);
         lineRef.current = [];
         distanceMovedRef.current = 0;
         break;
@@ -244,6 +256,31 @@ export default function Canvas() {
     };
   }
 
+  function drawText() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.fillStyle = 'black';
+    ctx.font = '20px Arial';
+    ctx.fillText(text, 50, 50);
+  }
+
+  function handleClear() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'gray';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
   return (
     <div>
       <canvas
@@ -266,8 +303,15 @@ export default function Canvas() {
             <option value="draw">Draw</option>
             <option value="shape">Shape</option>
             <option value="image">Image</option>
+            <option value="text">Text</option>
           </select>
           <input type="file" accept="image/*" onChange={(e) => drawImage(e)} />
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && drawText()}
+          />
         </div>
 
         <div>
@@ -299,7 +343,7 @@ export default function Canvas() {
           <option value="triangle">Triangle</option>
         </select>
       </div>
-      <button>Clear</button>
+      <button onClick={handleClear}>Clear</button>
       <button>Done</button>
     </div>
   );

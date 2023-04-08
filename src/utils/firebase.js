@@ -11,7 +11,8 @@ import {
   query,
   where,
   serverTimestamp,
-  onSnapshot,
+  updateDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -226,29 +227,49 @@ export async function getFilteredItems(field, value) {
   return items;
 }
 
-// export async function uploadLines() {
-//   try {
-//     const { name, category, status, joinGiveaway, description, images } = form;
-//     const itemDocRef = doc(
-//       db,
-//       'users',
-//       'q1khIAOnt2ewvY4SQw1z65roVPD2',
-//       'visionBoards',
-//       'DuKJFlYgSv69GIsAqyyN',
-//     );
-//     const docRef = await addDoc(itemDocRef, {
-//       name,
-//       category,
-//       status,
-//       joinGiveaway,
-//       created: serverTimestamp(),
-//       description,
-//       images,
-//       isGifted: '',
-//       processedDate: '',
-//     });
-//     console.log('Item uploaded with ID: ', docRef.id);
-//   } catch (e) {
-//     console.error('Error uploading article: ', e);
-//   }
-// }
+export async function createBoard() {
+  try {
+    const userCollectionRef = collection(
+      db,
+      'users',
+      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      'visionBoards'
+    );
+    const docRef = await addDoc(
+      userCollectionRef,
+      {
+        created: serverTimestamp(),
+        lines: [],
+        shapes: [],
+      },
+      { merge: true }
+    );
+    // console.log('Boards uploaded with ID: ', docRef.id);
+    return docRef.id;
+  } catch (e) {
+    console.error('Error uploading article: ', e);
+  }
+  return null;
+}
+
+export async function updateLines(id, lineRef) {
+  try {
+    const boardDocRef = doc(
+      db,
+      'users',
+      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      'visionBoards',
+      id
+    );
+    await updateDoc(boardDocRef, {
+      lines: arrayUnion({
+        points: lineRef,
+      }),
+      lastUpdated: serverTimestamp(),
+    });
+    console.log('更新線條成功');
+  } catch (e) {
+    console.error('Error uploading article: ', e);
+  }
+  return null;
+}
