@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { createBoard, updateLines } from '../../utils/firebase';
+import { createBoard, updateLines, updateShapes } from '../../utils/firebase';
 
 export default function Canvas() {
   const [tool, setTool] = useState<string | null>(null);
@@ -16,13 +16,17 @@ export default function Canvas() {
   const lastPointRef = useRef<object>({ x: 0, y: 0 });
   const lineRef = useRef<Object[]>([]);
   const distanceMovedRef = useRef<number>(0);
+  const shapeRef = useRef<Object | null>(null);
 
   useEffect(() => {
+    const storageId = localStorage.getItem('boardId');
+
     async function getBoardId() {
       const id = await createBoard();
+      localStorage.setItem('boardId', id);
       setBoardId(id);
     }
-    getBoardId();
+    !storageId && getBoardId();
   }, []);
 
   useEffect(() => {
@@ -186,25 +190,34 @@ export default function Canvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    console.log(lineRef.current);
-
-    // const rect = canvas.getBoundingClientRect();
-    // const endX = lastPointRef.current.x - rect.left;
-    // const endY = lastPointRef.current.y - rect.top;
+    const rect = canvas.getBoundingClientRect();
+    const endX = lastPointRef.current.x - rect.left;
+    const endY = lastPointRef.current.y - rect.top;
 
     // if (lineRef.current.length > 0 && distanceMovedRef.current >= 5) {
     //   lineRef.current = [];
     //   distanceMovedRef.current = 0;
     // }
 
+    shapeRef.current = {
+      type: shape,
+      startX: startPointRef.current.x,
+      startY: startPointRef.current.y,
+      endX,
+      endY,
+      color,
+      lineWidth,
+    };
+
     switch (tool) {
       case 'draw':
-        updateLines(boardId, lineRef.current);
+        // updateLines(boardId, lineRef.current);
         lineRef.current = [];
         distanceMovedRef.current = 0;
         break;
       case 'shape':
-        console.log('畫完圖形囉');
+        // updateShapes(boardId, shapeRef.current);
+        shapeRef.current = {};
         break;
       default:
         break;

@@ -273,3 +273,23 @@ export async function updateLines(id, lineRef) {
   }
   return null;
 }
+
+export async function updateShapes(id, shapeRef) {
+  try {
+    const boardDocRef = doc(
+      db,
+      'users',
+      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      'visionBoards',
+      id
+    );
+    await updateDoc(boardDocRef, {
+      shapes: arrayUnion(shapeRef),
+      lastUpdated: serverTimestamp(),
+    });
+    console.log('更新形狀成功');
+  } catch (e) {
+    console.error('Error uploading article: ', e);
+  }
+  return null;
+}
