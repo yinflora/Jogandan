@@ -1,5 +1,10 @@
 import { useRef, useEffect, useState } from 'react';
-import { createBoard, updateLines, updateShapes } from '../../utils/firebase';
+import {
+  createBoard,
+  updateLines,
+  updateShapes,
+  resetBoard,
+} from '../../utils/firebase';
 
 export default function Canvas() {
   const [tool, setTool] = useState<string | null>(null);
@@ -26,6 +31,7 @@ export default function Canvas() {
       localStorage.setItem('boardId', id);
       setBoardId(id);
     }
+    storageId && setBoardId(storageId);
     !storageId && getBoardId();
   }, []);
 
@@ -88,6 +94,7 @@ export default function Canvas() {
 
   function draw(e) {
     if (!isDrawingRef.current) return;
+    if (tool !== 'draw') return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -124,6 +131,7 @@ export default function Canvas() {
 
   function drawShape(e) {
     if (!isDrawingRef.current) return;
+    if (tool !== 'shape' && !shape) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -207,17 +215,25 @@ export default function Canvas() {
       endY,
       color,
       lineWidth,
-    };
+    }; //Todo
 
     switch (tool) {
       case 'draw':
-        // updateLines(boardId, lineRef.current);
+        isDrawingRef.current === false &&
+          lineRef.current.length > 0 &&
+          console.log('更新線條');
+        // (await updateLines(boardId, lineRef.current));
         lineRef.current = [];
         distanceMovedRef.current = 0;
         break;
       case 'shape':
-        // updateShapes(boardId, shapeRef.current);
-        shapeRef.current = {};
+        isDrawingRef.current === false &&
+          // shapeRef.current !== null &&
+          console.log(shapeRef.current, '更新形狀');
+        // (await updateShapes(boardId, shapeRef.current));
+        shapeRef.current = null;
+        console.log(shapeRef.current);
+
         break;
       default:
         break;
@@ -292,6 +308,8 @@ export default function Canvas() {
 
     ctx.fillStyle = 'gray';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    resetBoard(boardId);
   }
 
   return (
@@ -306,7 +324,7 @@ export default function Canvas() {
           }
         }}
         onMouseUp={endDrawing}
-        onMouseOut={endDrawing}
+        // onMouseOut={endDrawing}
       />
       <div>
         <div>

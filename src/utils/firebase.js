@@ -13,6 +13,7 @@ import {
   serverTimestamp,
   updateDoc,
   arrayUnion,
+  deleteField,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -246,6 +247,26 @@ export async function createBoard() {
     );
     // console.log('Boards uploaded with ID: ', docRef.id);
     return docRef.id;
+  } catch (e) {
+    console.error('Error uploading article: ', e);
+  }
+  return null;
+}
+
+export async function resetBoard(id) {
+  try {
+    const boardDocRef = doc(
+      db,
+      'users',
+      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      'visionBoards',
+      id
+    );
+    await updateDoc(boardDocRef, {
+      lines: deleteField(),
+      shapes: deleteField(),
+    });
+    console.log('刪除成功');
   } catch (e) {
     console.error('Error uploading article: ', e);
   }
