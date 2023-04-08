@@ -4,6 +4,7 @@ import {
   updateLines,
   updateShapes,
   resetBoard,
+  getBoard,
 } from '../../utils/firebase';
 
 export default function Canvas() {
@@ -20,7 +21,7 @@ export default function Canvas() {
   const startPointRef = useRef<object>({ x: 0, y: 0 });
   const lastPointRef = useRef<object>({ x: 0, y: 0 });
   const lineRef = useRef<Object[]>([]);
-  const distanceMovedRef = useRef<number>(0);
+  // const distanceMovedRef = useRef<number>(0);
   const shapeRef = useRef<Object | null>(null);
 
   useEffect(() => {
@@ -32,6 +33,8 @@ export default function Canvas() {
       setBoardId(id);
     }
     storageId && setBoardId(storageId);
+    storageId && renderBoard(storageId);
+
     !storageId && getBoardId();
   }, []);
 
@@ -65,6 +68,77 @@ export default function Canvas() {
 
     ctx.lineWidth = lineWidth;
   }, [lineWidth, color]);
+
+  async function renderBoard(storageId) {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const boardData = await getBoard(storageId);
+    const { lines, shapes } = boardData;
+
+    //render lines
+    for (const line of lines) {
+      for (const point of line.points) {
+        ctx.beginPath();
+        ctx.moveTo(point.prevX, point.prevY);
+        ctx.lineTo(point.x, point.y);
+        ctx.strokeStyle = point.color;
+        ctx.lineWidth = point.lineWidth;
+        ctx.stroke();
+      }
+    }
+
+    // render shapes
+    for (const shapeData of shapes) {
+      ctx.fillStyle = shapeData.color;
+      ctx.lineWidth = shapeData.lineWidth;
+
+      const radius = Math.sqrt(
+        Math.pow(shapeData.endX - shapeData.startX, 2) +
+          Math.pow(shapeData.endY - shapeData.startY, 2)
+      );
+
+      switch (shapeData.type) {
+        case 'circle':
+          ctx.beginPath();
+          ctx.arc(shapeData.startX, shapeData.startY, radius, 0, 2 * Math.PI);
+          ctx.fill();
+          break;
+        case 'rectangle':
+          ctx.beginPath();
+          ctx.rect(
+            Math.min(shapeData.endX, shapeData.startX),
+            Math.min(shapeData.endY, shapeData.startY),
+            Math.abs(shapeData.endX - shapeData.startX),
+            Math.abs(shapeData.endY - shapeData.startY)
+          );
+          ctx.fill();
+          break;
+        case 'triangle':
+          ctx.beginPath();
+          ctx.moveTo(
+            shapeData.startX,
+            shapeData.startY - Math.abs(shapeData.endY - shapeData.startY)
+          );
+          ctx.lineTo(
+            shapeData.startX - Math.abs(shapeData.endX - shapeData.startX) / 2,
+            shapeData.startY + Math.abs(shapeData.endY - shapeData.startY)
+          );
+          ctx.lineTo(
+            shapeData.startX + Math.abs(shapeData.endX - shapeData.startX) / 2,
+            shapeData.startY + Math.abs(shapeData.endY - shapeData.startY)
+          );
+          ctx.closePath();
+          ctx.fill();
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
   function startDrawing(e) {
     const canvas = canvasRef.current;
@@ -106,12 +180,23 @@ export default function Canvas() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const line = lineRef.current;
-    const dx = x - (line.length > 0 ? line[line.length - 1].x : x);
-    const dy = y - (line.length > 0 ? line[line.length - 1].y : y);
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    distanceMovedRef.current += distance;
-    lastPointRef.current = { x: e.clientX, y: e.clientY };
+    // const line = lineRef.current;
+
+    // const dx =
+    //   x -
+    //   (lineRef.current.length > 0
+    //     ? lineRef.current[lineRef.current.length - 1].x
+    //     : x);
+    // const dy =
+    //   y -
+    //   (lineRef.current.length > 0
+    //     ? lineRef.current[lineRef.current.length - 1].y
+    //     : y);
+    // const distance = Math.sqrt(dx * dx + dy * dy);
+    // distanceMovedRef.current += distance;
+    // lastPointRef.current = { x: e.clientX, y: e.clientY };
+
+    // console.log(distance);
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -121,8 +206,14 @@ export default function Canvas() {
       {
         x,
         y,
-        prevX: dx,
-        prevY: dy,
+        prevX:
+          lineRef.current.length > 0
+            ? lineRef.current[lineRef.current.length - 1].x
+            : x,
+        prevY:
+          lineRef.current.length > 0
+            ? lineRef.current[lineRef.current.length - 1].y
+            : y,
         color,
         lineWidth,
       },
@@ -221,16 +312,16 @@ export default function Canvas() {
       case 'draw':
         isDrawingRef.current === false &&
           lineRef.current.length > 0 &&
-          console.log('更新線條');
-        // (await updateLines(boardId, lineRef.current));
+          // console.log('更新線條');
+          updateLines(boardId, lineRef.current);
         lineRef.current = [];
-        distanceMovedRef.current = 0;
+        // distanceMovedRef.current = 0;
         break;
       case 'shape':
         isDrawingRef.current === false &&
           // shapeRef.current !== null &&
-          console.log(shapeRef.current, '更新形狀');
-        // (await updateShapes(boardId, shapeRef.current));
+          // console.log(shapeRef.current, '更新形狀');
+          updateShapes(boardId, shapeRef.current);
         shapeRef.current = null;
         console.log(shapeRef.current);
 

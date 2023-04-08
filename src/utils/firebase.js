@@ -314,3 +314,17 @@ export async function updateShapes(id, shapeRef) {
   }
   return null;
 }
+
+export async function getBoard(id) {
+  const boardDocRef = doc(
+    db,
+    'users',
+    'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    'visionBoards',
+    id
+  );
+
+  const boardSnapshot = await getDoc(boardDocRef);
+  const boardData = boardSnapshot.data();
+  return boardData;
+}
