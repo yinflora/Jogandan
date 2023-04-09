@@ -55,8 +55,8 @@ export default function Canvas() {
 
   function drag(e) {
     if (!isDraggingRef.current) return;
-    if (!selectedRef.current) return;
-    if (tool !== null) return;
+    if (isSelectedRef.current === false) return;
+    // if (tool !== null) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -71,7 +71,7 @@ export default function Canvas() {
     const y = e.clientY - rect.top;
 
     const type = selectedRef.current.type;
-    // console.log(type);
+    console.log(type);
 
     //邊移動邊清畫布
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -129,35 +129,19 @@ export default function Canvas() {
       default:
         break;
     }
-
-    // const rect = canvas.getBoundingClientRect();
-    // startPointRef.current = { x, y };
-
-    // lastPointRef.current = { x: e.clientX, y: e.clientY };
-    // startPointRef.current = { x: e.clientX, y: e.clientY };
   }
 
   function endDragging(e) {
+    if (isSelectedRef.current === false) return;
+
     isDraggingRef.current = false;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    // const endX = lastPointRef.current.x - rect.left;
-    // const endY = lastPointRef.current.y - rect.top;
     const startX = e.clientX - rect.left;
     const startY = e.clientY - rect.top;
-
-    // shapeRef.current = {
-    //   type: shape,
-    //   startX: startPointRef.current.x,
-    //   startY: startPointRef.current.y,
-    //   endX,
-    //   endY,
-    //   color,
-    //   lineWidth,
-    // }; //Todo
 
     selectedRef.current = {
       ...selectedRef.current,
