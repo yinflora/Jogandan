@@ -15,6 +15,7 @@ export default function Canvas() {
   const [shape, setShape] = useState<string | null>(null);
   const [text, setText] = useState<string | null>(null);
   const [boardId, setBoardId] = useState<string | null>(null);
+  const [canDrag, setCanDrag] = useState<boolean>(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef<boolean>(false);
@@ -28,6 +29,8 @@ export default function Canvas() {
   const selectedRef = useRef<object | null>(null);
 
   const BACKGROUND_COLOR: string = 'gray';
+
+  console.log(canDrag);
 
   async function startDragging(e) {
     const canvas = canvasRef.current;
@@ -60,6 +63,8 @@ export default function Canvas() {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // renderBoard(boardId);
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -538,21 +543,30 @@ export default function Canvas() {
     setBoardId(null);
   }
 
+  function handleDrawing(e) {
+    if (tool) {
+      tool === 'draw' && draw(e);
+      tool === 'shape' && drawShape(e);
+    }
+  }
+
   return (
     <div>
       <canvas
         ref={canvasRef}
         // onMouseDown={(e) => startDrawing(e)}
-        onMouseDown={(e) => startDragging(e)}
+        // onMouseDown={(e) => startDragging(e)}
+        onMouseDown={(e) => (canDrag ? startDragging(e) : startDrawing(e))}
         // onMouseMove={(e) => {
         //   if (tool) {
         //     tool === 'draw' && draw(e);
         //     tool === 'shape' && drawShape(e);
         //   }
         // }}
-        onMouseMove={(e) => drag(e)}
-        // onMouseUp={endDrawing}
-        onMouseUp={endDragging}
+        onMouseMove={(e) => (canDrag ? drag(e) : handleDrawing(e))}
+        // onMouseMove={(e) => drag(e)}
+        // onMouseUp={endDragging}
+        onMouseUp={canDrag ? endDragging : endDrawing}
       />
       <div>
         <div>
@@ -600,6 +614,14 @@ export default function Canvas() {
           <option value="rectangle">Rectangle</option>
           <option value="triangle">Triangle</option>
         </select>
+      </div>
+      <div>
+        <label>Drag:</label>
+        <input
+          type="checkbox"
+          checked={canDrag}
+          onChange={(e) => setCanDrag(e.target.checked)}
+        />
       </div>
       <button onClick={handleClear}>Clear</button>
       <button onClick={handleDone}>Done</button>
