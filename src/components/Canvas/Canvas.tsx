@@ -15,14 +15,225 @@ export default function Canvas() {
   // const [file, setFile] = useState(null);
   const [text, setText] = useState<string | null>(null);
   const [boardId, setBoardId] = useState<string | null>(null);
+  // const [imgElement, setImgElement] = useState(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef<boolean>(false);
   const startPointRef = useRef<object>({ x: 0, y: 0 });
   const lastPointRef = useRef<object>({ x: 0, y: 0 });
-  const lineRef = useRef<Object[]>([]);
+  const lineRef = useRef<object[]>([]);
   // const distanceMovedRef = useRef<number>(0);
-  const shapeRef = useRef<Object | null>(null);
+  const shapeRef = useRef<object | null>(null);
+  // const imageRef = useRef<HTMLCanvasElement>(null);
+
+  const isDraggingRef = useRef<boolean>(false);
+  const isSelectedRef = useRef<boolean>(false);
+  const selectedRef = useRef<object | null>(null);
+
+  // let isDown = null;
+  // let dragTarget = null;
+  // let startX = null;
+  // let startY = null;
+
+  async function startDragging(e) {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    startPointRef.current = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    isSelectedRef.current = await findTarget(
+      startPointRef.current.x,
+      startPointRef.current.y
+    );
+    // console.log(isSelected);
+
+    if (isSelectedRef.current) isDraggingRef.current = true;
+  }
+
+  function drag(e) {
+    if (!isDraggingRef.current) return;
+    if (!selectedRef.current) return;
+    if (tool !== null) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    console.log(`Move:(${x},${y})`);
+
+    const startX = startPointRef.current.x;
+    const startY = startPointRef.current.y;
+
+    console.log(`Start:(${startX},${startY})`);
+
+    //假設是要移動長方形
+    const rectWidth = selectedRef.current.endX - selectedRef.current.startX;
+    const rectHeight = selectedRef.current.endY - selectedRef.current.startY;
+
+    console.log(rectWidth, rectHeight);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'gray';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = color;
+    ctx.lineWidth = lineWidth;
+
+    ctx.beginPath();
+    ctx.rect(x, y, rectWidth, rectHeight);
+    ctx.fill();
+  }
+
+  function endDragging() {
+    isDraggingRef.current = false;
+
+    // const canvas = canvasRef.current;
+    // if (!canvas) return;
+
+    // const rect = canvas.getBoundingClientRect();
+    // const endX = lastPointRef.current.x - rect.left;
+    // const endY = lastPointRef.current.y - rect.top;
+  }
+
+  async function findTarget(x, y) {
+    let isTarget = false;
+
+    const boardData = await getBoard(boardId);
+    const { lines, shapes } = boardData;
+
+    for (let i = 0; i < shapes.length; i++) {
+      const shape = shapes[i];
+      if (
+        x >= shape.startX &&
+        x <= shape.startX + shape.endX - shape.startX &&
+        y >= shape.startY &&
+        y <= shape.startY + shape.endY - shape.startY
+      ) {
+        // dragTarget = shape;
+        selectedRef.current = shape;
+        isTarget = true;
+        // isSelectedRef.current = true;
+        break;
+      }
+    }
+
+    console.log(selectedRef.current);
+    console.log(isTarget);
+    return isTarget;
+  }
+
+  // async function hitTarget(x, y) {
+  //   let isTarget = null;
+
+  //   const boardData = await getBoard(boardId);
+  //   const { lines, shapes } = boardData;
+
+  //   for (let i = 0; i < shapes.length; i++) {
+  //     const shape = shapes[i];
+  //     if (
+  //       x >= shape.startX &&
+  //       x <= shape.startX + shape.endX - shape.startX &&
+  //       y >= shape.startY &&
+  //       y <= shape.startY + shape.endY - shape.startY
+  //     ) {
+  //       dragTarget = shape;
+  //       isTarget = true;
+  //       break;
+  //     }
+  //   }
+
+  //   console.log(dragTarget);
+  //   console.log(isTarget);
+  //   return isTarget;
+  // }
+
+  // function handleMouseDown(e) {
+  //   startX = parseInt(e.nativeEvent.offsetX - canvasRef.current.clientLeft);
+  //   startY = parseInt(e.nativeEvent.offsetY - canvasRef.current.clientTop);
+  //   isDown = hitTarget(startX, startY);
+  // }
+
+  // function handleMouseMove(e) {
+  //   if (!isDown) return;
+
+  //   const canvas = canvasRef.current;
+  //   if (!canvas) return;
+
+  //   const ctx = canvas.getContext('2d');
+  //   if (!ctx) return;
+
+  //   const mouseX = parseInt(
+  //     e.nativeEvent.offsetX - canvasRef.current.clientLeft
+  //   );
+  //   const mouseY = parseInt(
+  //     e.nativeEvent.offsetY - canvasRef.current.clientTop
+  //   );
+  //   const dx = mouseX - startX;
+  //   const dy = mouseY - startY;
+  //   startX = mouseX;
+  //   startY = mouseY;
+  //   dragTarget.startX += dx;
+  //   dragTarget.startY += dy;
+  //   console.log('moving');
+
+  //   const rect = canvas.getBoundingClientRect();
+  //   const x = e.clientX - rect.left;
+  //   const y = e.clientY - rect.top;
+
+  //   // ctx.clearRect(0, 0, canvas.width, canvas.height);
+  //   // ctx.fillStyle = 'gray';
+  //   // ctx.fillRect(0, 0, canvas.width, canvas.height);
+  //   // const startX = startPointRef.current.x;
+  //   // const startY = startPointRef.current.y;
+  //   ctx.beginPath();
+  //   ctx.rect(
+  //     Math.min(dragTarget.endX, dragTarget.startX),
+  //     Math.min(dragTarget.endY, dragTarget.startY),
+  //     Math.abs(dragTarget.endX - dragTarget.startX),
+  //     Math.abs(dragTarget.endY - dragTarget.startY)
+  //   );
+  //   ctx.fill();
+  // }
+  // useEffect(() => {
+  //   // imageRef.current.addEventListener('mousedown', () =>
+  //   //   console.log('有嗎有嗎')
+  //   // );
+  //   imgElement &&
+  //     imgElement.addEventListener('mousedown', () => console.log('有嗎有嗎'));
+
+  //   return () => {
+  //     imgElement &&
+  //       imgElement.removeEventListener('mousedown', () =>
+  //         console.log('有嗎有嗎')
+  //       );
+  //   };
+  // }, [imgElement]);
+
+  // function startDragging(e) {
+  //   const canvas = canvasRef.current;
+  //   if (!canvas || !imageRef.current) return;
+
+  //   !isDrawingRef.current && setIsDragging(true);
+  // }
+
+  // useEffect(() => {
+  //   imageRef.current && console.log(imageRef.current);
+  // }, []);
 
   useEffect(() => {
     const storageId = localStorage.getItem('boardId');
@@ -79,63 +290,71 @@ export default function Canvas() {
     const boardData = await getBoard(storageId);
     const { lines, shapes } = boardData;
 
+    // console.log(lines, shapes);
+
     //render lines
-    for (const line of lines) {
-      for (const point of line.points) {
-        ctx.beginPath();
-        ctx.moveTo(point.prevX, point.prevY);
-        ctx.lineTo(point.x, point.y);
-        ctx.strokeStyle = point.color;
-        ctx.lineWidth = point.lineWidth;
-        ctx.stroke();
+    if (lines !== undefined) {
+      for (const line of lines) {
+        for (const point of line.points) {
+          ctx.beginPath();
+          ctx.moveTo(point.prevX, point.prevY);
+          ctx.lineTo(point.x, point.y);
+          ctx.strokeStyle = point.color;
+          ctx.lineWidth = point.lineWidth;
+          ctx.stroke();
+        }
       }
     }
 
     // render shapes
-    for (const shapeData of shapes) {
-      ctx.fillStyle = shapeData.color;
-      ctx.lineWidth = shapeData.lineWidth;
+    if (shapes !== undefined) {
+      for (const shapeData of shapes) {
+        ctx.fillStyle = shapeData.color;
+        ctx.lineWidth = shapeData.lineWidth;
 
-      const radius = Math.sqrt(
-        Math.pow(shapeData.endX - shapeData.startX, 2) +
-          Math.pow(shapeData.endY - shapeData.startY, 2)
-      );
+        const radius = Math.sqrt(
+          Math.pow(shapeData.endX - shapeData.startX, 2) +
+            Math.pow(shapeData.endY - shapeData.startY, 2)
+        );
 
-      switch (shapeData.type) {
-        case 'circle':
-          ctx.beginPath();
-          ctx.arc(shapeData.startX, shapeData.startY, radius, 0, 2 * Math.PI);
-          ctx.fill();
-          break;
-        case 'rectangle':
-          ctx.beginPath();
-          ctx.rect(
-            Math.min(shapeData.endX, shapeData.startX),
-            Math.min(shapeData.endY, shapeData.startY),
-            Math.abs(shapeData.endX - shapeData.startX),
-            Math.abs(shapeData.endY - shapeData.startY)
-          );
-          ctx.fill();
-          break;
-        case 'triangle':
-          ctx.beginPath();
-          ctx.moveTo(
-            shapeData.startX,
-            shapeData.startY - Math.abs(shapeData.endY - shapeData.startY)
-          );
-          ctx.lineTo(
-            shapeData.startX - Math.abs(shapeData.endX - shapeData.startX) / 2,
-            shapeData.startY + Math.abs(shapeData.endY - shapeData.startY)
-          );
-          ctx.lineTo(
-            shapeData.startX + Math.abs(shapeData.endX - shapeData.startX) / 2,
-            shapeData.startY + Math.abs(shapeData.endY - shapeData.startY)
-          );
-          ctx.closePath();
-          ctx.fill();
-          break;
-        default:
-          break;
+        switch (shapeData.type) {
+          case 'circle':
+            ctx.beginPath();
+            ctx.arc(shapeData.startX, shapeData.startY, radius, 0, 2 * Math.PI);
+            ctx.fill();
+            break;
+          case 'rectangle':
+            ctx.beginPath();
+            ctx.rect(
+              Math.min(shapeData.endX, shapeData.startX),
+              Math.min(shapeData.endY, shapeData.startY),
+              Math.abs(shapeData.endX - shapeData.startX),
+              Math.abs(shapeData.endY - shapeData.startY)
+            );
+            ctx.fill();
+            break;
+          case 'triangle':
+            ctx.beginPath();
+            ctx.moveTo(
+              shapeData.startX,
+              shapeData.startY - Math.abs(shapeData.endY - shapeData.startY)
+            );
+            ctx.lineTo(
+              shapeData.startX -
+                Math.abs(shapeData.endX - shapeData.startX) / 2,
+              shapeData.startY + Math.abs(shapeData.endY - shapeData.startY)
+            );
+            ctx.lineTo(
+              shapeData.startX +
+                Math.abs(shapeData.endX - shapeData.startX) / 2,
+              shapeData.startY + Math.abs(shapeData.endY - shapeData.startY)
+            );
+            ctx.closePath();
+            ctx.fill();
+            break;
+          default:
+            break;
+        }
       }
     }
   }
@@ -358,6 +577,9 @@ export default function Canvas() {
         //   (canvas.height * 0.3) / imgScale
         // );
 
+        // canvas.width = 200;
+        // canvas.height = 200;
+
         // Calculate image width and height based on original aspect ratio
         let imgWidth, imgHeight;
         const aspectRatio = img.width / img.height;
@@ -371,6 +593,11 @@ export default function Canvas() {
 
         // Draw image on canvas at top-left corner
         ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+        // ctx.drawImage(img, 0, 0, canvas.width, canvas.height / imgScale);
+
+        // imageRef.current = img;
+        // console.log(img);
+        // setImgElement(img);
       };
       img.src = reader.result;
     };
@@ -421,16 +648,25 @@ export default function Canvas() {
 
   return (
     <div>
+      {/* <canvas
+        ref={imageRef}
+        style={{ width: 200, height: 200, backgroundColor: '#000' }}
+      /> */}
       <canvas
         ref={canvasRef}
-        onMouseDown={(e) => startDrawing(e)}
-        onMouseMove={(e) => {
-          if (tool) {
-            tool === 'draw' && draw(e);
-            tool === 'shape' && drawShape(e);
-          }
-        }}
-        onMouseUp={endDrawing}
+        // onMouseDown={(e) => startDrawing(e)}
+        // onMouseDown={(e) => handleMouseDown(e)}
+        onMouseDown={(e) => startDragging(e)}
+        // onMouseMove={(e) => {
+        //   if (tool) {
+        //     tool === 'draw' && draw(e);
+        //     tool === 'shape' && drawShape(e);
+        //   }
+        // }}
+        // onMouseMove={(e) => handleMouseMove(e)}
+        onMouseMove={(e) => drag(e)}
+        // onMouseUp={endDrawing}
+        onMouseUp={endDragging}
         // onMouseOut={endDrawing}
       />
       <div>
