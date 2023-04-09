@@ -6,6 +6,7 @@ import {
   resetBoard,
   getBoard,
   deleteSelectedShapes,
+  getLiveBoard,
 } from '../../utils/firebase';
 
 export default function Canvas() {
@@ -16,6 +17,7 @@ export default function Canvas() {
   const [text, setText] = useState<string | null>(null);
   const [boardId, setBoardId] = useState<string | null>(null);
   const [canDrag, setCanDrag] = useState<boolean>(false);
+  const [boardData, setBoardData] = useState<object>({ lines: [], shapes: [] });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef<boolean>(false);
@@ -30,7 +32,7 @@ export default function Canvas() {
 
   const BACKGROUND_COLOR: string = 'gray';
 
-  console.log(canDrag);
+  // console.log(canDrag);
 
   async function startDragging(e) {
     const canvas = canvasRef.current;
@@ -180,6 +182,19 @@ export default function Canvas() {
     return isTarget;
   }
 
+  // useEffect(() => {
+  //   const storageId = localStorage.getItem('boardId');
+  //   const unsubscribeGetBoard = getLiveBoard(storageId, setBoardData);
+
+  //   drawBoard();
+
+  //   return () => {
+  //     unsubscribeGetBoard();
+  //   };
+  // }, [boardData]);
+
+  // console.log(boardData);
+
   useEffect(() => {
     const storageId = localStorage.getItem('boardId');
 
@@ -221,6 +236,85 @@ export default function Canvas() {
 
     ctx.lineWidth = lineWidth;
   }, [lineWidth, color]);
+
+  async function drawBoard() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // const boardData = await getBoard(storageId);
+    // const { lines, shapes } = boardData;
+
+    const { lines, shapes } = boardData;
+
+    //render lines
+    if (lines.length > 0) {
+      for (const line of lines) {
+        for (const point of line.points) {
+          ctx.beginPath();
+          ctx.moveTo(point.prevX, point.prevY);
+          ctx.lineTo(point.x, point.y);
+          ctx.strokeStyle = point.color;
+          ctx.lineWidth = point.lineWidth;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // render shapes
+    if (shapes.length > 0) {
+      for (const shapeData of shapes) {
+        ctx.fillStyle = shapeData.color;
+        ctx.lineWidth = shapeData.lineWidth;
+
+        const radius = Math.sqrt(
+          Math.pow(shapeData.endX - shapeData.startX, 2) +
+            Math.pow(shapeData.endY - shapeData.startY, 2)
+        );
+
+        switch (shapeData.type) {
+          case 'circle':
+            ctx.beginPath();
+            ctx.arc(shapeData.startX, shapeData.startY, radius, 0, 2 * Math.PI);
+            ctx.fill();
+            break;
+          case 'rectangle':
+            ctx.beginPath();
+            ctx.rect(
+              Math.min(shapeData.endX, shapeData.startX),
+              Math.min(shapeData.endY, shapeData.startY),
+              Math.abs(shapeData.endX - shapeData.startX),
+              Math.abs(shapeData.endY - shapeData.startY)
+            );
+            ctx.fill();
+            break;
+          case 'triangle':
+            ctx.beginPath();
+            ctx.moveTo(
+              shapeData.startX,
+              shapeData.startY - Math.abs(shapeData.endY - shapeData.startY)
+            );
+            ctx.lineTo(
+              shapeData.startX -
+                Math.abs(shapeData.endX - shapeData.startX) / 2,
+              shapeData.startY + Math.abs(shapeData.endY - shapeData.startY)
+            );
+            ctx.lineTo(
+              shapeData.startX +
+                Math.abs(shapeData.endX - shapeData.startX) / 2,
+              shapeData.startY + Math.abs(shapeData.endY - shapeData.startY)
+            );
+            ctx.closePath();
+            ctx.fill();
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
 
   async function renderBoard(storageId) {
     const canvas = canvasRef.current;
