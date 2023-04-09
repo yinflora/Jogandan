@@ -15,6 +15,7 @@ import {
   arrayUnion,
   deleteField,
   arrayRemove,
+  onSnapshot,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -348,4 +349,23 @@ export async function deleteSelectedShapes(id, shapeRef) {
     console.error('Error uploading article: ', e);
   }
   return null;
+}
+
+export function getLiveBoard(id, setBoardData) {
+  const boardDocRef = doc(
+    db,
+    'users',
+    'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    'visionBoards',
+    id
+  );
+
+  return onSnapshot(boardDocRef, (document) => {
+    const boardData = document.data();
+    // console.log(boardData.lines, boardData.shapes);
+    setBoardData({
+      lines: boardData.lines || [],
+      shapes: boardData.shapes || [],
+    });
+  });
 }
