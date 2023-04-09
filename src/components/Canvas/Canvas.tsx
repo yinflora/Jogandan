@@ -5,6 +5,7 @@ import {
   updateShapes,
   resetBoard,
   getBoard,
+  deleteSelectedShapes,
 } from '../../utils/firebase';
 
 export default function Canvas() {
@@ -75,6 +76,7 @@ export default function Canvas() {
     //假設是要移動長方形
     const rectWidth = selectedRef.current.endX - selectedRef.current.startX;
     const rectHeight = selectedRef.current.endY - selectedRef.current.startY;
+    console.log(rectWidth, rectHeight);
 
     const circleBaseX = selectedRef.current.endX - selectedRef.current.startX;
     const circleBaseY = selectedRef.current.endY - selectedRef.current.startY;
@@ -83,8 +85,8 @@ export default function Canvas() {
       Math.pow(circleBaseX, 2) + Math.pow(circleBaseY, 2)
     );
     //形狀顏色
-    ctx.fillStyle = color;
-    ctx.lineWidth = lineWidth;
+    ctx.fillStyle = selectedRef.current.color;
+    ctx.lineWidth = selectedRef.current.lineWidth;
 
     switch (type) {
       case 'circle':
@@ -122,17 +124,45 @@ export default function Canvas() {
       default:
         break;
     }
-  }
-
-  function endDragging() {
-    isDraggingRef.current = false;
-
-    // const canvas = canvasRef.current;
-    // if (!canvas) return;
 
     // const rect = canvas.getBoundingClientRect();
+    // startPointRef.current = { x, y };
+
+    // lastPointRef.current = { x: e.clientX, y: e.clientY };
+    // startPointRef.current = { x: e.clientX, y: e.clientY };
+  }
+
+  function endDragging(e) {
+    isDraggingRef.current = false;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
     // const endX = lastPointRef.current.x - rect.left;
     // const endY = lastPointRef.current.y - rect.top;
+    const startX = e.clientX - rect.left;
+    const startY = e.clientY - rect.top;
+
+    // shapeRef.current = {
+    //   type: shape,
+    //   startX: startPointRef.current.x,
+    //   startY: startPointRef.current.y,
+    //   endX,
+    //   endY,
+    //   color,
+    //   lineWidth,
+    // }; //Todo
+
+    selectedRef.current = {
+      ...selectedRef.current,
+      startX,
+      startY,
+      endX: startX + selectedRef.current.endX - selectedRef.current.startX,
+      endY: startY + selectedRef.current.endY - selectedRef.current.startY,
+    };
+    updateShapes(boardId, selectedRef.current);
+    console.log(selectedRef.current);
   }
 
   async function findTarget(x, y) {
@@ -151,6 +181,7 @@ export default function Canvas() {
       ) {
         selectedRef.current = shape;
         isTarget = true;
+        deleteSelectedShapes(boardId, shape);
         break;
       }
     }
@@ -413,7 +444,7 @@ export default function Canvas() {
       endY,
       color,
       lineWidth,
-    }; //Todo
+    };
 
     switch (tool) {
       case 'draw':
