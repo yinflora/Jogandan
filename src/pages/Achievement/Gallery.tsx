@@ -23,7 +23,13 @@ const ItemWrapper = styled.ul`
   align-items: flex-end;
 `;
 
-const Item = styled.li`
+interface ItemProps {
+  isSelected: boolean;
+  isFirst: boolean;
+  isLast: boolean;
+}
+
+const Item = styled.li<ItemProps>`
   width: 250px;
   padding: 10px;
   flex-shrink: 0;
@@ -34,8 +40,6 @@ const Item = styled.li`
       width: 500px;
       margin-left: ${isFirst ? '250px' : 0};
       margin-right: ${isLast ? '250px' : 0};
-      /* transform: translateX(${isFirst ? '-250px' : isLast ? '250px' : 0}); */
-
       & > {
         border: '1px solid red';
       }
@@ -49,47 +53,60 @@ const Image = styled.img`
   aspect-ratio: 1/1;
 `;
 
-const Time = styled.p`
-  margin: 60px auto;
-  text-align: center;
-  color: #acaea9;
-`;
+// const Time = styled.p`
+//   margin: 60px auto;
+//   text-align: center;
+//   color: #acaea9;
+// `;
 
-const Timeline = styled.div`
-  position: absolute;
-  top: 400px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  margin-top: 30px;
-  background-color: #acaea9;
-`;
+// const Timeline = styled.div`
+//   position: absolute;
+//   top: 400px;
+//   left: 0;
+//   width: 100%;
+//   height: 1px;
+//   margin-top: 30px;
+//   background-color: #acaea9;
+// `;
 
-type month = string;
+// Todo: 照指定資料格式render
+// type month = string;
 
-const MONTHS: month[] = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
+// const MONTHS: month[] = [
+//   'Jan',
+//   'Feb',
+//   'Mar',
+//   'Apr',
+//   'May',
+//   'Jun',
+//   'Jul',
+//   'Aug',
+//   'Sep',
+//   'Oct',
+//   'Nov',
+//   'Dec',
+// ];
 
-export default function CatFriends({ items }) {
-  const selectedRef = useRef(null);
-  const [index, setIndex] = useState(0);
+interface processedItem {
+  image: string;
+  processedDate: {
+    seconds: number;
+  };
+  name: string;
+}
+
+interface GalleryProps {
+  items: processedItem[];
+}
+
+export default function Gallery({ items }: GalleryProps) {
+  const selectedRef = useRef<HTMLLIElement>(null);
+  const [index, setIndex] = useState<number>(0);
 
   console.log(items);
 
   function ScrollIntoImage() {
-    selectedRef.current.scrollIntoView({
+    selectedRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'nearest',
       inline: 'center',
