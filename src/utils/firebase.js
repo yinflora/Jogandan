@@ -14,6 +14,7 @@ import {
   updateDoc,
   arrayUnion,
   deleteField,
+  arrayRemove,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -327,4 +328,24 @@ export async function getBoard(id) {
   const boardSnapshot = await getDoc(boardDocRef);
   const boardData = boardSnapshot.data();
   return boardData;
+}
+
+export async function deleteSelectedShapes(id, shapeRef) {
+  try {
+    const boardDocRef = doc(
+      db,
+      'users',
+      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      'visionBoards',
+      id
+    );
+    await updateDoc(boardDocRef, {
+      shapes: arrayRemove(shapeRef),
+      lastUpdated: serverTimestamp(),
+    });
+    console.log('刪除指定形狀成功');
+  } catch (e) {
+    console.error('Error uploading article: ', e);
+  }
+  return null;
 }
