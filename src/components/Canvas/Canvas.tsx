@@ -12,29 +12,21 @@ export default function Canvas() {
   const [color, setColor] = useState<string>('#000');
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [shape, setShape] = useState<string | null>(null);
-  // const [file, setFile] = useState(null);
   const [text, setText] = useState<string | null>(null);
   const [boardId, setBoardId] = useState<string | null>(null);
-  // const [imgElement, setImgElement] = useState(null);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef<boolean>(false);
   const startPointRef = useRef<object>({ x: 0, y: 0 });
   const lastPointRef = useRef<object>({ x: 0, y: 0 });
   const lineRef = useRef<object[]>([]);
-  // const distanceMovedRef = useRef<number>(0);
   const shapeRef = useRef<object | null>(null);
-  // const imageRef = useRef<HTMLCanvasElement>(null);
 
   const isDraggingRef = useRef<boolean>(false);
   const isSelectedRef = useRef<boolean>(false);
   const selectedRef = useRef<object | null>(null);
 
-  // let isDown = null;
-  // let dragTarget = null;
-  // let startX = null;
-  // let startY = null;
+  const BACKGROUND_COLOR: string = 'gray';
 
   async function startDragging(e) {
     const canvas = canvasRef.current;
@@ -53,7 +45,6 @@ export default function Canvas() {
       startPointRef.current.x,
       startPointRef.current.y
     );
-    // console.log(isSelected);
 
     if (isSelectedRef.current) isDraggingRef.current = true;
   }
@@ -73,30 +64,64 @@ export default function Canvas() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    console.log(`Move:(${x},${y})`);
+    const type = selectedRef.current.type;
+    // console.log(type);
 
-    const startX = startPointRef.current.x;
-    const startY = startPointRef.current.y;
-
-    console.log(`Start:(${startX},${startY})`);
+    //邊移動邊清畫布
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = BACKGROUND_COLOR;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     //假設是要移動長方形
     const rectWidth = selectedRef.current.endX - selectedRef.current.startX;
     const rectHeight = selectedRef.current.endY - selectedRef.current.startY;
 
-    console.log(rectWidth, rectHeight);
+    const circleBaseX = selectedRef.current.endX - selectedRef.current.startX;
+    const circleBaseY = selectedRef.current.endY - selectedRef.current.startY;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = 'gray';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+    const radius = Math.sqrt(
+      Math.pow(circleBaseX, 2) + Math.pow(circleBaseY, 2)
+    );
+    //形狀顏色
     ctx.fillStyle = color;
     ctx.lineWidth = lineWidth;
 
-    ctx.beginPath();
-    ctx.rect(x, y, rectWidth, rectHeight);
-    ctx.fill();
+    switch (type) {
+      case 'circle':
+        console.log('Hi我是圓形');
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fill();
+        break;
+      case 'rectangle':
+        console.log('Hi我是方形');
+        ctx.beginPath();
+        ctx.rect(x, y, rectWidth, rectHeight);
+        ctx.fill();
+        break;
+      case 'triangle':
+        console.log('Hi我是三角形');
+        ctx.beginPath();
+        ctx.moveTo(
+          x,
+          y - Math.abs(selectedRef.current.endY - selectedRef.current.startY)
+        );
+        ctx.lineTo(
+          x -
+            Math.abs(selectedRef.current.endX - selectedRef.current.startX) / 2,
+          y + Math.abs(selectedRef.current.endY - selectedRef.current.startY)
+        );
+        ctx.lineTo(
+          x +
+            Math.abs(selectedRef.current.endX - selectedRef.current.startX) / 2,
+          y + Math.abs(selectedRef.current.endY - selectedRef.current.startY)
+        );
+        ctx.closePath();
+        ctx.fill();
+        break;
+      default:
+        break;
+    }
   }
 
   function endDragging() {
@@ -124,10 +149,8 @@ export default function Canvas() {
         y >= shape.startY &&
         y <= shape.startY + shape.endY - shape.startY
       ) {
-        // dragTarget = shape;
         selectedRef.current = shape;
         isTarget = true;
-        // isSelectedRef.current = true;
         break;
       }
     }
@@ -136,104 +159,6 @@ export default function Canvas() {
     console.log(isTarget);
     return isTarget;
   }
-
-  // async function hitTarget(x, y) {
-  //   let isTarget = null;
-
-  //   const boardData = await getBoard(boardId);
-  //   const { lines, shapes } = boardData;
-
-  //   for (let i = 0; i < shapes.length; i++) {
-  //     const shape = shapes[i];
-  //     if (
-  //       x >= shape.startX &&
-  //       x <= shape.startX + shape.endX - shape.startX &&
-  //       y >= shape.startY &&
-  //       y <= shape.startY + shape.endY - shape.startY
-  //     ) {
-  //       dragTarget = shape;
-  //       isTarget = true;
-  //       break;
-  //     }
-  //   }
-
-  //   console.log(dragTarget);
-  //   console.log(isTarget);
-  //   return isTarget;
-  // }
-
-  // function handleMouseDown(e) {
-  //   startX = parseInt(e.nativeEvent.offsetX - canvasRef.current.clientLeft);
-  //   startY = parseInt(e.nativeEvent.offsetY - canvasRef.current.clientTop);
-  //   isDown = hitTarget(startX, startY);
-  // }
-
-  // function handleMouseMove(e) {
-  //   if (!isDown) return;
-
-  //   const canvas = canvasRef.current;
-  //   if (!canvas) return;
-
-  //   const ctx = canvas.getContext('2d');
-  //   if (!ctx) return;
-
-  //   const mouseX = parseInt(
-  //     e.nativeEvent.offsetX - canvasRef.current.clientLeft
-  //   );
-  //   const mouseY = parseInt(
-  //     e.nativeEvent.offsetY - canvasRef.current.clientTop
-  //   );
-  //   const dx = mouseX - startX;
-  //   const dy = mouseY - startY;
-  //   startX = mouseX;
-  //   startY = mouseY;
-  //   dragTarget.startX += dx;
-  //   dragTarget.startY += dy;
-  //   console.log('moving');
-
-  //   const rect = canvas.getBoundingClientRect();
-  //   const x = e.clientX - rect.left;
-  //   const y = e.clientY - rect.top;
-
-  //   // ctx.clearRect(0, 0, canvas.width, canvas.height);
-  //   // ctx.fillStyle = 'gray';
-  //   // ctx.fillRect(0, 0, canvas.width, canvas.height);
-  //   // const startX = startPointRef.current.x;
-  //   // const startY = startPointRef.current.y;
-  //   ctx.beginPath();
-  //   ctx.rect(
-  //     Math.min(dragTarget.endX, dragTarget.startX),
-  //     Math.min(dragTarget.endY, dragTarget.startY),
-  //     Math.abs(dragTarget.endX - dragTarget.startX),
-  //     Math.abs(dragTarget.endY - dragTarget.startY)
-  //   );
-  //   ctx.fill();
-  // }
-  // useEffect(() => {
-  //   // imageRef.current.addEventListener('mousedown', () =>
-  //   //   console.log('有嗎有嗎')
-  //   // );
-  //   imgElement &&
-  //     imgElement.addEventListener('mousedown', () => console.log('有嗎有嗎'));
-
-  //   return () => {
-  //     imgElement &&
-  //       imgElement.removeEventListener('mousedown', () =>
-  //         console.log('有嗎有嗎')
-  //       );
-  //   };
-  // }, [imgElement]);
-
-  // function startDragging(e) {
-  //   const canvas = canvasRef.current;
-  //   if (!canvas || !imageRef.current) return;
-
-  //   !isDrawingRef.current && setIsDragging(true);
-  // }
-
-  // useEffect(() => {
-  //   imageRef.current && console.log(imageRef.current);
-  // }, []);
 
   useEffect(() => {
     const storageId = localStorage.getItem('boardId');
@@ -256,17 +181,14 @@ export default function Canvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // canvas.width = canvas.clientWidth;
-    // canvas.height = canvas.clientHeight;
     canvas.width = 1000;
     canvas.height = 500;
 
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
-    // ctx.lineWidth = lineWidth;
+    ctx.lineWidth = lineWidth;
 
-    // Set canvas background to white
-    ctx.fillStyle = 'gray';
+    ctx.fillStyle = BACKGROUND_COLOR;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
 
@@ -289,8 +211,6 @@ export default function Canvas() {
 
     const boardData = await getBoard(storageId);
     const { lines, shapes } = boardData;
-
-    // console.log(lines, shapes);
 
     //render lines
     if (lines !== undefined) {
@@ -368,10 +288,6 @@ export default function Canvas() {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     };
-    // console.log(
-    //   `start point - x: ${startPointRef.current.x},
-    //   y: ${startPointRef.current.y}`
-    // );
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -398,24 +314,6 @@ export default function Canvas() {
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
-    // const line = lineRef.current;
-
-    // const dx =
-    //   x -
-    //   (lineRef.current.length > 0
-    //     ? lineRef.current[lineRef.current.length - 1].x
-    //     : x);
-    // const dy =
-    //   y -
-    //   (lineRef.current.length > 0
-    //     ? lineRef.current[lineRef.current.length - 1].y
-    //     : y);
-    // const distance = Math.sqrt(dx * dx + dy * dy);
-    // distanceMovedRef.current += distance;
-    // lastPointRef.current = { x: e.clientX, y: e.clientY };
-
-    // console.log(distance);
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -452,11 +350,6 @@ export default function Canvas() {
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
-    // ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除畫布
-    // ctx.fillStyle = 'white'; // 將背景設置為白色
-    // ctx.fillRect(0, 0, canvas.width, canvas.height); // 填充白色背景
-    // renderLines(); // 重新繪製線條
 
     ctx.fillStyle = color;
     ctx.lineWidth = lineWidth;
@@ -512,11 +405,6 @@ export default function Canvas() {
     const endX = lastPointRef.current.x - rect.left;
     const endY = lastPointRef.current.y - rect.top;
 
-    // if (lineRef.current.length > 0 && distanceMovedRef.current >= 5) {
-    //   lineRef.current = [];
-    //   distanceMovedRef.current = 0;
-    // }
-
     shapeRef.current = {
       type: shape,
       startX: startPointRef.current.x,
@@ -531,19 +419,14 @@ export default function Canvas() {
       case 'draw':
         isDrawingRef.current === false &&
           lineRef.current.length > 0 &&
-          // console.log('更新線條');
           updateLines(boardId, lineRef.current);
         lineRef.current = [];
-        // distanceMovedRef.current = 0;
         break;
       case 'shape':
         isDrawingRef.current === false &&
-          // shapeRef.current !== null &&
-          // console.log(shapeRef.current, '更新形狀');
           updateShapes(boardId, shapeRef.current);
         shapeRef.current = null;
         console.log(shapeRef.current);
-
         break;
       default:
         break;
@@ -565,22 +448,6 @@ export default function Canvas() {
     reader.onload = () => {
       const img = new Image();
       img.onload = () => {
-        // const imgScale = img.width / img.height;
-        // // canvas.width = 700;
-        // // canvas.height = 700;
-
-        // ctx.drawImage(
-        //   img,
-        //   0,
-        //   0,
-        //   canvas.width * 0.3,
-        //   (canvas.height * 0.3) / imgScale
-        // );
-
-        // canvas.width = 200;
-        // canvas.height = 200;
-
-        // Calculate image width and height based on original aspect ratio
         let imgWidth, imgHeight;
         const aspectRatio = img.width / img.height;
         if (aspectRatio > 1) {
@@ -591,13 +458,7 @@ export default function Canvas() {
           imgHeight = canvas.height * 0.5;
         }
 
-        // Draw image on canvas at top-left corner
         ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
-        // ctx.drawImage(img, 0, 0, canvas.width, canvas.height / imgScale);
-
-        // imageRef.current = img;
-        // console.log(img);
-        // setImgElement(img);
       };
       img.src = reader.result;
     };
@@ -624,7 +485,7 @@ export default function Canvas() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = 'gray';
+    ctx.fillStyle = BACKGROUND_COLOR;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     resetBoard(boardId);
@@ -639,7 +500,7 @@ export default function Canvas() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = 'gray';
+    ctx.fillStyle = BACKGROUND_COLOR;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     localStorage.removeItem('boardId');
@@ -648,14 +509,9 @@ export default function Canvas() {
 
   return (
     <div>
-      {/* <canvas
-        ref={imageRef}
-        style={{ width: 200, height: 200, backgroundColor: '#000' }}
-      /> */}
       <canvas
         ref={canvasRef}
         // onMouseDown={(e) => startDrawing(e)}
-        // onMouseDown={(e) => handleMouseDown(e)}
         onMouseDown={(e) => startDragging(e)}
         // onMouseMove={(e) => {
         //   if (tool) {
@@ -663,11 +519,9 @@ export default function Canvas() {
         //     tool === 'shape' && drawShape(e);
         //   }
         // }}
-        // onMouseMove={(e) => handleMouseMove(e)}
         onMouseMove={(e) => drag(e)}
         // onMouseUp={endDrawing}
         onMouseUp={endDragging}
-        // onMouseOut={endDrawing}
       />
       <div>
         <div>
@@ -676,8 +530,8 @@ export default function Canvas() {
             <option>---</option>
             <option value="draw">Draw</option>
             <option value="shape">Shape</option>
-            <option value="image">Image</option>
-            <option value="text">Text</option>
+            {/* <option value="image">Image</option>
+            <option value="text">Text</option> */}
           </select>
           <input type="file" accept="image/*" onChange={(e) => drawImage(e)} />
           <input
@@ -706,7 +560,6 @@ export default function Canvas() {
             onChange={(e) => setLineWidth(Number(e.target.value))}
           />
         </div>
-        {/* <button onClick={handleClearCanvas}>Clear</button> */}
       </div>
       <div>
         <label>Shape:</label>
