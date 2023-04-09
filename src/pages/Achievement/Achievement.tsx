@@ -11,9 +11,9 @@ const Title = styled.h1`
 
 function Achievement() {
   // const [period, setPeriod] = useState({ start: '', end: '' });
-  const [selectedYear, setSelectedYear] = useState(null);
-  const [galleryMode, setGalleryMode] = useState(true);
-  const [items, setItems] = useState(null);
+  const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [galleryMode, setGalleryMode] = useState<boolean>(true);
+  const [items, setItems] = useState<Array<any> | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -44,8 +44,11 @@ function Achievement() {
           value={period.end}
           onChange={(e) => setPeriod({ ...period, end: e.target.value })}
         /> */}
-        <select onChange={(e) => setSelectedYear(e.target.value)}>
-          <option value="year">year</option>
+        <select
+          value={selectedYear || ''}
+          onChange={(e) => setSelectedYear(e.target.value)}
+        >
+          <option value="">year</option>
           <option value="2023">2023</option>
           <option value="2024">2024</option>
         </select>
