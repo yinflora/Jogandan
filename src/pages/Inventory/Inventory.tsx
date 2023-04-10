@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { getItems } from '../../utils/firebase';
 import { useEffect, useRef, useState } from 'react';
+import Popout from './Popout';
 
 const Title = styled.h1`
   font-size: 4rem;
@@ -61,11 +62,11 @@ const SubFilterWrapper = styled.p`
   color: #acaea9;
 `;
 
-const SubTitle = styled.p`
+const SubTitle = styled.p<{ isSelected: boolean }>`
   color: ${({ isSelected }) => (isSelected ? 'red' : '#acaea9')};
 `;
 
-const SUBCATEGORY = [
+const SUBCATEGORY: string[] = [
   '居家生活',
   '服飾配件',
   '美妝保養',
@@ -80,12 +81,21 @@ const SUBCATEGORY = [
   '其他',
 ];
 
-const SUBSTATUS = ['保留', '處理中', '已處理'];
+const SUBSTATUS: string[] = ['保留', '處理中', '已處理'];
+
+type processedItem = {
+  category: string;
+  status: string;
+};
 
 export default function Inventory() {
-  const itemsRef = useRef(null);
-  const [items, setItems] = useState(null);
-  const [filter, setfilter] = useState({ category: '', status: '' });
+  const itemsRef = useRef<processedItem[] | null>(null);
+  const [items, setItems] = useState<processedItem[] | null>(null);
+  const [filter, setfilter] = useState<processedItem>({
+    category: '',
+    status: '',
+  });
+  const [isPopout, setIsPopout] = useState<boolean>(false);
 
   useEffect(() => {
     // const itemList = getItems();
@@ -107,16 +117,16 @@ export default function Inventory() {
       let filteredItems = itemsRef.current;
       if (filter.category !== '' && filter.status !== '') {
         filteredItems = itemsRef.current.filter(
-          (item) =>
+          (item: processedItem) =>
             item.category === filter.category && item.status === filter.status
         );
       } else if (filter.category !== '') {
         filteredItems = itemsRef.current.filter(
-          (item) => item.category === filter.category
+          (item: processedItem) => item.category === filter.category
         );
       } else if (filter.status !== '') {
         filteredItems = itemsRef.current.filter(
-          (item) => item.status === filter.status
+          (item: processedItem) => item.status === filter.status
         );
       }
       console.log(filteredItems);
@@ -230,13 +240,14 @@ export default function Inventory() {
         </FilterWrapper>
         <ItemWrapper>
           {items &&
-            items.map((item) => (
-              <Item>
+            items.map((item: any) => (
+              <Item onClick={() => setIsPopout(true)}>
                 {item.images && <Image src={item.images[0]}></Image>}
                 <Name>{item.name}</Name>
               </Item>
             ))}
         </ItemWrapper>
+        {isPopout && <Popout />}
       </Container>
     </>
   );
