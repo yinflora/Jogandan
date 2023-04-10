@@ -81,8 +81,9 @@ const InfoWrapper = styled.div`
   color: #acaea9;
 `;
 
-const Category = styled.p`
+const Category = styled.span`
   /* color: #acaea9; */
+  /* margin-right: auto; */
 `;
 
 const Name = styled.p`
@@ -108,6 +109,16 @@ const Content = styled.span`
 const Description = styled.div`
   padding: 20px 0;
   overflow-y: scroll;
+`;
+
+const Edit = styled.button`
+  /* margin-left: auto; */
+  /* text-align: end; */
+`;
+
+const FirstRow = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;
 
 type popoutProp = {
@@ -136,39 +147,6 @@ export default function Popout({ setIsPopout, selectedItem }: popoutProp) {
 
   if (selectedItem) {
     return (
-      // {selectedItem.map((item)=> (<Overlay>
-      //   <Cancel onClick={() => setIsPopout(false)}>X</Cancel>
-      //   <Container>
-      //     <ImageWrapper>
-      //       <MainImage src={aoao} />
-      //       <SubImageWrapper>
-      //         <SubImage src={aoao} />
-      //         <SubImage src={aoao} />
-      //         <SubImage src={aoao} />
-      //         <SubImage src={aoao} />
-      //       </SubImageWrapper>
-      //     </ImageWrapper>
-      //     <InfoWrapper>
-      //       <Category>{item.category}</Category>
-      //       <Name>{item.name}</Name>
-      //       <Row>
-      //         <Title>購買日期</Title>
-      //         <Content>{item.created.seconds}</Content>
-      //       </Row>
-      //       <Row>
-      //         <Title>目前狀態</Title>
-      //         <Content>{item.status}</Content>
-      //       </Row>
-      //       <Row>
-      //         <Title>數量</Title>
-      //         <Content>1</Content>
-      //       </Row>
-      //       <Description>
-      //         {item.description}
-      //       </Description>
-      //     </InfoWrapper>
-      //   </Container>
-      // </Overlay>))}
       <Overlay>
         <Cancel onClick={() => setIsPopout(false)}>X</Cancel>
         <Container>
@@ -182,7 +160,10 @@ export default function Popout({ setIsPopout, selectedItem }: popoutProp) {
             </SubImageWrapper>
           </ImageWrapper>
           <InfoWrapper>
-            <Category>{selectedItem[0].category}</Category>
+            <FirstRow>
+              <Category>{selectedItem[0].category}</Category>
+              <Edit>Edit</Edit>
+            </FirstRow>
             <Name>{selectedItem[0].name}</Name>
             <Row>
               <Title>購買日期</Title>
@@ -192,10 +173,10 @@ export default function Popout({ setIsPopout, selectedItem }: popoutProp) {
               <Title>目前狀態</Title>
               <Content>{selectedItem[0].status}</Content>
             </Row>
-            <Row>
+            {/* <Row>
               <Title>數量</Title>
               <Content>1</Content>
-            </Row>
+            </Row> */}
             <Description>{selectedItem[0].description}</Description>
           </InfoWrapper>
         </Container>
