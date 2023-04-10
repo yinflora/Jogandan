@@ -136,13 +136,13 @@ async function createUser(userAuth) {
 export async function uploadItems(id, form) {
   try {
     const { name, category, status, joinGiveaway, description, images } = form;
-    const itemDocRef = collection(
+    const itemsRef = collection(
       db,
       'users',
       'q1khIAOnt2ewvY4SQw1z65roVPD2',
       'items'
     );
-    const docRef = await addDoc(itemDocRef, {
+    const docRef = await addDoc(itemsRef, {
       name,
       category,
       status,
@@ -154,8 +154,22 @@ export async function uploadItems(id, form) {
       processedDate: '',
     });
     console.log('Item uploaded with ID: ', docRef.id);
+
+    const itemDocRef = doc(
+      db,
+      'users',
+      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      'items',
+      docRef.id
+    );
+
+    const setId = await updateDoc(itemDocRef, {
+      id: docRef.id,
+    });
+
+    setId && window.alert('已成功加入！');
   } catch (e) {
-    console.error('Error uploading article: ', e);
+    console.error('Error uploading item: ', e);
   }
 }
 

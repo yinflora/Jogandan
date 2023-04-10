@@ -96,6 +96,8 @@ export default function Inventory() {
     status: '',
   });
   const [isPopout, setIsPopout] = useState<boolean>(false);
+  // const [clickedItem, setClickedItem] = useState(null);
+  const selectedItemRef = useRef<[] | null>(null);
 
   useEffect(() => {
     // const itemList = getItems();
@@ -157,6 +159,12 @@ export default function Inventory() {
       setItems(itemsRef.current);
     }
     setfilter({ ...filter, status: '' });
+  }
+
+  function handlePopout(itemId) {
+    setIsPopout(true);
+    selectedItemRef.current = items.filter((item) => item.id === itemId);
+    console.log(selectedItemRef.current);
   }
 
   return (
@@ -241,13 +249,18 @@ export default function Inventory() {
         <ItemWrapper>
           {items &&
             items.map((item: any) => (
-              <Item onClick={() => setIsPopout(true)}>
+              <Item onClick={() => handlePopout(item.id)}>
                 {item.images && <Image src={item.images[0]}></Image>}
                 <Name>{item.name}</Name>
               </Item>
             ))}
         </ItemWrapper>
-        {isPopout && <Popout />}
+        {isPopout && (
+          <Popout
+            setIsPopout={setIsPopout}
+            selectedItem={selectedItemRef.current}
+          />
+        )}
       </Container>
     </>
   );

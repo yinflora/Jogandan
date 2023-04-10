@@ -110,46 +110,96 @@ const Description = styled.div`
   overflow-y: scroll;
 `;
 
-export default function Popout() {
-  return (
-    <Overlay>
-      <Cancel>X</Cancel>
-      <Container>
-        <ImageWrapper>
-          <MainImage src={aoao} />
-          <SubImageWrapper>
-            <SubImage src={aoao} />
-            <SubImage src={aoao} />
-            <SubImage src={aoao} />
-            <SubImage src={aoao} />
-          </SubImageWrapper>
-        </ImageWrapper>
-        <InfoWrapper>
-          <Category>居家生活</Category>
-          <Name>凹凹</Name>
-          <Row>
-            <Title>購買日期</Title>
-            <Content>2023/04/10</Content>
-          </Row>
-          <Row>
-            <Title>目前狀態</Title>
-            <Content>保留</Content>
-          </Row>
-          <Row>
-            <Title>數量</Title>
-            <Content>1</Content>
-          </Row>
-          <Description>
-            快來喵喵 喵喵喵 喵電感應 感覺到我跟你同時觸電反應
-            不管相隔多遠都能互相連繫 因為太多太奇妙的喵電感應 喵 喵電感應
-            喔我的距離 細胞在共鳴 內心在呼應 喵 喵電感應 有一些感性 連結的遊戲
-            不斷在通訊 不管到哪裡都可以感覺到 這種心有靈犀特別地美好
-            有沒有心動一看喵喵就知道 不需要再說的好不好欸(別說好不好欸) 磁場共鳴
-            越來越接近 電波感應 契合地相信 磁場共鳴 越來越接近 電波感應
-            契合地相信著
-          </Description>
-        </InfoWrapper>
-      </Container>
-    </Overlay>
-  );
+type popoutProp = {
+  setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedItem: [] | null;
+};
+
+export default function Popout({ setIsPopout, selectedItem }: popoutProp) {
+  function formatTime(time) {
+    const date = new Date(time * 1000); // 轉換成毫秒
+    const options = {
+      // year: 'numeric',
+      // month: 'long',
+      // day: 'numeric',
+      // hour: 'numeric',
+      // minute: 'numeric',
+      // second: 'numeric',
+      // hour12: false, // 24小時制
+      // timeZoneName: 'short',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    };
+    return date.toLocaleDateString('zh-TW', options); // 繁體中文語系
+  }
+
+  if (selectedItem) {
+    return (
+      // {selectedItem.map((item)=> (<Overlay>
+      //   <Cancel onClick={() => setIsPopout(false)}>X</Cancel>
+      //   <Container>
+      //     <ImageWrapper>
+      //       <MainImage src={aoao} />
+      //       <SubImageWrapper>
+      //         <SubImage src={aoao} />
+      //         <SubImage src={aoao} />
+      //         <SubImage src={aoao} />
+      //         <SubImage src={aoao} />
+      //       </SubImageWrapper>
+      //     </ImageWrapper>
+      //     <InfoWrapper>
+      //       <Category>{item.category}</Category>
+      //       <Name>{item.name}</Name>
+      //       <Row>
+      //         <Title>購買日期</Title>
+      //         <Content>{item.created.seconds}</Content>
+      //       </Row>
+      //       <Row>
+      //         <Title>目前狀態</Title>
+      //         <Content>{item.status}</Content>
+      //       </Row>
+      //       <Row>
+      //         <Title>數量</Title>
+      //         <Content>1</Content>
+      //       </Row>
+      //       <Description>
+      //         {item.description}
+      //       </Description>
+      //     </InfoWrapper>
+      //   </Container>
+      // </Overlay>))}
+      <Overlay>
+        <Cancel onClick={() => setIsPopout(false)}>X</Cancel>
+        <Container>
+          <ImageWrapper>
+            <MainImage src={aoao} />
+            <SubImageWrapper>
+              <SubImage src={aoao} />
+              <SubImage src={aoao} />
+              <SubImage src={aoao} />
+              <SubImage src={aoao} />
+            </SubImageWrapper>
+          </ImageWrapper>
+          <InfoWrapper>
+            <Category>{selectedItem[0].category}</Category>
+            <Name>{selectedItem[0].name}</Name>
+            <Row>
+              <Title>購買日期</Title>
+              <Content>{formatTime(selectedItem[0].created.seconds)}</Content>
+            </Row>
+            <Row>
+              <Title>目前狀態</Title>
+              <Content>{selectedItem[0].status}</Content>
+            </Row>
+            <Row>
+              <Title>數量</Title>
+              <Content>1</Content>
+            </Row>
+            <Description>{selectedItem[0].description}</Description>
+          </InfoWrapper>
+        </Container>
+      </Overlay>
+    );
+  }
 }
