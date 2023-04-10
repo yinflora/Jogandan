@@ -3,5 +3,6 @@
 import Canvas from '../../components/Canvas/Canvas';
 
 export default function Compose() {
-  return <Canvas width="1000px" height="600px" />;
+  // return <Canvas width="1000px" height="600px" />;
+  return <Canvas />;
 }

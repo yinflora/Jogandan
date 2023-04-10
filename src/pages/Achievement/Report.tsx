@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 // import { getProcessedItems } from '../../utils/firebase';
-import { useState } from 'react';
+// import { useState } from 'react';
 
 const Svg = styled.svg`
   display: block;
