@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 import EditItem from '../Upload/Upload';
 import aoao from './aoao.jpg';
@@ -20,7 +21,7 @@ const Overlay = styled.div`
   gap: 10px;
 `;
 
-const Cancel = styled.div`
+const Cancel = styled(Link)`
   /* width: 20px;
   height: 10px; */
   /* transform: scale(2, 0.5); */
@@ -156,7 +157,8 @@ export default function Popout({ setIsPopout, selectedItem }: PopoutProp) {
     // }
     return (
       <Overlay>
-        <Cancel onClick={() => setIsPopout(false)}>X</Cancel>
+        {/* <Cancel onClick={() => setIsPopout(false)}>X</Cancel> */}
+        <Cancel to="/inventory">X</Cancel>
 
         {isEdit ? (
           <EditItem isEdit={isEdit} />
@@ -165,9 +167,10 @@ export default function Popout({ setIsPopout, selectedItem }: PopoutProp) {
             <ImageWrapper>
               <MainImage src={selectedItem[0].images[0]} />
               <SubImageWrapper>
-                {selectedItem[0].images.map((image) => (
-                  <SubImage key={image} src={image} />
-                ))}
+                {selectedItem[0].images.map(
+                  (image) =>
+                    image !== '' && <SubImage key={image} src={image} />
+                )}
               </SubImageWrapper>
             </ImageWrapper>
             <InfoWrapper>

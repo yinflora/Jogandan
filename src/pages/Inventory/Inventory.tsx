@@ -1,6 +1,7 @@
 import styled from 'styled-components';
-import { getItems } from '../../utils/firebase';
+import { getItems, getItemById } from '../../utils/firebase';
 import { useEffect, useRef, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import Popout from './Popout';
 
 const Title = styled.h1`
@@ -31,7 +32,7 @@ const ItemWrapper = styled.div`
   background-color: #828282;
 `;
 
-const Item = styled.div`
+const Item = styled(Link)`
   width: 100%;
   background-color: #fff;
 `;
@@ -98,6 +99,18 @@ export default function Inventory() {
   const [isPopout, setIsPopout] = useState<boolean>(false);
   // const [clickedItem, setClickedItem] = useState(null);
   const selectedItemRef = useRef<[] | null>(null);
+  const { id } = useParams();
+
+  console.log(id);
+
+  useEffect(() => {
+    async function fetchSelectedData() {
+      const item = await getItemById(id);
+      // selectedItemRef.current = item;
+      console.log(item);
+    }
+    fetchSelectedData();
+  }, [id]);
 
   useEffect(() => {
     // const itemList = getItems();
@@ -109,7 +122,25 @@ export default function Inventory() {
       setItems(itemList);
     }
     fetchData();
-  }, []);
+
+    async function fetchSelectedData() {
+      const item = await getItemById(id);
+      selectedItemRef.current = item;
+      console.log(item);
+    }
+
+    if (id) {
+      // console.log('hihihhi有', id);
+      fetchSelectedData();
+      handlePopout(id);
+      // selectedItemRef.current=
+    } else {
+      // console.log('nononno');
+      setIsPopout(false);
+    }
+  }, [id]);
+
+  // useEffect(() => {}, [id]);
 
   // console.log(itemsRef.current);
 
@@ -163,10 +194,12 @@ export default function Inventory() {
 
   function handlePopout(itemId) {
     setIsPopout(true);
-    selectedItemRef.current = items.filter((item) => item.id === itemId);
+    // fetchSelectedData();
+    // selectedItemRef.current = items.filter((item) => item.id === itemId);
     console.log(selectedItemRef.current);
   }
 
+  // if (!id) return;
   return (
     <>
       <Title>Inventory</Title>
@@ -249,7 +282,8 @@ export default function Inventory() {
         <ItemWrapper>
           {items &&
             items.map((item: any) => (
-              <Item onClick={() => handlePopout(item.id)}>
+              // <Item onClick={() => handlePopout(item.id)}>
+              <Item to={`/inventory/${item.id}`}>
                 {item.images && <Image src={item.images[0]}></Image>}
                 <Name>{item.name}</Name>
               </Item>

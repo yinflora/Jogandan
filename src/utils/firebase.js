@@ -135,7 +135,7 @@ async function createUser(userAuth) {
 
 export async function uploadItems(id, form) {
   try {
-    const { name, category, status, joinGiveaway, description, images } = form;
+    const { name, category, status, description, images } = form;
     const itemsRef = collection(
       db,
       'users',
@@ -146,7 +146,7 @@ export async function uploadItems(id, form) {
       name,
       category,
       status,
-      joinGiveaway,
+      // joinGiveaway,
       created: serverTimestamp(),
       description,
       images,
@@ -163,15 +163,35 @@ export async function uploadItems(id, form) {
       docRef.id
     );
 
-    const setId = await updateDoc(itemDocRef, {
+    await updateDoc(itemDocRef, {
       id: docRef.id,
     });
 
-    setId && window.alert('已成功加入！');
+    alert('已成功加入！');
   } catch (e) {
     console.error('Error uploading item: ', e);
   }
 }
+
+// export updateItems(id){
+//   try {
+//     const boardDocRef = doc(
+//       db,
+//       'users',
+//       'q1khIAOnt2ewvY4SQw1z65roVPD2',
+//       'visionBoards',
+//       id
+//     );
+//     await updateDoc(boardDocRef, {
+//       lines: deleteField(),
+//       shapes: deleteField(),
+//     });
+//     console.log('刪除成功');
+//   } catch (e) {
+//     console.error('Error uploading article: ', e);
+//   }
+//   return null;
+// }
 
 export async function getProcessedItems() {
   const itemsRef = collection(
@@ -223,6 +243,53 @@ export async function getItems() {
     items.push(document.data());
   });
   return items;
+}
+
+export async function getItemById(itemId) {
+  const itemsRef = collection(
+    db,
+    'users',
+    'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    'items'
+  );
+  const itemsQuery = query(itemsRef, where('id', '==', itemId));
+  // const itemsQuery = query(itemsRef, where('status', '==', '保留'));
+  const items = [];
+
+  const querySnapshot = await getDocs(itemsQuery);
+
+  querySnapshot.forEach((document) => {
+    // doc.data() is never undefined for query doc snapshots
+    // console.log(doc.id, ' => ', doc.data());
+    items.push(document.data());
+    // console.log(document.data());
+  });
+  return items;
+}
+
+export async function updateItem(id, itemRef) {
+  try {
+    const itemDocRef = doc(
+      db,
+      'users',
+      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      'items',
+      id
+    );
+    const { images, name, category, status, description } = itemRef;
+    await updateDoc(itemDocRef, {
+      name,
+      category,
+      status,
+      description,
+      images,
+    });
+    // console.log('更新item成功');
+    alert('更新物品成功！');
+  } catch (e) {
+    console.error('Error uploading item: ', e);
+  }
+  return null;
 }
 
 export async function getFilteredItems(field, value) {
