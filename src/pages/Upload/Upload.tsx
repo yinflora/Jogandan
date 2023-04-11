@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   display: flex;
-  width: 90%;
+  width: 100%;
   height: 100%;
   padding: 40px 60px;
   gap: 60px;
@@ -136,7 +136,11 @@ const formInputs = [
   { label: '備註', key: 'description' },
 ];
 
-export default function Upload() {
+type EditProp = {
+  isEdit: boolean;
+};
+
+export default function Upload({ isEdit }: EditProp) {
   const [images, setImages] = useState(Array(10).fill(''));
   const [form, setForm] = useState({
     name: '',
@@ -294,7 +298,7 @@ export default function Upload() {
           })}
           <input
             type="button"
-            value="上傳物品"
+            value={isEdit ? '更新物品' : '上傳物品'}
             disabled={
               Object.values(form).includes('') ||
               !images.some((image) => image !== '')
@@ -304,18 +308,5 @@ export default function Upload() {
         </form>
       </InfoWrapper>
     </Container>
-    // <div>
-    //   <input
-    //     type="file"
-    //     accept="image/*"
-    //     onChange={(e) => handleFileUpload(e)}
-    //     multiple
-    //   />
-    //   {/* <button onClick={handleUpload}>Upload to Firebase</button> */}
-    //   {form.images.map((image) => (
-    //     <img src={image} />
-    //   ))}
-
-    // </div>
   );
 }
