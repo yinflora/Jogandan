@@ -19,6 +19,10 @@ const GlobalStyle = createGlobalStyle`
     background-color: transparent;
   }
 
+  a {
+    text-decoration: none;
+  }
+
   #root {
     min-height: 100vh;
     padding: 140px 50px 50px;

@@ -1,6 +1,12 @@
-import { useState } from 'react';
-import { storage, uploadItems } from '../../utils/firebase';
+import { useEffect, useState } from 'react';
+import {
+  storage,
+  uploadItems,
+  getItemById,
+  updateItem,
+} from '../../utils/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -16,7 +22,7 @@ const ImageWrapper = styled.div`
   width: 40%;
 `;
 
-const MainImage = styled.div`
+const MainImage = styled.div<{ coverUrl: string }>`
   width: 100%;
   object-fit: cover;
   object-position: center;
@@ -64,7 +70,7 @@ const SubImageWrapper = styled.div`
   flex-shrink: 0;
 `;
 
-const UploadBtn = styled.div`
+const UploadBtn = styled.div<{ canAdd: string }>`
   position: absolute;
   top: calc(50% - 20px);
   right: calc(50% - 20px);
@@ -84,7 +90,7 @@ const CancelBtn = styled.button`
   font-size: 20px;
 `;
 
-const SubImage = styled.div`
+const SubImage = styled.div<{ imageUrl: string }>`
   width: 100%;
   object-fit: cover;
   object-position: center;
@@ -141,6 +147,10 @@ type EditProp = {
 };
 
 export default function Upload({ isEdit }: EditProp) {
+  const { id } = useParams();
+
+  console.log(typeof id, id);
+
   const [images, setImages] = useState(Array(10).fill(''));
   const [form, setForm] = useState({
     name: '',
@@ -155,6 +165,26 @@ export default function Upload({ isEdit }: EditProp) {
   });
 
   console.log(form);
+  console.log(images);
+
+  useEffect(() => {
+    async function getItem() {
+      const item = await getItemById(id);
+      const { images, name, category, status, description } = item[0];
+      // console.log(item.images);
+      setImages(images);
+      setForm({
+        name,
+        category,
+        status,
+        description,
+        images,
+      });
+    }
+    if (isEdit && id) {
+      getItem();
+    }
+  }, []);
 
   function handleFileUpload(e, limit) {
     const files = e.target.files;
@@ -165,7 +195,7 @@ export default function Upload({ isEdit }: EditProp) {
     }
 
     const storageRef = ref(storage, '/q1khIAOnt2ewvY4SQw1z65roVPD2/images/');
-    const urlList = [];
+    const urlList: string[] | [] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -183,10 +213,12 @@ export default function Upload({ isEdit }: EditProp) {
             const startIndex = imageList.findIndex((image) => image === '');
             imageList.splice(startIndex, urlList.length, ...urlList);
             setImages(imageList);
+            setForm({ ...form, images: imageList });
           });
         }
       );
     }
+    return null;
   }
 
   function handleDeleted(index) {
@@ -194,6 +226,7 @@ export default function Upload({ isEdit }: EditProp) {
     imageList.splice(index, 1);
     const list = [...imageList, ''];
     setImages(list);
+    setForm({ ...form, images: list });
   }
 
   return (
@@ -266,7 +299,12 @@ export default function Upload({ isEdit }: EditProp) {
                     }
                   >
                     {input.option.map((option) => (
-                      <option value={option}>{option}</option>
+                      <option
+                        value={option}
+                        selected={option === form[input.key]}
+                      >
+                        {option}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -303,7 +341,9 @@ export default function Upload({ isEdit }: EditProp) {
               Object.values(form).includes('') ||
               !images.some((image) => image !== '')
             }
-            onClick={() => uploadItems(null, form)}
+            onClick={() =>
+              isEdit ? updateItem(id, form) : uploadItems(null, form)
+            }
           />
         </form>
       </InfoWrapper>

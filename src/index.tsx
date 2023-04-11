@@ -22,7 +22,9 @@ root.render(
         <Route path="login" element={<Login />} />
         <Route path="profile" element={<Profile />} />
         <Route path="upload" element={<Upload />} />
-        <Route path="inventory" element={<Inventory />} />
+        <Route path="inventory" element={<Inventory />}>
+          <Route path=":id" element={<Inventory />} />
+        </Route>
         <Route path="achievement" element={<Achievement />} />
         <Route path="compose" element={<Compose />} />
         <Route path="*" element={<Navigate to="/" replace />} />
