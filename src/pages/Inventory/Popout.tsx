@@ -1,5 +1,8 @@
 import styled from 'styled-components';
+
+import EditItem from '../Upload/Upload';
 import aoao from './aoao.jpg';
+import { useState } from 'react';
 
 const Overlay = styled.div`
   position: fixed;
@@ -121,12 +124,14 @@ const FirstRow = styled.div`
   justify-content: space-between;
 `;
 
-type popoutProp = {
+type PopoutProp = {
   setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
   selectedItem: [] | null;
 };
 
-export default function Popout({ setIsPopout, selectedItem }: popoutProp) {
+export default function Popout({ setIsPopout, selectedItem }: PopoutProp) {
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+
   function formatTime(time) {
     const date = new Date(time * 1000); // 轉換成毫秒
     const options = {
@@ -146,40 +151,47 @@ export default function Popout({ setIsPopout, selectedItem }: popoutProp) {
   }
 
   if (selectedItem) {
+    // if (isEdit) {
+    //   return <EditItem />;
+    // }
     return (
       <Overlay>
         <Cancel onClick={() => setIsPopout(false)}>X</Cancel>
-        <Container>
-          <ImageWrapper>
-            <MainImage src={aoao} />
-            <SubImageWrapper>
-              <SubImage src={aoao} />
-              <SubImage src={aoao} />
-              <SubImage src={aoao} />
-              <SubImage src={aoao} />
-            </SubImageWrapper>
-          </ImageWrapper>
-          <InfoWrapper>
-            <FirstRow>
-              <Category>{selectedItem[0].category}</Category>
-              <Edit>Edit</Edit>
-            </FirstRow>
-            <Name>{selectedItem[0].name}</Name>
-            <Row>
-              <Title>購買日期</Title>
-              <Content>{formatTime(selectedItem[0].created.seconds)}</Content>
-            </Row>
-            <Row>
-              <Title>目前狀態</Title>
-              <Content>{selectedItem[0].status}</Content>
-            </Row>
-            {/* <Row>
+
+        {isEdit ? (
+          <EditItem isEdit={isEdit} />
+        ) : (
+          <Container>
+            <ImageWrapper>
+              <MainImage src={selectedItem[0].images[0]} />
+              <SubImageWrapper>
+                {selectedItem[0].images.map((image) => (
+                  <SubImage key={image} src={image} />
+                ))}
+              </SubImageWrapper>
+            </ImageWrapper>
+            <InfoWrapper>
+              <FirstRow>
+                <Category>{selectedItem[0].category}</Category>
+                <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
+              </FirstRow>
+              <Name>{selectedItem[0].name}</Name>
+              <Row>
+                <Title>購買日期</Title>
+                <Content>{formatTime(selectedItem[0].created.seconds)}</Content>
+              </Row>
+              <Row>
+                <Title>目前狀態</Title>
+                <Content>{selectedItem[0].status}</Content>
+              </Row>
+              {/* <Row>
               <Title>數量</Title>
               <Content>1</Content>
             </Row> */}
-            <Description>{selectedItem[0].description}</Description>
-          </InfoWrapper>
-        </Container>
+              <Description>{selectedItem[0].description}</Description>
+            </InfoWrapper>
+          </Container>
+        )}
       </Overlay>
     );
   }
