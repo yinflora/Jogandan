@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import EditItem from '../Upload/Upload';
-import aoao from './aoao.jpg';
 import { useState } from 'react';
 
 const Overlay = styled.div`
