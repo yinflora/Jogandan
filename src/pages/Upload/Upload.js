@@ -18,11 +18,35 @@ const ImageWrapper = styled.div`
 
 const MainImage = styled.div`
   width: 100%;
-  /* margin: 5px; */
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
   border: 1px solid #acaea9;
+  background: ${({ coverUrl }) =>
+    coverUrl === '' ? 'none' : `center / cover no-repeat url(${coverUrl})`};
+`;
+
+const RemindWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+`;
+
+const SelectImage = styled.div`
+  width: 100px;
+  height: 30px;
+  background-color: #acaea9;
+  border-radius: 5px;
+  line-height: 30px;
+  text-align: center;
+`;
+
+const Remind = styled.p`
+  color: #acaea9;
 `;
 
 const SubImageContainer = styled.div`
@@ -61,12 +85,10 @@ const CancelBtn = styled.button`
 `;
 
 const SubImage = styled.div`
-  /* width: calc((100% - 20px) / 3); */
   width: 100%;
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
-  /* flex-shrink: 0; */
   border: 1px solid #acaea9;
   background: ${({ imageUrl }) =>
     imageUrl === '' ? 'none' : `center / cover no-repeat url(${imageUrl})`};
@@ -120,15 +142,15 @@ export default function Upload() {
     name: '',
     category: '',
     status: '',
-    // joinGiveaway: '',
-    // created: '',
     description: '',
     images,
+    // joinGiveaway: '',
+    // created: '',
     // isGifted: '',
     // processedDate: '',
   });
 
-  console.log(images);
+  console.log(form);
 
   function handleFileUpload(e, limit) {
     const files = e.target.files;
@@ -173,7 +195,29 @@ export default function Upload() {
   return (
     <Container>
       <ImageWrapper>
-        <MainImage />
+        <MainImage coverUrl={images[0]}>
+          {images[0] === '' && (
+            <RemindWrapper>
+              <input
+                id="uploadImage"
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  handleFileUpload(
+                    e,
+                    images.filter((item) => item === '').length
+                  )
+                }
+                multiple
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="uploadImage">
+                <SelectImage>選擇照片</SelectImage>
+              </label>
+              <Remind>最多只能上傳 10 張</Remind>
+            </RemindWrapper>
+          )}
+        </MainImage>
         <SubImageContainer>
           {images.map((image, index) => (
             <SubImageWrapper key={index}>
@@ -198,12 +242,67 @@ export default function Upload() {
                   +
                 </UploadBtn>
               </label>
-              <CancelBtn onClick={() => handleDeleted(index)}>X</CancelBtn>
+              {images[index] !== '' && (
+                <CancelBtn onClick={() => handleDeleted(index)}>X</CancelBtn>
+              )}
             </SubImageWrapper>
           ))}
         </SubImageContainer>
       </ImageWrapper>
-      <InfoWrapper></InfoWrapper>
+      <InfoWrapper>
+        <form>
+          {formInputs.map((input) => {
+            if (input.option) {
+              return (
+                <div>
+                  <label key={input.key}>{input.label}</label>
+                  <select
+                    onChange={(e) =>
+                      setForm({ ...form, [input.key]: e.target.value })
+                    }
+                  >
+                    {input.option.map((option) => (
+                      <option value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+              );
+            } else if (input.key === 'description') {
+              return (
+                <div>
+                  <label key={input.key}>{input.label}</label>
+                  <textarea
+                    value={form[input.key]}
+                    onChange={(e) =>
+                      setForm({ ...form, [input.key]: e.target.value })
+                    }
+                  />
+                </div>
+              );
+            }
+            return (
+              <div>
+                <label key={input.key}>{input.label}</label>
+                <input
+                  value={form[input.key]}
+                  onChange={(e) =>
+                    setForm({ ...form, [input.key]: e.target.value })
+                  }
+                />
+              </div>
+            );
+          })}
+          <input
+            type="button"
+            value="上傳物品"
+            disabled={
+              Object.values(form).includes('') ||
+              !images.some((image) => image !== '')
+            }
+            onClick={() => uploadItems(null, form)}
+          />
+        </form>
+      </InfoWrapper>
     </Container>
     // <div>
     //   <input
@@ -216,66 +315,7 @@ export default function Upload() {
     //   {form.images.map((image) => (
     //     <img src={image} />
     //   ))}
-    //   <form>
-    //     {/* {formInputs.map((input) => (
-    //       <div>
-    //         <label key={input.key}>{input.label}</label>
-    //         <input
-    //           value={form[input.key]}
-    //           onChange={(e) =>
-    //             setForm({ ...form, [input.key]: e.target.value })
-    //           }
-    //         />
-    //       </div>
-    //     ))} */}
-    //     {formInputs.map((input) => {
-    //       if (input.option) {
-    //         return (
-    //           <div>
-    //             <label key={input.key}>{input.label}</label>
-    //             <select
-    //               onChange={(e) =>
-    //                 setForm({ ...form, [input.key]: e.target.value })
-    //               }
-    //             >
-    //               {input.option.map((option) => (
-    //                 <option value={option}>{option}</option>
-    //               ))}
-    //             </select>
-    //           </div>
-    //         );
-    //       } else if (input.key === 'description') {
-    //         return (
-    //           <div>
-    //             <label key={input.key}>{input.label}</label>
-    //             <textarea
-    //               value={form[input.key]}
-    //               onChange={(e) =>
-    //                 setForm({ ...form, [input.key]: e.target.value })
-    //               }
-    //             />
-    //           </div>
-    //         );
-    //       }
-    //       return (
-    //         <div>
-    //           <label key={input.key}>{input.label}</label>
-    //           <input
-    //             value={form[input.key]}
-    //             onChange={(e) =>
-    //               setForm({ ...form, [input.key]: e.target.value })
-    //             }
-    //           />
-    //         </div>
-    //       );
-    //     })}
-    //     <input
-    //       type="button"
-    //       value="上傳物品"
-    //       disabled={Object.values(form).includes('')}
-    //       onClick={() => uploadItems(null, form)}
-    //     />
-    //   </form>
+
     // </div>
   );
 }
