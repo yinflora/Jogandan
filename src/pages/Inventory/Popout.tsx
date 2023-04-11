@@ -176,7 +176,9 @@ export default function Popout({ setIsPopout, selectedItem }: PopoutProp) {
             <InfoWrapper>
               <FirstRow>
                 <Category>{selectedItem[0].category}</Category>
-                <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
+                {selectedItem[0].status !== '已處理' && (
+                  <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
+                )}
               </FirstRow>
               <Name>{selectedItem[0].name}</Name>
               <Row>
