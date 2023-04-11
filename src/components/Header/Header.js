@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Login from '../Login/Login';
 
 const Container = styled.section`
   position: fixed;
@@ -33,6 +34,7 @@ export default function Header() {
   return (
     <Container>
       <Logo>JOGANDAN</Logo>
+      <Login />
       <MenuBtn>
         <Line />
         <Line />
