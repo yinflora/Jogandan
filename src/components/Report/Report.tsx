@@ -1,7 +1,4 @@
-// import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-// import { getProcessedItems } from '../../utils/firebase';
-// import { type } from 'os';
 
 const Svg = styled.svg`
   display: block;
@@ -34,6 +31,23 @@ const Rect = styled.rect`
 type month = string;
 type quantity = number;
 // type data = number[];
+type Row = string[];
+type Column = number[];
+
+const CATEGORY: Row = [
+  '居家生活',
+  '服飾配件',
+  '美妝保養',
+  '3C產品',
+  '影音產品',
+  '書報雜誌',
+  '體育器材',
+  '寵物用品',
+  '食物及飲料',
+  '興趣及遊戲',
+  '紀念意義',
+  '其他',
+];
 
 const MONTHS: month[] = [
   'Jan',
@@ -49,7 +63,7 @@ const MONTHS: month[] = [
   'Nov',
   'Dec',
 ];
-const QUANTITY: quantity[] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const QUANTITY: Column = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
 // const Items: data = [5, 23, 20, 15, 60, 78, 100, 96, 3, 34, 66, 12];
 
@@ -66,14 +80,14 @@ const YTAG_X_AXIS: number = 30;
 const HEIGHT_PER_QTY: number = 5;
 
 type ReportProps = {
-  filteredItems: [];
+  processedItems: [];
 };
 
-export default function Report({ filteredItems }: ReportProps) {
+export default function Report({ processedItems }: ReportProps) {
   return (
     <Svg>
       <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
-      {MONTHS.map((item: month, index: number) => (
+      {CATEGORY.map((item: month, index: number) => (
         <XTag
           key={item}
           x={XTAG_START_AXIS + index * XTAG_SPACE}
@@ -99,7 +113,7 @@ export default function Report({ filteredItems }: ReportProps) {
         </YTag>
       ))}
 
-      {filteredItems.map((item: quantity, index: number) => (
+      {processedItems.map((item: quantity, index: number) => (
         <Rect
           x={XTAG_START_AXIS + index * XTAG_SPACE}
           y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
