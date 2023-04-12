@@ -260,21 +260,21 @@ export default function Upload({ isEdit }: EditProp) {
           {images.map((image, index) => (
             <SubImageWrapper
               key={index}
-              // onDragEnter={(e) => console.log('onDragEnter')}
-              // onDragLeave={(e) => console.log('onDragLeave')}
-              // onDragOver={(e) => {
-              //   e.preventDefault();
-              //   e.clientX && console.log('onDragOver');
-              // }}
-              // onDrop={(e) => console.log('onDrop')}
+              onDragEnter={(e) => console.log('onDragEnter')}
+              onDragLeave={(e) => console.log('onDragLeave')}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.clientX && console.log('onDragOver');
+              }}
+              onDrop={(e) => console.log('onDrop')}
             >
               <div
-              // draggable={images.some((image) => image !== '') ? true : false}
-              // onDragStart={(e) => {
-              //   console.log('onDragStart');
-              //   e.target.style.opacity = '0.01';
-              // }}
-              // onDragEnd={(e) => (e.target.style.opacity = '1')}
+                draggable={images.some((image) => image !== '') ? true : false}
+                onDragStart={(e) => {
+                  console.log('onDragStart');
+                  e.target.style.opacity = '0.01';
+                }}
+                onDragEnd={(e) => (e.target.style.opacity = '1')}
               >
                 <SubImage imageUrl={image}></SubImage>
                 <input
