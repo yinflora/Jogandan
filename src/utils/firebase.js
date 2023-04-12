@@ -151,7 +151,7 @@ export async function uploadItems(id, form) {
       description,
       images,
       isGifted: '',
-      processedDate: '',
+      processedDate: status === '已處理' ? serverTimestamp() : '',
     });
     console.log('Item uploaded with ID: ', docRef.id);
 
@@ -283,6 +283,7 @@ export async function updateItem(id, itemRef) {
       status,
       description,
       images,
+      processedDate: status === '已處理' ? serverTimestamp() : '',
     });
     // console.log('更新item成功');
     alert('更新物品成功！');

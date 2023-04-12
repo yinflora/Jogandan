@@ -11,9 +11,13 @@ const Title = styled.h1`
 `;
 
 function Achievement() {
-  const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  // const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [galleryMode, setGalleryMode] = useState<boolean>(true);
   const [items, setItems] = useState<Array<any> | null>(null);
+  const [years, setYears] = useState<[] | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(() =>
+    new Date().getFullYear()
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -22,21 +26,38 @@ function Achievement() {
         (a, b) => a.processedDate.seconds - b.processedDate.seconds
       );
       setItems(sortedItems);
+
+      const yearsList = Array.from(
+        new Set(
+          processedItems.map((item) =>
+            new Date(item.processedDate.seconds * 1000).getFullYear()
+          )
+        )
+      );
+      setYears(yearsList);
     }
     fetchData();
   }, []);
 
-  if (items) {
+  console.log(selectedYear);
+  console.log(years);
+
+  if (items && years) {
     return (
       <>
         <Title>Achievement</Title>
         <select
-          value={selectedYear || ''}
+          value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
         >
-          <option value="">year</option>
+          {years.map((year) => (
+            <option key={year} value={year} selected={year === selectedYear}>
+              {year}
+            </option>
+          ))}
+          {/* <option value="">year</option>
           <option value="2023">2023</option>
-          <option value="2024">2024</option>
+          <option value="2024">2024</option> */}
         </select>
         <button onClick={() => setGalleryMode(true)}>Gallery</button>
         <button onClick={() => setGalleryMode(false)}>Report</button>

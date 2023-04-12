@@ -65,15 +65,24 @@ const YTAG_X_AXIS: number = 30;
 const HEIGHT_PER_QTY: number = 5;
 
 export default function Report() {
-  const [items, setItems] = useState(null);
-  useEffect(() => {
-    async function fetchData() {
-      const processedItems = await getProcessedItems();
-      setItems(processedItems);
-    }
-    fetchData();
-  }, []);
-  console.log(items);
+  // const [items, setItems] = useState(null);
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const processedItems = await getProcessedItems();
+  //     setItems(processedItems);
+  //   }
+  //   fetchData();
+
+  //   const years = Array.from(
+  //     new Set(
+  //       items.map((item) =>
+  //         new Date(item.processedDate.seconds * 1000).getFullYear()
+  //       )
+  //     )
+  //   );
+  //   console.log(years);
+  // }, []);
+  // console.log(items);
 
   return (
     <Svg>

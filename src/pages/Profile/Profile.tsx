@@ -160,9 +160,12 @@ export default function Profile() {
       {/* <VisionBoard></VisionBoard> */}
       <QtyWrapper>
         <Qty>
-          {items?.filter((item: any) => item.status !== '已處理').length}
+          {
+            itemRef.current?.filter((item: any) => item.status !== '已處理')
+              .length
+          }
         </Qty>
-        <QtyTitle>現有物品數量</QtyTitle>
+        <QtyTitle>現有物品總數量</QtyTitle>
       </QtyWrapper>
       <QtyWrapper>
         <Qty>
@@ -171,7 +174,9 @@ export default function Profile() {
         <QtyTitle>減少數量</QtyTitle>
       </QtyWrapper>
       <QtyWrapper>
-        <Qty>350</Qty>
+        <Qty>
+          {items?.filter((item: any) => item.status !== '已處理').length}
+        </Qty>
         <QtyTitle>增加數量</QtyTitle>
       </QtyWrapper>
     </>
