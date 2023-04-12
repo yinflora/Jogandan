@@ -81,16 +81,15 @@ export default function Profile() {
 
   useEffect(() => {
     function countItems() {
-      const hasPeriod = Object.values(period).every((time) => time !== '');
-      if (hasPeriod) {
-      }
+      const hasPeriod: boolean = Object.values(period).every(
+        (time) => time !== ''
+      );
+      // if (hasPeriod) {
+      // }
     }
     countItems();
   }, [period]);
 
-  // console.log(period, items);
-
-  // if (isLogin) {
   return (
     <>
       {/* <Title>Profile</Title> */}
@@ -120,11 +119,15 @@ export default function Profile() {
       />
       {/* <VisionBoard></VisionBoard> */}
       <QtyWrapper>
-        <Qty>{items?.filter((item) => item.status !== '已處理').length}</Qty>
+        <Qty>
+          {items?.filter((item: any) => item.status !== '已處理').length}
+        </Qty>
         <QtyTitle>現有物品數量</QtyTitle>
       </QtyWrapper>
       <QtyWrapper>
-        <Qty>{items?.filter((item) => item.status === '已處理').length}</Qty>
+        <Qty>
+          {items?.filter((item: any) => item.status === '已處理').length}
+        </Qty>
         <QtyTitle>減少數量</QtyTitle>
       </QtyWrapper>
       <QtyWrapper>
@@ -133,6 +136,4 @@ export default function Profile() {
       </QtyWrapper>
     </>
   );
-  // }
-  // return <Navigate to="/login" />;
 }

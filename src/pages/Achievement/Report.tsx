@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-// import { getProcessedItems } from '../../utils/firebase';
-// import { useState } from 'react';
+import { getProcessedItems } from '../../utils/firebase';
 
 const Svg = styled.svg`
   display: block;
@@ -65,15 +65,15 @@ const YTAG_X_AXIS: number = 30;
 const HEIGHT_PER_QTY: number = 5;
 
 export default function Report() {
-  // const [items, setItems] = useState(null);
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const processedItems = await getProcessedItems();
-  //     // console.log(items);
-  //     setItems(processedItems);
-  //   }
-  //   fetchData();
-  // }, []);
+  const [items, setItems] = useState(null);
+  useEffect(() => {
+    async function fetchData() {
+      const processedItems = await getProcessedItems();
+      setItems(processedItems);
+    }
+    fetchData();
+  }, []);
+  console.log(items);
 
   return (
     <Svg>
