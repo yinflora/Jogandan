@@ -88,7 +88,7 @@ function reducer(items, { type, payload }) {
       return payload.data;
     }
     case 'FILTER_PERIOD':
-      return items.filter((item) => {
+      return payload.items.filter((item) => {
         const createdTime = new Date(
           item.created.seconds * 1000 + item.created.nanoseconds / 1000000
         ).getTime();
@@ -156,7 +156,7 @@ export default function Profile() {
 
         dispatch({
           type: 'FILTER_PERIOD',
-          payload: { periodStart, periodEnd },
+          payload: { items: itemRef.current, periodStart, periodEnd },
         });
 
         // const filteredItems = itemRef.current.filter((item) => {
@@ -171,23 +171,25 @@ export default function Profile() {
         // });
         // console.log(filteredItems);
         // setItems(filteredItems);
-
-        const filteredItems = items.filter((item) => item.status === '已處理');
-
-        const qtyList = filteredItems.reduce((acc, item) => {
-          const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
-          if (index !== -1) {
-            // 如果分類存在
-            acc[index]++; // 將對應的數量加 1
-          }
-          return acc;
-        }, Array(CATEGORIES.length).fill(0)); // 初始化為 0 的陣列
-
-        setProcessedItems(qtyList);
       }
     }
     countItems();
   }, [period]);
+
+  useEffect(() => {
+    const filteredItems = items.filter((item) => item.status === '已處理');
+
+    const qtyList = filteredItems.reduce((acc, item) => {
+      const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
+      if (index !== -1) {
+        // 如果分類存在
+        acc[index]++; // 將對應的數量加 1
+      }
+      return acc;
+    }, Array(CATEGORIES.length).fill(0)); // 初始化為 0 的陣列
+
+    setProcessedItems(qtyList);
+  }, [items]);
 
   function handleLevel() {
     const processedItems = itemRef.current?.filter(
