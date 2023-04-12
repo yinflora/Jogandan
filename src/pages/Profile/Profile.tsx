@@ -47,7 +47,7 @@ const Label = styled.label`
   width: 50px;
 `;
 
-const Date = styled.input``;
+const DateInput = styled.input``;
 
 const VisionBoard = styled.div`
   width: 70vw;
@@ -84,11 +84,50 @@ export default function Profile() {
       const hasPeriod: boolean = Object.values(period).every(
         (time) => time !== ''
       );
-      // if (hasPeriod) {
-      // }
+      if (hasPeriod) {
+        // const periodStart = new Date(period.start).getTime();
+        // const periodEnd = new Date(period.end).getTime();
+
+        // // console.log(periodStart, periodEnd);
+        // console.log(new Date(period.start), new Date(period.end));
+
+        const filteredItems = itemRef.current.filter((item) => {
+          const createdTime = new Date(
+            item.created.seconds * 1000 + item.created.nanoseconds / 1000000
+          ).getTime();
+          const periodStart = new Date(
+            period.start + 'T00:00:00.000Z'
+          ).getTime();
+          const periodEnd = new Date(period.end + 'T23:59:59.999Z').getTime();
+          return createdTime >= periodStart && createdTime <= periodEnd;
+        });
+        console.log(filteredItems);
+        setItems(filteredItems);
+      }
     }
     countItems();
   }, [period]);
+
+  function handleLevel() {
+    const processedItems = itemRef.current?.filter(
+      (item) => item.status === '已處理'
+    ).length;
+
+    // const processedItems = 55;
+
+    if (processedItems >= 100) {
+      // console.log('Master');
+      return 'Master';
+    } else if (processedItems < 100 && processedItems >= 50) {
+      // console.log('Veteran');
+      return 'Veteran';
+    } else if (processedItems < 50 && processedItems >= 10) {
+      // console.log('Seasoned');
+      return 'Seasoned';
+    }
+    // console.log('Rookie');
+    return 'Rookie';
+  }
 
   return (
     <>
@@ -97,7 +136,8 @@ export default function Profile() {
         <Image src={user.photoURL} />
         <InformationWrapper>
           <Name>{user.displayName}</Name>
-          <Level>Rookie</Level>
+          {/* {items && handleLevel()} */}
+          <Level>{items && handleLevel()}</Level>
           {/* <div>
             <Label>Email</Label>
             <Information>{user.email}</Information>
@@ -106,13 +146,13 @@ export default function Profile() {
         </InformationWrapper>
       </Wrapper>
       <Label>Period:</Label>
-      <Date
+      <DateInput
         type="date"
         value={period.start}
         onChange={(e) => setPeriod({ ...period, start: e.target.value })}
       />
       <span>~</span>
-      <Date
+      <DateInput
         type="date"
         value={period.end}
         onChange={(e) => setPeriod({ ...period, end: e.target.value })}
