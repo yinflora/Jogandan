@@ -163,9 +163,10 @@ export default function Upload({ isEdit }: EditProp) {
     // isGifted: '',
     // processedDate: '',
   });
+  // const [pastIndex, ]
 
-  console.log(form);
-  console.log(images);
+  // console.log(form);
+  // console.log(images);
 
   useEffect(() => {
     async function getItem() {
@@ -257,31 +258,49 @@ export default function Upload({ isEdit }: EditProp) {
         </MainImage>
         <SubImageContainer>
           {images.map((image, index) => (
-            <SubImageWrapper key={index}>
-              <SubImage imageUrl={image}></SubImage>
-              <input
-                id="uploadImage"
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  handleFileUpload(
-                    e,
-                    images.filter((item) => item === '').length
-                  )
-                }
-                multiple
-                style={{ display: 'none' }}
-              />
-              <label htmlFor="uploadImage">
-                <UploadBtn
-                  canAdd={images.findIndex((item) => item === '') === index}
-                >
-                  +
-                </UploadBtn>
-              </label>
-              {images[index] !== '' && (
-                <CancelBtn onClick={() => handleDeleted(index)}>X</CancelBtn>
-              )}
+            <SubImageWrapper
+              key={index}
+              // onDragEnter={(e) => console.log('onDragEnter')}
+              // onDragLeave={(e) => console.log('onDragLeave')}
+              // onDragOver={(e) => {
+              //   e.preventDefault();
+              //   e.clientX && console.log('onDragOver');
+              // }}
+              // onDrop={(e) => console.log('onDrop')}
+            >
+              <div
+              // draggable={images.some((image) => image !== '') ? true : false}
+              // onDragStart={(e) => {
+              //   console.log('onDragStart');
+              //   e.target.style.opacity = '0.01';
+              // }}
+              // onDragEnd={(e) => (e.target.style.opacity = '1')}
+              >
+                <SubImage imageUrl={image}></SubImage>
+                <input
+                  id="uploadImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    handleFileUpload(
+                      e,
+                      images.filter((item) => item === '').length
+                    )
+                  }
+                  multiple
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="uploadImage">
+                  <UploadBtn
+                    canAdd={images.findIndex((item) => item === '') === index}
+                  >
+                    +
+                  </UploadBtn>
+                </label>
+                {images[index] !== '' && (
+                  <CancelBtn onClick={() => handleDeleted(index)}>X</CancelBtn>
+                )}
+              </div>
             </SubImageWrapper>
           ))}
         </SubImageContainer>
