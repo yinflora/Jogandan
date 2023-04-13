@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useRef, useState, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { Link, useParams } from 'react-router-dom';
@@ -65,6 +66,8 @@ const SubTitle = styled.p<{ isSelected: boolean }>`
   color: ${({ isSelected }) => (isSelected ? 'red' : '#acaea9')};
 `;
 
+const SearchField = styled.input``;
+
 const SUBCATEGORY: string[] = [
   '居家生活',
   '服飾配件',
@@ -82,11 +85,6 @@ const SUBCATEGORY: string[] = [
 
 const SUBSTATUS: string[] = ['保留', '處理中', '已處理'];
 
-// type processedItem = {
-//   category: string;
-//   status: string;
-// };
-
 type Item = {
   id: string;
   name: string;
@@ -94,7 +92,7 @@ type Item = {
   category: string;
   created: Timestamp;
   processedDate: string;
-  description: '';
+  description: string;
   images: string[];
 };
 
@@ -116,6 +114,7 @@ export default function Inventory() {
   });
   const [isPopout, setIsPopout] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [search, setSearch] = useState<string>('');
 
   const itemsRef = useRef<Items | null>(null);
 
@@ -145,26 +144,26 @@ export default function Inventory() {
 
   useEffect(() => {
     function handleFilter() {
+      if (!itemsRef.current) return;
+
       let filteredItems = itemsRef.current;
       if (filter.category !== '' && filter.status !== '') {
-        filteredItems =
-          itemsRef.current &&
-          itemsRef.current.filter(
-            (item: Item) =>
-              item.category === filter.category && item.status === filter.status
-          );
+        filteredItems = itemsRef.current.filter(
+          (item: Item) =>
+            item.category === filter.category && item.status === filter.status
+        );
       } else if (filter.category !== '') {
-        filteredItems =
-          itemsRef.current &&
-          itemsRef.current.filter(
-            (item: Item) => item.category === filter.category
-          );
+        filteredItems = itemsRef.current.filter(
+          (item: Item) => item.category === filter.category
+        );
       } else if (filter.status !== '') {
-        filteredItems =
-          itemsRef.current &&
-          itemsRef.current.filter(
-            (item: Item) => item.status === filter.status
-          );
+        filteredItems = itemsRef.current.filter(
+          (item: Item) => item.status === filter.status
+        );
+      } else if (search !== '') {
+        filteredItems = itemsRef.current.filter((item) =>
+          item.name.toLowerCase().includes(search.toLowerCase())
+        );
       }
       setItems(filteredItems);
     }
@@ -183,6 +182,15 @@ export default function Inventory() {
       setItems(itemsRef.current);
     }
     setFilter({ ...filter, status: '' });
+  }
+
+  function handleSearch(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (itemsRef.current && e.key === 'Enter') {
+      const filteredItems = itemsRef.current.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase())
+      );
+      setItems(filteredItems);
+    }
   }
 
   return (
@@ -226,6 +234,12 @@ export default function Inventory() {
           }
           return null;
         })()}
+      <SearchField
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={(e) => handleSearch(e)}
+      />
 
       <Container>
         <FilterWrapper>

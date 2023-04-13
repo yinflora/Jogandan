@@ -108,7 +108,7 @@ type Item = {
   category: string;
   created: Timestamp;
   processedDate: string;
-  description: '';
+  description: string;
   images: string[];
 };
 
@@ -136,7 +136,7 @@ export default function Popout({ selectedItem }: PopoutProp) {
         <Cancel to="/inventory">X</Cancel>
 
         {isEdit ? (
-          <EditItem isEdit={isEdit} />
+          <EditItem isEdit={isEdit} setIsEdit={setIsEdit} />
         ) : (
           <Container>
             <ImageWrapper>
