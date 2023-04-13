@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   storage,
   uploadItems,
@@ -6,6 +6,7 @@ import {
   updateItem,
 } from '../../utils/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { AuthContext } from '../../context/authContext';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -147,9 +148,8 @@ type EditProp = {
 };
 
 export default function Upload({ isEdit }: EditProp) {
+  const { uid } = useContext(AuthContext);
   const { id } = useParams();
-
-  console.log(typeof id, id);
 
   const [images, setImages] = useState(Array(10).fill(''));
   const [form, setForm] = useState({
@@ -163,16 +163,11 @@ export default function Upload({ isEdit }: EditProp) {
     // isGifted: '',
     // processedDate: '',
   });
-  // const [pastIndex, ]
-
-  // console.log(form);
-  // console.log(images);
 
   useEffect(() => {
     async function getItem() {
       const item = await getItemById(id);
       const { images, name, category, status, description } = item[0];
-      // console.log(item.images);
       setImages(images);
       setForm({
         name,
@@ -182,9 +177,7 @@ export default function Upload({ isEdit }: EditProp) {
         images,
       });
     }
-    if (isEdit && id) {
-      getItem();
-    }
+    if (isEdit && id) getItem();
   }, []);
 
   function handleFileUpload(e, limit) {
@@ -361,7 +354,7 @@ export default function Upload({ isEdit }: EditProp) {
               !images.some((image) => image !== '')
             }
             onClick={() =>
-              isEdit ? updateItem(id, form) : uploadItems(null, form)
+              isEdit ? updateItem(uid, id, form) : uploadItems(uid, form)
             }
           />
         </form>

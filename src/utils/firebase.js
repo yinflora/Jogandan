@@ -73,8 +73,6 @@ async function createUser(userAuth) {
 
   // 將 document 實例的資料取出來
   const userSnapshot = await getDoc(userDocRef);
-  console.log(userSnapshot);
-  console.log(userSnapshot.exists());
 
   // 如果使用者不存在
   if (!userSnapshot.exists()) {
@@ -100,46 +98,14 @@ async function createUser(userAuth) {
   return userDocRef;
 }
 
-// export async function createUserDocumentFromAuth(userAuth) {
-//   // 建立一個 document 實例
-//   const userDocRef = doc(db, 'users', userAuth.uid);
-
-//   // 將 document 實例的資料取出來
-//   const userSnapshot = await getDoc(userDocRef);
-//   console.log(userSnapshot);
-//   console.log(userSnapshot.exists());
-
-//   // 如果使用者不存在
-//   if (!userSnapshot.exists()) {
-//     const { displayName, email, photoURL } = userAuth;
-//     const createdAt = new Date();
-//     // 就把資料寫進 Firestore
-//     try {
-//       await setDoc(userDocRef, {
-//         name: displayName,
-//         email,
-//         image: photoURL,
-//         createdAt,
-//         period: { start: null, end: null },
-//         processedItems: null,
-//       });
-//       console.log('建立使用者成功' + displayName);
-//     } catch (error) {
-//       console.log('建立使用者失敗' + error.message);
-//     }
-//   }
-
-//   // 如果使用者存在直接回傳 userDocRef
-//   return userDocRef;
-// }
-
-export async function uploadItems(id, form) {
+export async function uploadItems(userId, form) {
   try {
     const { name, category, status, description, images } = form;
     const itemsRef = collection(
       db,
       'users',
-      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      // 'kyZjoKtIpCe0c3ZrItSubP8mAle2',
+      userId,
       'items'
     );
     const docRef = await addDoc(itemsRef, {
@@ -158,7 +124,8 @@ export async function uploadItems(id, form) {
     const itemDocRef = doc(
       db,
       'users',
-      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      // 'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      userId,
       'items',
       docRef.id
     );
@@ -169,29 +136,9 @@ export async function uploadItems(id, form) {
 
     alert('已成功加入！');
   } catch (e) {
-    console.error('Error uploading item: ', e);
+    console.error('Error uploading items: ', e);
   }
 }
-
-// export updateItems(id){
-//   try {
-//     const boardDocRef = doc(
-//       db,
-//       'users',
-//       'q1khIAOnt2ewvY4SQw1z65roVPD2',
-//       'visionBoards',
-//       id
-//     );
-//     await updateDoc(boardDocRef, {
-//       lines: deleteField(),
-//       shapes: deleteField(),
-//     });
-//     console.log('刪除成功');
-//   } catch (e) {
-//     console.error('Error uploading article: ', e);
-//   }
-//   return null;
-// }
 
 export async function getProcessedItems() {
   const itemsRef = collection(
@@ -213,24 +160,12 @@ export async function getProcessedItems() {
   return items;
 }
 
-// export function getItems() {
-//   const itemsRef = query(
-//     collection(db, 'users', 'q1khIAOnt2ewvY4SQw1z65roVPD2', 'items')
-//   );
-//   const items = [];
-
-//   onSnapshot(itemsRef, (query) => {
-//     query.forEach((doc) => items.push(doc.data()));
-//   });
-
-//   return items;
-// }
-
-export async function getItems() {
+export async function getItems(userId) {
   const itemsRef = collection(
     db,
     'users',
-    'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    // 'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    userId,
     'items'
   );
   const itemsQuery = query(itemsRef);
@@ -238,43 +173,34 @@ export async function getItems() {
 
   const querySnapshot = await getDocs(itemsQuery);
   querySnapshot.forEach((document) => {
-    // doc.data() is never undefined for query doc snapshots
-    // console.log(doc.id, ' => ', doc.data());
     items.push(document.data());
   });
+
   return items;
 }
 
-export async function getItemById(itemId) {
-  const itemsRef = collection(
-    db,
-    'users',
-    'q1khIAOnt2ewvY4SQw1z65roVPD2',
-    'items'
-  );
+export async function getItemById(userId, itemId) {
+  const itemsRef = collection(db, 'users', userId, 'items');
   const itemsQuery = query(itemsRef, where('id', '==', itemId));
-  // const itemsQuery = query(itemsRef, where('status', '==', '保留'));
   const items = [];
 
   const querySnapshot = await getDocs(itemsQuery);
 
   querySnapshot.forEach((document) => {
-    // doc.data() is never undefined for query doc snapshots
-    // console.log(doc.id, ' => ', doc.data());
     items.push(document.data());
-    // console.log(document.data());
   });
   return items;
 }
 
-export async function updateItem(id, itemRef) {
+export async function updateItem(userId, itemId, itemRef) {
   try {
     const itemDocRef = doc(
       db,
       'users',
-      'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      // 'q1khIAOnt2ewvY4SQw1z65roVPD2',
+      userId,
       'items',
-      id
+      itemId
     );
     const { images, name, category, status, description } = itemRef;
     await updateDoc(itemDocRef, {

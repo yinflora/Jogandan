@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
+import { AuthContext } from '../../context/authContext';
 import { Link, useParams } from 'react-router-dom';
 import { getItems, getItemById } from '../../utils/firebase';
 import styled from 'styled-components';
@@ -86,6 +87,9 @@ type processedItem = {
 };
 
 export default function Inventory() {
+  const { uid } = useContext(AuthContext);
+  const { id } = useParams();
+
   const [items, setItems] = useState<processedItem[] | null>(null);
   const [filter, setfilter] = useState<processedItem>({
     category: '',
@@ -96,17 +100,17 @@ export default function Inventory() {
 
   const itemsRef = useRef<processedItem[] | null>(null);
 
-  const { id } = useParams();
-
   useEffect(() => {
+    if (!uid) return;
+
     async function fetchData() {
-      const itemList = await getItems();
+      const itemList = await getItems(uid);
       itemsRef.current = itemList;
       setItems(itemList);
     }
 
     async function fetchSelectedData() {
-      const item = await getItemById(id);
+      const item = await getItemById(uid, id);
       setSelectedItem(item);
     }
 
@@ -118,7 +122,7 @@ export default function Inventory() {
       setSelectedItem(null);
       setIsPopout(false);
     }
-  }, [id, isPopout, selectedItem]);
+  }, [uid, id]);
 
   useEffect(() => {
     function handleFilter() {
