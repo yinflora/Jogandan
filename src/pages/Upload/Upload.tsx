@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useEffect, useState, useContext } from 'react';
 import {
   storage,
@@ -58,12 +58,23 @@ const Remind = styled.p`
 `;
 
 const SubImageContainer = styled.div`
+  position: relative;
   display: flex;
   width: 100%;
   margin-top: 10px;
   overflow-x: scroll;
   gap: 10px;
   flex-wrap: nowrap;
+`;
+
+const NextPage = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  width: 30px;
+  height: 100%;
+  background-color: #000;
 `;
 
 const SubImageWrapper = styled.div`
@@ -89,6 +100,7 @@ const CancelBtn = styled.button`
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 2;
   font-size: 20px;
 `;
 
@@ -165,6 +177,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     // isGifted: '',
     // processedDate: '',
   });
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+
+  const containerRef = useRef(null);
 
   useEffect(() => {
     async function getItem() {
@@ -248,6 +263,48 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     setIsEdit(false);
   }
 
+  function handleDragOver(e, index) {
+    e.preventDefault();
+    if (draggingIndex !== null && draggingIndex !== index) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+  }
+
+  function handleDrop(e, index) {
+    e.preventDefault();
+    if (draggingIndex !== null && draggingIndex !== index) {
+      const newImages = [...images];
+      [newImages[draggingIndex], newImages[index]] = [
+        newImages[index],
+        newImages[draggingIndex],
+      ];
+      setImages(newImages);
+    }
+    setDraggingIndex(null);
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    const containerLeft = rect.x - rect.width;
+    const containerRight = rect.x + rect.width;
+    if (e.clientX > containerRight - 30) {
+      container.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'end',
+      });
+    } else if (e.clientX < containerLeft - 30) {
+      container.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'start',
+      });
+    }
+    // rest of the code
+  }
+
   return (
     <Container>
       <ImageWrapper>
@@ -274,25 +331,41 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
             </RemindWrapper>
           )}
         </MainImage>
-        <SubImageContainer>
+        <SubImageContainer
+          ref={containerRef}
+          onDragOver={(e) => handleDragOver(e)}
+        >
+          {/* <NextPage onDragEnter={(e) => console.log('onDragEnter')} /> */}
           {images.map((image, index) => (
             <SubImageWrapper
               key={index}
-              onDragEnter={(e) => console.log('onDragEnter')}
-              onDragLeave={(e) => console.log('onDragLeave')}
+              // onDragEnter={(e) => console.log('onDragEnter')}
+              // onDragLeave={(e) => console.log('onDragLeave')}
+              // onDragOver={(e) => {
+              //   e.preventDefault();
+              //   e.clientX && console.log('onDragOver');
+              // }}
+              // onDrop={(e) => console.log('onDrop')}
               onDragOver={(e) => {
-                e.preventDefault();
-                e.clientX && console.log('onDragOver');
+                console.log('DragOver');
+                handleDragOver(e, index);
               }}
-              onDrop={(e) => console.log('onDrop')}
+              onDrop={(e) => {
+                console.log('Drop');
+                handleDrop(e, index);
+              }}
             >
               <div
                 draggable={images.some((image) => image !== '') ? true : false}
                 onDragStart={(e) => {
                   console.log('onDragStart');
                   e.target.style.opacity = '0.01';
+                  setDraggingIndex(index);
                 }}
-                onDragEnd={(e) => (e.target.style.opacity = '1')}
+                onDragEnd={(e) => {
+                  e.target.style.opacity = '1';
+                  setDraggingIndex(null);
+                }}
               >
                 <SubImage imageUrl={image}></SubImage>
                 <input
