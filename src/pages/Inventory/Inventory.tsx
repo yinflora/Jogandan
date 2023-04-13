@@ -1,7 +1,7 @@
-import styled from 'styled-components';
-import { getItems, getItemById } from '../../utils/firebase';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { getItems, getItemById } from '../../utils/firebase';
+import styled from 'styled-components';
 import Popout from './Popout';
 
 const Title = styled.h1`
@@ -22,10 +22,6 @@ const FilterWrapper = styled.div`
 const ItemWrapper = styled.div`
   display: grid;
   width: 80%;
-  /* height: 100%; */
-  /* grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
-  /* grid-template-rows: 1fr 1fr 1fr 1fr; */
-  /* grid-template-rows: 350px 350px 350px 350px; */
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(4, 1fr);
   grid-gap: 20px;
@@ -90,32 +86,26 @@ type processedItem = {
 };
 
 export default function Inventory() {
-  const itemsRef = useRef<processedItem[] | null>(null);
   const [items, setItems] = useState<processedItem[] | null>(null);
   const [filter, setfilter] = useState<processedItem>({
     category: '',
     status: '',
   });
   const [isPopout, setIsPopout] = useState<boolean>(false);
-  // const [clickedItem, setClickedItem] = useState(null);
-  const selectedItemRef = useRef<[] | null>(null);
-  const { id } = useParams();
 
-  console.log(id);
+  const itemsRef = useRef<processedItem[] | null>(null);
+  const selectedItemRef = useRef<[] | null>(null);
+
+  const { id } = useParams();
 
   useEffect(() => {
     async function fetchSelectedData() {
-      const item = await getItemById(id);
-      // selectedItemRef.current = item;
-      console.log(item);
+      await getItemById(id);
     }
     fetchSelectedData();
   }, [id]);
 
   useEffect(() => {
-    // const itemList = getItems();
-    // setItems(itemList);
-    // console.log(itemList);
     async function fetchData() {
       const itemList = await getItems();
       itemsRef.current = itemList;
@@ -126,27 +116,18 @@ export default function Inventory() {
     async function fetchSelectedData() {
       const item = await getItemById(id);
       selectedItemRef.current = item;
-      console.log(item);
     }
 
     if (id) {
-      // console.log('hihihhi有', id);
       fetchSelectedData();
-      handlePopout(id);
-      // selectedItemRef.current=
+      setIsPopout(true);
     } else {
-      // console.log('nononno');
       setIsPopout(false);
     }
   }, [id]);
 
-  // useEffect(() => {}, [id]);
-
-  // console.log(itemsRef.current);
-
   useEffect(() => {
     function handleFilter() {
-      console.log('hello');
       let filteredItems = itemsRef.current;
       if (filter.category !== '' && filter.status !== '') {
         filteredItems = itemsRef.current.filter(
@@ -162,21 +143,10 @@ export default function Inventory() {
           (item: processedItem) => item.status === filter.status
         );
       }
-      console.log(filteredItems);
       setItems(filteredItems);
     }
     handleFilter();
   }, [filter]);
-
-  // console.log(filter);
-
-  // console.log(items.filter((item) => item.status === '已處理').length);
-
-  // async function handleFilter(field, value) {
-  //   const filteredItems = await getFilteredItems(field, value);
-  //   setItems(filteredItems);
-  //   // getFilteredItems(field, value);
-  // }
 
   function handleClearCategory() {
     if (filter.status === '') {
@@ -192,14 +162,6 @@ export default function Inventory() {
     setfilter({ ...filter, status: '' });
   }
 
-  function handlePopout(itemId) {
-    setIsPopout(true);
-    // fetchSelectedData();
-    // selectedItemRef.current = items.filter((item) => item.id === itemId);
-    console.log(selectedItemRef.current);
-  }
-
-  // if (!id) return;
   return (
     <>
       <Title>Inventory</Title>
@@ -230,26 +192,15 @@ export default function Inventory() {
             All
           </FilterTitle>
           <FilterTitle>Category</FilterTitle>
-          {/* <TitleWrapper>
-            <FilterTitle>
-              {filter.category !== '' ? filter.category : 'Category'}
-            </FilterTitle>
-            <FilterButton>{filter.category !== '' ? 'X' : '+'}</FilterButton>
-          </TitleWrapper> */}
           <SubFilterWrapper>
             {SUBCATEGORY.map((category) => (
               <TitleWrapper>
                 <SubTitle
                   key={category}
-                  // onClick={() => handleFilter('category', category)}
                   onClick={() => setfilter({ ...filter, category })}
                   isSelected={filter.category === category}
                 >
                   {category}
-                  {/* {`${category}(${
-                  items &&
-                  items.filter((item) => item.category === category).length
-                })`} */}
                 </SubTitle>
                 {filter.category === category && (
                   <FilterButton onClick={handleClearCategory}>X</FilterButton>
@@ -263,14 +214,10 @@ export default function Inventory() {
               <TitleWrapper>
                 <SubTitle
                   key={status}
-                  // onClick={() => handleFilter('status', status)}
                   onClick={() => setfilter({ ...filter, status })}
                   isSelected={filter.status === status}
                 >
                   {status}
-                  {/* {`${status}(${
-                  items && items.filter((item) => item.status === status).length
-                })`} */}
                 </SubTitle>
                 {filter.status === status && (
                   <FilterButton onClick={handleClearStatus}>X</FilterButton>
@@ -282,7 +229,6 @@ export default function Inventory() {
         <ItemWrapper>
           {items &&
             items.map((item: any) => (
-              // <Item onClick={() => handlePopout(item.id)}>
               <Item to={`/inventory/${item.id}`}>
                 {item.images && <Image src={item.images[0]}></Image>}
                 <Name>{item.name}</Name>
