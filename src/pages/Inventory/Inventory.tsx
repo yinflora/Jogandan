@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { getItems, getItemById } from '../../utils/firebase';
 import styled from 'styled-components';
 import Popout from './Popout';
+import { Timestamp } from 'firebase/firestore';
 
 const Title = styled.h1`
   font-size: 4rem;
@@ -20,7 +21,7 @@ const FilterWrapper = styled.div`
   background-color: #000;
 `;
 
-const ItemWrapper = styled.div`
+const ProductWrapper = styled.div`
   display: grid;
   width: 80%;
   grid-template-columns: repeat(3, 1fr);
@@ -29,7 +30,7 @@ const ItemWrapper = styled.div`
   background-color: #828282;
 `;
 
-const Item = styled(Link)`
+const Product = styled(Link)`
   width: 100%;
   background-color: #fff;
 `;
@@ -81,7 +82,25 @@ const SUBCATEGORY: string[] = [
 
 const SUBSTATUS: string[] = ['保留', '處理中', '已處理'];
 
-type processedItem = {
+// type processedItem = {
+//   category: string;
+//   status: string;
+// };
+
+type Item = {
+  id: string;
+  name: string;
+  status: string;
+  category: string;
+  created: Timestamp;
+  processedDate: string;
+  description: '';
+  images: string[];
+};
+
+type Items = Item[];
+
+type Filter = {
   category: string;
   status: string;
 };
@@ -90,15 +109,15 @@ export default function Inventory() {
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
 
-  const [items, setItems] = useState<processedItem[] | null>(null);
-  const [filter, setfilter] = useState<processedItem>({
+  const [items, setItems] = useState<Items | null>(null);
+  const [filter, setFilter] = useState<Filter>({
     category: '',
     status: '',
   });
   const [isPopout, setIsPopout] = useState<boolean>(false);
-  const [selectedItem, setSelectedItem] = useState<[] | null>(null);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
-  const itemsRef = useRef<processedItem[] | null>(null);
+  const itemsRef = useRef<Items | null>(null);
 
   useEffect(() => {
     if (!uid) return;
@@ -110,7 +129,7 @@ export default function Inventory() {
     }
 
     async function fetchSelectedData() {
-      const item = await getItemById(uid, id);
+      const item: any = await getItemById(uid, id); //!記得改any
       setSelectedItem(item);
     }
 
@@ -128,18 +147,24 @@ export default function Inventory() {
     function handleFilter() {
       let filteredItems = itemsRef.current;
       if (filter.category !== '' && filter.status !== '') {
-        filteredItems = itemsRef.current.filter(
-          (item: processedItem) =>
-            item.category === filter.category && item.status === filter.status
-        );
+        filteredItems =
+          itemsRef.current &&
+          itemsRef.current.filter(
+            (item: Item) =>
+              item.category === filter.category && item.status === filter.status
+          );
       } else if (filter.category !== '') {
-        filteredItems = itemsRef.current.filter(
-          (item: processedItem) => item.category === filter.category
-        );
+        filteredItems =
+          itemsRef.current &&
+          itemsRef.current.filter(
+            (item: Item) => item.category === filter.category
+          );
       } else if (filter.status !== '') {
-        filteredItems = itemsRef.current.filter(
-          (item: processedItem) => item.status === filter.status
-        );
+        filteredItems =
+          itemsRef.current &&
+          itemsRef.current.filter(
+            (item: Item) => item.status === filter.status
+          );
       }
       setItems(filteredItems);
     }
@@ -150,40 +175,58 @@ export default function Inventory() {
     if (filter.status === '') {
       setItems(itemsRef.current);
     }
-    setfilter({ ...filter, category: '' });
+    setFilter({ ...filter, category: '' });
   }
 
   function handleClearStatus() {
     if (filter.category === '') {
       setItems(itemsRef.current);
     }
-    setfilter({ ...filter, status: '' });
+    setFilter({ ...filter, status: '' });
   }
 
   return (
     <>
       <Title>Inventory</Title>
-      <p>Total: {items ? itemsRef.current.length : 0}</p>
-      <p>
-        {!Object.values(filter).includes('')
-          ? `共${
-              items &&
-              items.filter(
-                (item) =>
-                  item.category === filter.category &&
-                  item.status === filter.status
-              ).length
-            }件符合${filter.category}+${filter.status}的物品`
-          : filter.category !== ''
-          ? `共${
-              items &&
-              items.filter((item) => item.category === filter.category).length
-            }件符合${filter.category}的物品`
-          : `共${
-              items &&
-              items.filter((item) => item.status === filter.status).length
-            }件符合${filter.status}的物品`}
-      </p>
+      <p>Total: {items && itemsRef.current ? itemsRef.current.length : 0}</p>
+      {Object.values(filter).includes('') &&
+        (() => {
+          if (filter.category !== '' && filter.status !== '') {
+            return (
+              <p>
+                共
+                {items &&
+                  items.filter(
+                    (item) =>
+                      item.category === filter.category &&
+                      item.status === filter.status
+                  ).length}
+                件符合{filter.category}+{filter.status}的物品
+              </p>
+            );
+          } else if (filter.category !== '') {
+            return (
+              <p>
+                共
+                {items &&
+                  items.filter((item) => item.category === filter.category)
+                    .length}
+                件符合{filter.category}的物品
+              </p>
+            );
+          } else if (filter.status !== '') {
+            return (
+              <p>
+                共
+                {items &&
+                  items.filter((item) => item.status === filter.status).length}
+                件符合{filter.status}的物品
+              </p>
+            );
+          }
+          return null;
+        })()}
+
       <Container>
         <FilterWrapper>
           <FilterTitle onClick={() => setItems(itemsRef.current)}>
@@ -195,7 +238,7 @@ export default function Inventory() {
               <TitleWrapper>
                 <SubTitle
                   key={category}
-                  onClick={() => setfilter({ ...filter, category })}
+                  onClick={() => setFilter({ ...filter, category })}
                   isSelected={filter.category === category}
                 >
                   {category}
@@ -212,7 +255,7 @@ export default function Inventory() {
               <TitleWrapper>
                 <SubTitle
                   key={status}
-                  onClick={() => setfilter({ ...filter, status })}
+                  onClick={() => setFilter({ ...filter, status })}
                   isSelected={filter.status === status}
                 >
                   {status}
@@ -224,15 +267,15 @@ export default function Inventory() {
             ))}
           </SubFilterWrapper>
         </FilterWrapper>
-        <ItemWrapper>
+        <ProductWrapper>
           {items &&
             items.map((item: any) => (
-              <Item to={`/inventory/${item.id}`}>
+              <Product to={`/inventory/${item.id}`}>
                 {item.images && <Image src={item.images[0]}></Image>}
                 <Name>{item.name}</Name>
-              </Item>
+              </Product>
             ))}
-        </ItemWrapper>
+        </ProductWrapper>
         {isPopout && <Popout selectedItem={selectedItem} />}
       </Container>
     </>
