@@ -35,11 +35,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
-// Firebase storage reference
 export const storage = getStorage(app);
-
-//Auth
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({
   prompt: 'select_account',
@@ -116,7 +112,7 @@ export async function uploadItems(userId, form) {
       created: serverTimestamp(),
       description,
       images,
-      isGifted: '',
+      // isGifted: '',
       processedDate: status === '已處理' ? serverTimestamp() : '',
     });
     console.log('Item uploaded with ID: ', docRef.id);
@@ -148,13 +144,10 @@ export async function getProcessedItems() {
     'items'
   );
   const itemsQuery = query(itemsRef, where('status', '==', '已處理'));
-  // const itemsQuery = query(itemsRef, where('status', '==', '保留'));
   const items = [];
 
   const querySnapshot = await getDocs(itemsQuery);
   querySnapshot.forEach((document) => {
-    // doc.data() is never undefined for query doc snapshots
-    // console.log(doc.id, ' => ', doc.data());
     items.push(document.data());
   });
   return items;

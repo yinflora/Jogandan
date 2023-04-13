@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useState, useContext } from 'react';
 import {
   storage,
@@ -144,10 +145,11 @@ const formInputs = [
 ];
 
 type EditProp = {
+  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
   isEdit: boolean;
 };
 
-export default function Upload({ isEdit }: EditProp) {
+export default function Upload({ isEdit, setIsEdit }: EditProp) {
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
 
@@ -166,7 +168,7 @@ export default function Upload({ isEdit }: EditProp) {
 
   useEffect(() => {
     async function getItem() {
-      const item = await getItemById(id);
+      const item = await getItemById(uid, id);
       const { images, name, category, status, description } = item[0];
       setImages(images);
       setForm({
@@ -180,6 +182,12 @@ export default function Upload({ isEdit }: EditProp) {
     if (isEdit && id) getItem();
   }, []);
 
+  // useEffect(() => {
+  //   if(!isEdit){
+
+  //   }
+  // },[isEdit]);
+
   function handleFileUpload(e, limit) {
     const files = e.target.files;
     if (files.length > limit) {
@@ -188,7 +196,7 @@ export default function Upload({ isEdit }: EditProp) {
       return false;
     }
 
-    const storageRef = ref(storage, '/q1khIAOnt2ewvY4SQw1z65roVPD2/images/');
+    const storageRef = ref(storage, `/${uid}/images/`);
     const urlList: string[] | [] = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -221,6 +229,23 @@ export default function Upload({ isEdit }: EditProp) {
     const list = [...imageList, ''];
     setImages(list);
     setForm({ ...form, images: list });
+  }
+
+  async function handleUploadItems() {
+    await uploadItems(uid, form);
+    setImages(Array(10).fill(''));
+    setForm({
+      name: '',
+      category: '',
+      status: '',
+      description: '',
+      images,
+    });
+  }
+
+  async function handleUpdateItems() {
+    await updateItem(uid, id, form);
+    setIsEdit(false);
   }
 
   return (
@@ -353,9 +378,7 @@ export default function Upload({ isEdit }: EditProp) {
               Object.values(form).includes('') ||
               !images.some((image) => image !== '')
             }
-            onClick={() =>
-              isEdit ? updateItem(uid, id, form) : uploadItems(uid, form)
-            }
+            onClick={() => (isEdit ? handleUpdateItems() : handleUploadItems())}
           />
         </form>
       </InfoWrapper>
