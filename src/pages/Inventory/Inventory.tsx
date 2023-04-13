@@ -92,18 +92,11 @@ export default function Inventory() {
     status: '',
   });
   const [isPopout, setIsPopout] = useState<boolean>(false);
+  const [selectedItem, setSelectedItem] = useState<[] | null>(null);
 
   const itemsRef = useRef<processedItem[] | null>(null);
-  const selectedItemRef = useRef<[] | null>(null);
 
   const { id } = useParams();
-
-  useEffect(() => {
-    async function fetchSelectedData() {
-      await getItemById(id);
-    }
-    fetchSelectedData();
-  }, [id]);
 
   useEffect(() => {
     async function fetchData() {
@@ -111,20 +104,21 @@ export default function Inventory() {
       itemsRef.current = itemList;
       setItems(itemList);
     }
-    fetchData();
 
     async function fetchSelectedData() {
       const item = await getItemById(id);
-      selectedItemRef.current = item;
+      setSelectedItem(item);
     }
 
     if (id) {
       fetchSelectedData();
       setIsPopout(true);
     } else {
+      fetchData();
+      setSelectedItem(null);
       setIsPopout(false);
     }
-  }, [id]);
+  }, [id, isPopout, selectedItem]);
 
   useEffect(() => {
     function handleFilter() {
@@ -235,12 +229,7 @@ export default function Inventory() {
               </Item>
             ))}
         </ItemWrapper>
-        {isPopout && (
-          <Popout
-            setIsPopout={setIsPopout}
-            selectedItem={selectedItemRef.current}
-          />
-        )}
+        {isPopout && <Popout selectedItem={selectedItem} />}
       </Container>
     </>
   );

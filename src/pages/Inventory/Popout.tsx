@@ -125,11 +125,11 @@ const FirstRow = styled.div`
 `;
 
 type PopoutProp = {
-  setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
+  // setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
   selectedItem: [] | null;
 };
 
-export default function Popout({ setIsPopout, selectedItem }: PopoutProp) {
+export default function Popout({ selectedItem }: PopoutProp) {
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
   function formatTime(time) {
