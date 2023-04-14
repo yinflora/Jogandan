@@ -100,7 +100,7 @@ function reducer(items, { type, payload }) {
 }
 
 export default function Profile() {
-  const { user } = useContext(AuthContext);
+  const { user, uid } = useContext(AuthContext);
 
   const [items, dispatch] = useReducer(reducer, []);
   const [period, setPeriod] = useState<object>({ start: '', end: '' });
@@ -113,7 +113,7 @@ export default function Profile() {
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getItems();
+      const data = await getItems(uid);
       itemRef.current = data;
       dispatch({ type: 'FETCH_DATA', payload: { data } });
 
@@ -131,7 +131,7 @@ export default function Profile() {
       setProcessedItems(qtyList);
     }
     fetchData();
-  }, []);
+  }, [uid]);
 
   console.log(processedItems);
 

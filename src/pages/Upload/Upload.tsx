@@ -412,13 +412,13 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                   <label key={input.key}>{input.label}</label>
                   <textarea
                     value={form[input.key]}
-                    onKeyDown={(e) =>
-                      e.key === 'Enter' &&
-                      setForm({ ...form, [input.key]: form[input.key] + '\n' })
-                    }
                     onChange={(e) =>
                       setForm({ ...form, [input.key]: e.target.value })
                     }
+                    // onKeyDown={(e) =>
+                    //   e.key === 'Enter' &&
+                    //   setForm({ ...form, [input.key]: form[input.key] + ' ' })
+                    // }
                   />
                 </div>
               );
@@ -435,6 +435,25 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               </div>
             );
           })}
+          <div>
+            <span>備註</span>
+            <div
+              style={{
+                width: '100px',
+                height: '100px',
+                border: '1px solid black',
+              }}
+              contentEditable="true"
+              onInput={(e) => {
+                const description = e.target.innerText.replace('\n', '<br/>');
+                setForm({
+                  ...form,
+                  description,
+                });
+              }}
+            />
+          </div>
+
           <input
             type="button"
             value={isEdit ? '更新物品' : '上傳物品'}
