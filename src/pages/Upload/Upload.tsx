@@ -67,17 +67,18 @@ const SubImageContainer = styled.div`
   flex-wrap: nowrap;
 `;
 
-const NextPage = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
-  width: 30px;
-  height: 100%;
-  background-color: #000;
-`;
+// const NextPage = styled.div`
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   z-index: 1;
+//   width: 30px;
+//   height: 100%;
+//   background-color: #000;
+// `;
 
 const SubImageWrapper = styled.div`
+  /* display: ${({ isVisible }) => (isVisible ? 'flex' : 'none')}; */
   width: calc((100% - 20px) / 3);
   position: relative;
   flex-shrink: 0;
@@ -263,10 +264,10 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     setIsEdit(false);
   }
 
-  function handleDragOver(e, index) {
+  function handleDragOverImg(e, index) {
     e.preventDefault();
     if (draggingIndex !== null && draggingIndex !== index) {
-      e.dataTransfer.dropEffect = 'move';
+      e.dataTransfer.dropEffect = 'copy';
     }
   }
 
@@ -289,13 +290,13 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     const rect = container.getBoundingClientRect();
     const containerLeft = rect.x - rect.width;
     const containerRight = rect.x + rect.width;
-    if (e.clientX > containerRight - 30) {
+    if (e.clientX > containerRight - 10) {
       container.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
         inline: 'end',
       });
-    } else if (e.clientX < containerLeft - 30) {
+    } else if (e.clientX < containerLeft - 10) {
       container.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
@@ -335,30 +336,16 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
           ref={containerRef}
           onDragOver={(e) => handleDragOver(e)}
         >
-          {/* <NextPage onDragEnter={(e) => console.log('onDragEnter')} /> */}
           {images.map((image, index) => (
             <SubImageWrapper
               key={index}
-              // onDragEnter={(e) => console.log('onDragEnter')}
-              // onDragLeave={(e) => console.log('onDragLeave')}
-              // onDragOver={(e) => {
-              //   e.preventDefault();
-              //   e.clientX && console.log('onDragOver');
-              // }}
-              // onDrop={(e) => console.log('onDrop')}
-              onDragOver={(e) => {
-                console.log('DragOver');
-                handleDragOver(e, index);
-              }}
-              onDrop={(e) => {
-                console.log('Drop');
-                handleDrop(e, index);
-              }}
+              onDragOver={(e) => handleDragOverImg(e, index)}
+              onDrop={(e) => handleDrop(e, index)}
+              // isVisible={image !== '' || index === images.indexOf('') + 1}
             >
               <div
                 draggable={images.some((image) => image !== '') ? true : false}
                 onDragStart={(e) => {
-                  console.log('onDragStart');
                   e.target.style.opacity = '0.01';
                   setDraggingIndex(index);
                 }}
@@ -425,6 +412,10 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                   <label key={input.key}>{input.label}</label>
                   <textarea
                     value={form[input.key]}
+                    onKeyDown={(e) =>
+                      e.key === 'Enter' &&
+                      setForm({ ...form, [input.key]: form[input.key] + '\n' })
+                    }
                     onChange={(e) =>
                       setForm({ ...form, [input.key]: e.target.value })
                     }
