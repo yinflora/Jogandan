@@ -1,5 +1,5 @@
-// import Canvas from '../../components/Canvas/Canvas';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
+import { fabric } from 'fabric';
 import styled from 'styled-components';
 import AuthContext from '../../context/authContext';
 import { storage } from '../../utils/firebase';
@@ -18,6 +18,7 @@ const BackgroundColor = styled.div`
   display: flex;
   width: 70%;
   aspect-ratio: 5/4;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #fbfbf9;
@@ -70,38 +71,34 @@ const VisionBoard = styled.div`
 `;
 
 const ImageBlock = styled.div<ComposeProp>`
-  background: ${({ url }) => `center / cover no-repeat url(${url})`};
+  background: ${({ url }) =>
+    url === '' ? '#FFF' : `center / cover no-repeat url(${url})`};
 `;
 
 const TopLeftBlock = styled(ImageBlock)`
   grid-area: topLeft;
-  /* background-color: red; */
-  /* background: ${({ url }) => `center / cover no-repeat url(${url})`}; */
 `;
 
 const TopRightBlock = styled(ImageBlock)`
   grid-area: topRight;
-  /* background-color: green; */
 `;
 
 const MiddleLeftBlock = styled(ImageBlock)`
   grid-area: middleLeft;
-  /* background-color: orange; */
 `;
 
 const MiddleRightLargeBlock = styled(ImageBlock)`
   grid-area: middleRightL;
-  /* background-color: blue; */
 `;
 
 const MiddleRightMediumBlock = styled.div`
   grid-area: middleRightM;
-  background-color: purple;
 `;
+
+const TextButton = styled.button``;
 
 const BottomLeftBlock = styled(ImageBlock)`
   grid-area: bottomLeft;
-  /* background-color: yellow; */
 `;
 
 const BottomRightBlock = styled.div`
@@ -124,6 +121,7 @@ type ComposeProp = {
 export default function Compose() {
   const { uid } = useContext(AuthContext);
 
+  const [textCanvas, setTextCanvas] = useState(null);
   const [images, setImages] = useState<string[] | null>(null);
   const [isUploaded, setIsUploaded] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
@@ -136,8 +134,27 @@ export default function Compose() {
     { position: 'bottomLeft', url: '' },
     { position: 'bottomRight', url: '' },
   ]);
+  const [textConfig, setTextConfig] = useState({
+    color: null,
+    fontSize: null,
+  });
 
+  const textContainerRef = useRef(null);
   const storageRef = ref(storage, `/${uid}/images/`);
+
+  const defaultColor = '#000';
+  const defaultFontSize = 16;
+
+  useEffect(() => {
+    if (textContainerRef.current) {
+      const canvas = new fabric.Canvas('textCanvas', {
+        width: textContainerRef.current.clientWidth,
+        height: textContainerRef.current.clientHeight,
+        backgroundColor: '#F3F9D2',
+      });
+      setTextCanvas(canvas);
+    }
+  }, [textContainerRef]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -154,6 +171,52 @@ export default function Compose() {
 
     fetchImages();
   }, [uid, isUploaded]);
+
+  useEffect(() => {
+    if (!textCanvas) return;
+    const activeObject = textCanvas.getActiveObject();
+
+    if (activeObject && activeObject.type === 'i-text') {
+      // Update its properties with the current textConfig values
+      activeObject.set({
+        fill: textConfig.color || defaultColor,
+        fontSize: textConfig.fontSize || defaultFontSize,
+      });
+      // Trigger canvas render and update state
+      textCanvas.renderAll();
+      setTextCanvas(textCanvas);
+    }
+  }, [textConfig]);
+
+  useEffect(() => {
+    if (!textCanvas) return;
+    const activeObject = textCanvas.getActiveObject();
+
+    if (activeObject && activeObject.type === 'i-text') {
+      // Update its properties with the current textConfig values
+      activeObject.set({
+        fill: textConfig.color || defaultColor,
+        fontSize: textConfig.fontSize || defaultFontSize,
+      });
+      // Trigger canvas render and update state
+      textCanvas.renderAll();
+      setTextCanvas(textCanvas);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!textCanvas) return;
+
+    function handleSave() {
+      console.log(textCanvas.toJSON());
+    }
+
+    const timeoutId = setTimeout(handleSave, 10000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [textCanvas]);
 
   function handleFileUpload(e) {
     const files = e.target.files;
@@ -177,31 +240,6 @@ export default function Compose() {
     return null;
   }
 
-  // function handleDrop(e, id) {
-  //   e.preventDefault();
-  //   const fileUrl = e.dataTransfer.getData('text');
-  //   const fileName = record[fileUrl];
-  //   const img = new Image();
-  //   img.src = fileUrl;
-  //   const canvas = document.getElementById(id) as HTMLCanvasElement;
-  //   const ctx = canvas.getContext('2d');
-  //   img.onload = function () {
-  //     ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-  //   };
-  // }
-
-  // function handleDrop(e: React.DragEvent<HTMLDivElement>, position: string) {
-  //   e.preventDefault();
-
-  //   if (draggingIndex !== null) {
-  //     console.log(`Dropped image at ${position}, index=${draggingIndex}`);
-
-  //     // TODO: 在 VisionBoard 上显示被拖动的图像
-
-  //     setDraggingIndex(null);
-  //   }
-  // }
-
   function handleDrop(e: React.DragEvent<HTMLDivElement>, position: string) {
     e.preventDefault();
 
@@ -217,7 +255,18 @@ export default function Compose() {
     }
   }
 
-  // return <Canvas />;
+  function addText() {
+    const text = new fabric.IText('請輸入文字', {
+      top: 10,
+      left: 10,
+      fill: textConfig.color || defaultColor,
+      fontSize: textConfig.fontSize || defaultFontSize,
+    });
+    textCanvas.add(text).setActiveObject(text);
+
+    console.log(textCanvas.getActiveObject());
+  }
+
   return (
     <Container>
       <ImageToolBar>
@@ -244,6 +293,31 @@ export default function Compose() {
         </ImageWrapper>
       </ImageToolBar>
       <BackgroundColor>
+        <div>
+          <label>Text color:</label>
+          <input
+            type="color"
+            defaultValue="#000"
+            value={textConfig.color}
+            onChange={(e) =>
+              setTextConfig({ ...textConfig, color: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <label>Font size:</label>
+          <input
+            type="range"
+            min="10"
+            max="40"
+            defaultValue="16"
+            value={textConfig.fontSize}
+            onChange={(e) =>
+              setTextConfig({ ...textConfig, fontSize: Number(e.target.value) })
+            }
+          />
+        </div>
+        <TextButton onClick={addText}>T</TextButton>
         <VisionBoard>
           <TopLeftBlock
             url={data[0].url}
@@ -265,7 +339,9 @@ export default function Compose() {
             onDrop={(e) => handleDrop(e, 'middleRightL')}
             onDragOver={(e) => e.preventDefault()}
           />
-          <MiddleRightMediumBlock></MiddleRightMediumBlock>
+          <MiddleRightMediumBlock ref={textContainerRef}>
+            <canvas id="textCanvas" />
+          </MiddleRightMediumBlock>
           <BottomLeftBlock
             url={data[5].url}
             onDrop={(e) => handleDrop(e, 'bottomLeft')}
