@@ -12,7 +12,6 @@ import {
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
 `;
 
 const BackgroundColor = styled.div`
@@ -26,23 +25,23 @@ const BackgroundColor = styled.div`
 
 const ImageUpload = styled.input``;
 
-const ImagesBlock = styled.div`
+const ImageToolBar = styled.div`
   width: 30%;
-  /* height: 100vh; */
   background-color: #343434;
+  overflow-y: scroll;
 `;
 
 const ImageWrapper = styled.div`
-  /* width: 100%;
-  height: 100%; */
   display: flex;
+  height: 100%;
+  max-height: 500px;
   flex-wrap: wrap;
-  /* overflow-y: scroll; */
+  overflow-y: scroll;
+  gap: 10px;
 `;
 
 const Image = styled.img`
-  width: 100px;
-  /* height: auto; */
+  height: 100px;
 `;
 
 const VisionBoard = styled.div`
@@ -70,34 +69,39 @@ const VisionBoard = styled.div`
   background-color: #000;
 `;
 
-const TopLeftBlock = styled.div`
+const ImageBlock = styled.div<ComposeProp>`
+  background: ${({ url }) => `center / cover no-repeat url(${url})`};
+`;
+
+const TopLeftBlock = styled(ImageBlock)`
   grid-area: topLeft;
-  background-color: red;
+  /* background-color: red; */
+  /* background: ${({ url }) => `center / cover no-repeat url(${url})`}; */
 `;
 
-const MiddleLeftBlock = styled.div`
-  grid-area: middleLeft;
-  background-color: orange;
-`;
-
-const BottomLeftBlock = styled.div`
-  grid-area: bottomLeft;
-  background-color: yellow;
-`;
-
-const TopRightBlock = styled.div`
+const TopRightBlock = styled(ImageBlock)`
   grid-area: topRight;
-  background-color: green;
+  /* background-color: green; */
 `;
 
-const MiddleRightLargeBlock = styled.div`
+const MiddleLeftBlock = styled(ImageBlock)`
+  grid-area: middleLeft;
+  /* background-color: orange; */
+`;
+
+const MiddleRightLargeBlock = styled(ImageBlock)`
   grid-area: middleRightL;
-  background-color: blue;
+  /* background-color: blue; */
 `;
 
 const MiddleRightMediumBlock = styled.div`
   grid-area: middleRightM;
   background-color: purple;
+`;
+
+const BottomLeftBlock = styled(ImageBlock)`
+  grid-area: bottomLeft;
+  /* background-color: yellow; */
 `;
 
 const BottomRightBlock = styled.div`
@@ -113,11 +117,26 @@ const ColorBlock = styled.div`
   background-color: #fff;
 `;
 
+type ComposeProp = {
+  url: string;
+};
+
 export default function Compose() {
   const { uid } = useContext(AuthContext);
 
-  const [isUploaded, setIsUploaded] = useState(false);
   const [images, setImages] = useState<string[] | null>(null);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [data, setData] = useState([
+    { position: 'topLeft', url: '' },
+    { position: 'topRight', url: '' },
+    { position: 'middleLeft', url: '' },
+    { position: 'middleRightL', url: '' },
+    { position: 'middleRightM', url: '' },
+    { position: 'bottomLeft', url: '' },
+    { position: 'bottomRight', url: '' },
+  ]);
+
   const storageRef = ref(storage, `/${uid}/images/`);
 
   useEffect(() => {
@@ -149,8 +168,7 @@ export default function Compose() {
         null,
         (err) => console.log(err),
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            console.log(url);
+          getDownloadURL(uploadTask.snapshot.ref).then(() => {
             setIsUploaded(!isUploaded);
           });
         }
@@ -159,30 +177,100 @@ export default function Compose() {
     return null;
   }
 
+  // function handleDrop(e, id) {
+  //   e.preventDefault();
+  //   const fileUrl = e.dataTransfer.getData('text');
+  //   const fileName = record[fileUrl];
+  //   const img = new Image();
+  //   img.src = fileUrl;
+  //   const canvas = document.getElementById(id) as HTMLCanvasElement;
+  //   const ctx = canvas.getContext('2d');
+  //   img.onload = function () {
+  //     ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+  //   };
+  // }
+
+  // function handleDrop(e: React.DragEvent<HTMLDivElement>, position: string) {
+  //   e.preventDefault();
+
+  //   if (draggingIndex !== null) {
+  //     console.log(`Dropped image at ${position}, index=${draggingIndex}`);
+
+  //     // TODO: 在 VisionBoard 上显示被拖动的图像
+
+  //     setDraggingIndex(null);
+  //   }
+  // }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>, position: string) {
+    e.preventDefault();
+
+    if (draggingIndex !== null) {
+      const imageUrl = images && images[draggingIndex];
+      const newData = [...data];
+      newData.find((item) => item.position === position)!.url = imageUrl!;
+      setData(newData);
+      setDraggingIndex(null);
+      console.log(
+        `Dropped image at ${position}, index=${draggingIndex}, url=${imageUrl}`
+      );
+    }
+  }
+
   // return <Canvas />;
   return (
     <Container>
-      <ImagesBlock>
+      <ImageToolBar>
         <ImageUpload
           type="file"
           accept="image/*"
           onChange={(e) => handleFileUpload(e)}
           multiple
         />
-        <button></button>
         <ImageWrapper>
           {images &&
-            images.map((item, index) => <Image key={index} src={item} />)}
+            images.map((item, index) => (
+              <Image
+                key={index}
+                src={item}
+                draggable
+                onDragStart={() => {
+                  console.log(index);
+                  setDraggingIndex(index);
+                }}
+                onDragEnd={() => setDraggingIndex(null)}
+              />
+            ))}
         </ImageWrapper>
-      </ImagesBlock>
+      </ImageToolBar>
       <BackgroundColor>
         <VisionBoard>
-          <TopLeftBlock></TopLeftBlock>
-          <TopRightBlock></TopRightBlock>
-          <MiddleLeftBlock></MiddleLeftBlock>
-          <MiddleRightLargeBlock></MiddleRightLargeBlock>
+          <TopLeftBlock
+            url={data[0].url}
+            onDrop={(e) => handleDrop(e, 'topLeft')}
+            onDragOver={(e) => e.preventDefault()}
+          />
+          <TopRightBlock
+            url={data[1].url}
+            onDrop={(e) => handleDrop(e, 'topRight')}
+            onDragOver={(e) => e.preventDefault()}
+          />
+          <MiddleLeftBlock
+            url={data[2].url}
+            onDrop={(e) => handleDrop(e, 'middleLeft')}
+            onDragOver={(e) => e.preventDefault()}
+          />
+          <MiddleRightLargeBlock
+            url={data[3].url}
+            onDrop={(e) => handleDrop(e, 'middleRightL')}
+            onDragOver={(e) => e.preventDefault()}
+          />
           <MiddleRightMediumBlock></MiddleRightMediumBlock>
-          <BottomLeftBlock></BottomLeftBlock>
+          <BottomLeftBlock
+            url={data[5].url}
+            onDrop={(e) => handleDrop(e, 'bottomLeft')}
+            onDragOver={(e) => e.preventDefault()}
+          />
           <BottomRightBlock>
             <ColorBlock></ColorBlock>
             <ColorBlock></ColorBlock>
