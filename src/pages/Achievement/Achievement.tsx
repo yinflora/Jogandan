@@ -1,32 +1,111 @@
-import React, { useEffect, useRef } from 'react';
-import locomotiveScroll from 'locomotive-scroll';
+import { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getProcessedItems } from '../../utils/firebase';
+import styled from 'styled-components';
+import AuthContext from '../../context/authContext';
 
-// import './locomotive-scroll.css';
+const Title = styled.h1`
+  font-size: 4rem;
+`;
 
-export default function Achievement() {
-  const scrollRef = useRef(null);
+const Image = styled.img`
+  height: 100px;
+`;
 
+function Achievement() {
+  const { uid } = useContext(AuthContext);
+  // const [galleryMode, setGalleryMode] = useState<boolean>(true);
+  const [items, setItems] = useState<Array<any> | null>(null);
+  // const [years, setYears] = useState<[] | null>(null);
+  // const [selectedYear, setSelectedYear] = useState<number>(() =>
+  //   new Date().getFullYear()
+  // );
+  // const [filteredItems, setFilteredItems] = useState<[]>([]);
+
+  console.log(items);
   useEffect(() => {
-    const scroll = new locomotiveScroll({
-      el: document.querySelector('.container'),
-      smooth: true,
-    });
-  }, []);
+    if (!uid) return;
+    async function fetchData() {
+      const processedItems = await getProcessedItems(uid);
+      const sortedItems = processedItems.sort(
+        (a, b) => a.processedDate.seconds - b.processedDate.seconds
+      );
+      setItems(sortedItems);
 
-  return (
-    <div id="container" data-scroll-container>
-      <div data-scroll-section>
-        <h1 data-scroll>Hey</h1>
-        <p data-scroll>👋</p>
-      </div>
-      <div data-scroll-section>
-        <h2 data-scroll data-scroll-speed="1">
-          What's up?
-        </h2>
-        <p data-scroll data-scroll-speed="2">
-          😬
-        </p>
-      </div>
-    </div>
-  );
+      // const yearsList = Array.from(
+      //   new Set(
+      //     processedItems.map((item) =>
+      //       new Date(item.processedDate.seconds * 1000).getFullYear()
+      //     )
+      //   )
+      // );
+      // setYears(yearsList);
+    }
+    fetchData();
+  }, [uid]);
+
+  // useEffect(() => {
+  //   if (!items) return;
+
+  //   const selectedItems = items.filter(
+  //     (item) =>
+  //       new Date(item.processedDate.seconds * 1000).getFullYear() ===
+  //       selectedYear
+  //   );
+
+  //   const itemsByMonth = [];
+  //   for (let i = 0; i < 12; i++) {
+  //     const filteredItemsByMonth = selectedItems.filter(
+  //       (item) => new Date(item.processedDate.seconds * 1000).getMonth() === i
+  //     ).length;
+  //     itemsByMonth.push(filteredItemsByMonth);
+  //   }
+  //   // console.log(itemsByMonth);
+
+  //   setFilteredItems(itemsByMonth);
+  // }, [items, selectedYear]);
+
+  // if (items && years) {
+  if (items) {
+    return (
+      <>
+        <Title>Achievement</Title>
+        {/* <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(Number(e.target.value))}
+        >
+          {years.map((year) => (
+            <option key={year} value={year} selected={year === selectedYear}>
+              {year}
+            </option>
+          ))}
+        </select>
+        <button onClick={() => setGalleryMode(true)}>Gallery</button>
+        <button onClick={() => setGalleryMode(false)}>Report</button>
+        {galleryMode ? (
+          <Gallery items={items} />
+        ) : (
+          <Report filteredItems={filteredItems} />
+        )}
+        <Level
+          percent={
+            items.filter((item) => item.status === '已處理').length / 100
+          }
+        /> */}
+        {items &&
+          items.map((item) =>
+            item.images.map(
+              (image: string, index: number) =>
+                image !== '' && (
+                  <Link to={`/inventory/${item.id}`}>
+                    <Image key={index} src={image} />
+                  </Link>
+                )
+            )
+          )}
+      </>
+    );
+  }
 }
+
+export default Achievement;

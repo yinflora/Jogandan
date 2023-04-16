@@ -136,11 +136,12 @@ export async function uploadItems(userId, form) {
   }
 }
 
-export async function getProcessedItems() {
+export async function getProcessedItems(userId) {
   const itemsRef = collection(
     db,
     'users',
-    'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    // 'q1khIAOnt2ewvY4SQw1z65roVPD2',
+    userId,
     'items'
   );
   const itemsQuery = query(itemsRef, where('status', '==', '已處理'));
