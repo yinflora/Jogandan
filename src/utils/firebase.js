@@ -318,19 +318,19 @@ export async function updateShapes(id, shapeRef) {
   return null;
 }
 
-export async function getBoard(id) {
-  const boardDocRef = doc(
-    db,
-    'users',
-    'q1khIAOnt2ewvY4SQw1z65roVPD2',
-    'visionBoards',
-    id
-  );
+// export async function getBoard(id) {
+//   const boardDocRef = doc(
+//     db,
+//     'users',
+//     'q1khIAOnt2ewvY4SQw1z65roVPD2',
+//     'visionBoards',
+//     id
+//   );
 
-  const boardSnapshot = await getDoc(boardDocRef);
-  const boardData = boardSnapshot.data();
-  return boardData;
-}
+//   const boardSnapshot = await getDoc(boardDocRef);
+//   const boardData = boardSnapshot.data();
+//   return boardData;
+// }
 
 export async function deleteSelectedShapes(id, shapeRef) {
   try {
@@ -397,3 +397,45 @@ export async function getTemplate() {
 
   return docSnap.data();
 }
+
+export async function getBoard(userId, boardId) {
+  const templatesRef = doc(db, 'users', userId, 'visionBoards', boardId);
+  const docSnap = await getDoc(templatesRef);
+
+  // console.log(docSnap.data());
+
+  return docSnap.data();
+}
+
+export async function setNewBoard(userId, boardData) {
+  try {
+    const userCollectionRef = collection(db, 'users', userId, 'visionBoards');
+
+    const docRef = await addDoc(userCollectionRef, {
+      data: boardData,
+      lastUpdated: serverTimestamp(),
+    });
+
+    return docRef.id;
+  } catch (e) {
+    console.error('Error uploading article: ', e);
+  }
+  return null;
+}
+
+export async function saveBoard(userId, boardId, boardData, boardURL) {
+  try {
+    const boardDocRef = doc(db, 'users', userId, 'visionBoards', boardId);
+    await updateDoc(boardDocRef, {
+      data: boardData,
+      lastUpdated: serverTimestamp(),
+      url: boardURL,
+    });
+
+    alert('已成功儲存！');
+  } catch (e) {
+    console.error('Error uploading items: ', e);
+  }
+}
+
+// export async function getBoard() {}
