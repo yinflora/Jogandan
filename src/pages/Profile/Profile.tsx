@@ -1,15 +1,11 @@
 import { useContext, useEffect, useState, useRef, useReducer } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { getItems } from '../../utils/firebase';
-// import { Navigate } from 'react-router-dom';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
+import { Timestamp } from 'firebase/firestore';
 
 import styled from 'styled-components';
-
-// const Title = styled.h1`
-//   font-size: 4rem;
-// `;
 
 const Wrapper = styled.div`
   display: flex;
@@ -29,14 +25,6 @@ const InformationWrapper = styled.div`
   gap: 10px;
 `;
 
-// const Label = styled.span`
-//   width: 50px;
-// `;
-
-// const Information = styled.span`
-//   border: 1px solid #000;
-// `;
-
 const Name = styled.p`
   font-size: 2rem;
 `;
@@ -51,11 +39,11 @@ const Label = styled.label`
 
 const DateInput = styled.input``;
 
-const VisionBoard = styled.div`
-  width: 70vw;
-  height: 60vh;
-  background-color: gray;
-`;
+// const VisionBoard = styled.div`
+//   width: 70vw;
+//   height: 60vh;
+//   background-color: gray;
+// `;
 
 const QtyWrapper = styled.div``;
 
@@ -82,34 +70,73 @@ const CATEGORIES: Row = [
   '其他',
 ];
 
-function reducer(items, { type, payload }) {
+type Action =
+  | { type: 'FETCH_DATA'; payload: { data: Items } }
+  | {
+      type: 'FILTER_PERIOD';
+      payload: {
+        items: Items | null;
+        periodStart: number;
+        periodEnd: number;
+      };
+    };
+
+function reducer(items: Items, action: Action): Items {
+  const { type, payload } = action;
   switch (type) {
     case 'FETCH_DATA': {
       return payload.data;
     }
     case 'FILTER_PERIOD':
-      return payload.items.filter((item) => {
-        const createdTime = new Date(
-          item.created.seconds * 1000 + item.created.nanoseconds / 1000000
-        ).getTime();
-        return (
-          createdTime >= payload.periodStart && createdTime <= payload.periodEnd
-        );
-      });
+      return (
+        payload.items?.filter((item: Item) => {
+          const createdTime = new Date(
+            item.created.seconds * 1000 + item.created.nanoseconds / 1000000
+          ).getTime();
+          return (
+            createdTime >= payload.periodStart &&
+            createdTime <= payload.periodEnd
+          );
+        }) ?? []
+      );
+    default: {
+      throw Error('err');
+    }
   }
 }
+
+type Item = {
+  id: string;
+  name: string;
+  status: string;
+  category: string;
+  created: Timestamp;
+  processedDate: string;
+  description: string;
+  images: string[];
+};
+
+type Items = Item[];
+
+type Period = {
+  start: string;
+  end: string;
+};
+
+// type ReportItems = number[] | [];
 
 export default function Profile() {
   const { user, uid } = useContext(AuthContext);
 
   const [items, dispatch] = useReducer(reducer, []);
-  const [period, setPeriod] = useState<object>({ start: '', end: '' });
+  const [period, setPeriod] = useState<Period>({ start: '', end: '' });
   // const [items, setItems] = useState<[] | null>(null);
   const [processedItems, setProcessedItems] = useState<[]>([]);
+  // const [existingItems, setExistingItems] = useState<[]>([]);
 
-  const itemRef = useRef<[] | null>(null);
+  const itemRef = useRef<Items | null>(null);
 
-  console.log('items', items);
+  // console.log('items', items);
 
   useEffect(() => {
     async function fetchData() {
@@ -117,7 +144,7 @@ export default function Profile() {
       itemRef.current = data;
       dispatch({ type: 'FETCH_DATA', payload: { data } });
 
-      const filteredItems = data.filter((item) => item.status === '已處理');
+      const filteredItems = data.filter((item) => item.status !== '已處理');
 
       const qtyList = filteredItems.reduce((acc, item) => {
         const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
@@ -133,18 +160,6 @@ export default function Profile() {
     fetchData();
   }, [uid]);
 
-  console.log(processedItems);
-
-  // useEffect(() => {
-  //   async function fetchItems() {
-  //     const itemList = await getItems();
-  //     itemRef.current = itemList;
-  //     setItems(itemList);
-  //     console.log(itemList);
-  //   }
-  //   fetchItems();
-  // }, []);
-
   useEffect(() => {
     function countItems() {
       const hasPeriod: boolean = Object.values(period).every(
@@ -158,28 +173,17 @@ export default function Profile() {
           type: 'FILTER_PERIOD',
           payload: { items: itemRef.current, periodStart, periodEnd },
         });
-
-        // const filteredItems = itemRef.current.filter((item) => {
-        //   const createdTime = new Date(
-        //     item.created.seconds * 1000 + item.created.nanoseconds / 1000000
-        //   ).getTime();
-        //   const periodStart = new Date(
-        //     period.start + 'T00:00:00.000Z'
-        //   ).getTime();
-        //   const periodEnd = new Date(period.end + 'T23:59:59.999Z').getTime();
-        //   return createdTime >= periodStart && createdTime <= periodEnd;
-        // });
-        // console.log(filteredItems);
-        // setItems(filteredItems);
       }
     }
     countItems();
   }, [period]);
 
   useEffect(() => {
-    const filteredItems = items.filter((item) => item.status === '已處理');
+    const filteredItems = items.filter(
+      (item: Item) => item.status !== '已處理'
+    );
 
-    const qtyList = filteredItems.reduce((acc, item) => {
+    const qtyList = filteredItems.reduce((acc: any, item: Item) => {
       const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
       if (index !== -1) {
         // 如果分類存在
@@ -192,17 +196,19 @@ export default function Profile() {
   }, [items]);
 
   function handleLevel() {
-    const processedItems = itemRef.current?.filter(
+    const disposedItems: number | undefined = itemRef.current?.filter(
       (item) => item.status === '已處理'
     ).length;
     // const processedItems = 55;
 
-    if (processedItems >= 100) {
-      return 'Master';
-    } else if (processedItems < 100 && processedItems >= 50) {
-      return 'Veteran';
-    } else if (processedItems < 50 && processedItems >= 10) {
-      return 'Seasoned';
+    if (disposedItems) {
+      if (disposedItems >= 100) {
+        return 'Master';
+      } else if (disposedItems < 100 && disposedItems >= 50) {
+        return 'Veteran';
+      } else if (disposedItems < 50 && disposedItems >= 10) {
+        return 'Seasoned';
+      }
     }
     return 'Rookie';
   }
@@ -211,7 +217,7 @@ export default function Profile() {
     <>
       {/* <Title>Profile</Title> */}
       <Wrapper>
-        <Image src={user.photoURL} />
+        <Image src={user.photoURL as string} />
         <InformationWrapper>
           <Name>{user.displayName}</Name>
           <Grade>{items && handleLevel()}</Grade>
@@ -254,13 +260,6 @@ export default function Profile() {
             : 0
         }
       />
-      {/* <button
-        onClick={() =>
-          dispatch({ type: 'choose_one', payload: { month: 2023 } })
-        }
-      >
-        test
-      </button> */}
       <Report processedItems={processedItems} />
     </>
   );
