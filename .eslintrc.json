@@ -14,14 +14,14 @@
     "consistent-return": "error",
     "dot-notation": "error",
     "eqeqeq": "error",
-    "no-console": "warn",
+    "no-console": "warn", //!改過
     "no-else-return": "error",
-    "no-empty-function": "error",
+    "no-empty-function": "warn",
     "no-lonely-if": "error",
     "no-multi-assign": "error",
     "no-negated-condition": "error",
     "no-nested-ternary": "error",
-    "no-shadow": 1,
+    "no-shadow": "warn", //!改過
     "no-undef": "error",
     "no-useless-return": "error",
     "no-var": "error",

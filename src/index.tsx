@@ -21,7 +21,17 @@ root.render(
         <Route index element={<Home />} />
         {/* <Route path="login" element={<Login />} /> */}
         <Route path="profile" element={<Profile />} />
-        <Route path="upload" element={<Upload />} />
+        <Route
+          path="upload"
+          element={
+            <Upload
+              setIsEdit={function (): void {
+                throw new Error('Function not implemented.');
+              }}
+              isEdit={false}
+            />
+          }
+        />
         <Route path="inventory" element={<Inventory />}>
           <Route path=":id" element={<Inventory />} />
         </Route>
