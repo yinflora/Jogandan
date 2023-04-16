@@ -11,7 +11,7 @@
   "extends": ["eslint:recommended"],
   "rules": {
     "camelcase": "error",
-    "consistent-return": "error",
+    "consistent-return": "warn",
     "dot-notation": "error",
     "eqeqeq": "error",
     "no-console": "warn", //!改過
