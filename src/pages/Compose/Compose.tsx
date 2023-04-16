@@ -9,9 +9,16 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from 'firebase/storage';
+import userEvent from '@testing-library/user-event';
 
 const Container = styled.div`
   display: flex;
+  flex-wrap: wrap;
+`;
+
+const ToolWrapper = styled.div`
+  display: flex;
+  width: 100%;
 `;
 
 const BackgroundColor = styled.div`
@@ -70,6 +77,12 @@ const VisionBoard = styled.div`
   background-color: #000;
 `;
 
+const VisionBoard2 = styled.div`
+  width: 70%;
+  aspect-ratio: 5/4;
+  background-color: #000;
+`;
+
 const ImageBlock = styled.div<ComposeProp>`
   background: ${({ url }) =>
     url === '' ? '#FFF' : `center / cover no-repeat url(${url})`};
@@ -121,10 +134,21 @@ type ComposeProp = {
 export default function Compose() {
   const { uid } = useContext(AuthContext);
 
-  const [textCanvas, setTextCanvas] = useState(null);
   const [images, setImages] = useState<string[] | null>(null);
   const [isUploaded, setIsUploaded] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+
+  const [savedRecord, setSavedRecord] = useState(null);
+  const [visionBoard, setVisionBoard] = useState(null);
+  const [bgColor, setBgColor] = useState('#fbfbf9');
+  const [textConfig, setTextConfig] = useState({
+    color: '#000',
+    fontSize: 16,
+  });
+  const [undo, setUndo] = useState([]);
+  const [redo, setRedo] = useState([]);
+
+  const [textCanvas, setTextCanvas] = useState(null);
   const [data, setData] = useState([
     { position: 'topLeft', url: '' },
     { position: 'topRight', url: '' },
@@ -134,27 +158,24 @@ export default function Compose() {
     { position: 'bottomLeft', url: '' },
     { position: 'bottomRight', url: '' },
   ]);
-  const [textConfig, setTextConfig] = useState({
-    color: null,
-    fontSize: null,
-  });
 
+  const canvasRef = useRef(null);
   const textContainerRef = useRef(null);
   const storageRef = ref(storage, `/${uid}/images/`);
 
   const defaultColor = '#000';
   const defaultFontSize = 16;
 
-  useEffect(() => {
-    if (textContainerRef.current) {
-      const canvas = new fabric.Canvas('textCanvas', {
-        width: textContainerRef.current.clientWidth,
-        height: textContainerRef.current.clientHeight,
-        backgroundColor: '#F3F9D2',
-      });
-      setTextCanvas(canvas);
-    }
-  }, [textContainerRef]);
+  // useEffect(() => {
+  //   if (textContainerRef.current) {
+  //     const canvas = new fabric.Canvas('textCanvas', {
+  //       width: textContainerRef.current.clientWidth,
+  //       height: textContainerRef.current.clientHeight,
+  //       backgroundColor: '#F3F9D2',
+  //     });
+  //     setTextCanvas(canvas);
+  //   }
+  // }, [textContainerRef]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -173,50 +194,221 @@ export default function Compose() {
   }, [uid, isUploaded]);
 
   useEffect(() => {
-    if (!textCanvas) return;
-    const activeObject = textCanvas.getActiveObject();
+    if (canvasRef.current) {
+      const canvas = new fabric.Canvas('canvas', {
+        width: canvasRef.current.clientWidth,
+        height: canvasRef.current.clientHeight,
+        backgroundColor: bgColor,
+      });
+
+      const clipPathTop = new fabric.Rect({
+        width: 240,
+        height: 240,
+        left: 255,
+        top: 5,
+        stroke: 'red',
+        strokeWidth: 1,
+        strokeDashArray: [5, 5],
+        fill: 'rgba(255,255,255,0.2)',
+        selectable: false,
+        isClipFrame: true,
+      });
+
+      const clipPathBottom = new fabric.Rect({
+        width: 240,
+        height: 240,
+        left: 5,
+        top: 5,
+        stroke: 'red',
+        strokeWidth: 1,
+        strokeDashArray: [5, 5],
+        fill: 'rgba(255,255,255,0.2)',
+        selectable: false,
+        isClipFrame: true,
+      });
+
+      canvas.add(clipPathTop);
+      canvas.add(clipPathBottom);
+
+      setVisionBoard(canvas);
+      setSavedRecord(canvas.toJSON());
+
+      //   canvas.on('drop', (e) => {
+      //     const rect = canvas.getBoundingClientRect();
+      //     const x = e.clientX - rect.left,
+      //    const y =  e.clientY - rect.top,
+      //     const movingImage = images[draggingIndex];
+      //    const image = new fabric.Image.fromURL(movingImage, {
+      //     width: movingImage.naturalWidth,
+      // height: movingImage.naturalHeight,
+      // scaleX: 100 / movingImage.naturalWidth,
+      // scaleY: 100 / movingImage.naturalHeight,
+      // top: y - e.clientY - e.target.offsetTop, // 計算起始位置
+      // left: x - e.clientX - e.target.offsetLeft
+      //    })
+      //   });
+    }
+  }, [canvasRef]);
+
+  useEffect(() => {
+    // if (!visionBoard || draggingIndex === null || images === null) return;
+    if (!visionBoard || draggingIndex === null || images === null) return;
+
+    function dropImage(e) {
+      console.log(e.target);
+
+      const target = e.target;
+      let clipPath;
+
+      if (!target.isClipFrame) return;
+      // 設定匯入圖塊
+      target.clone((cloned) => (clipPath = cloned));
+      clipPath.absolutePositioned = true;
+
+      const movingImage = images[draggingIndex];
+      console.log(movingImage);
+
+      // const image = new fabric.Image.fromURL(movingImage, {
+      //   width: movingImage.naturalWidth,
+      //   height: movingImage.naturalHeight,
+      //   left: target.left,
+      //   top: target.top,
+      //   clipPath,
+      // });
+
+      // console.log(image);
+      // // 判斷長寬是否為滿版來做調整並鎖定 X Y
+      // image.scaleToWidth(target.width);
+      // const isFullHeight = image.getScaledHeight() < target.height;
+      // if (isFullHeight) image.scaleToHeight(target.height);
+      // image.lockMovementY = isFullHeight;
+      // image.lockMovementX = !isFullHeight;
+
+      // image.clipPath = clipPath;
+
+      // const image = new fabric.Image(movingImage, {
+      //   width: movingImage.naturalWidth,
+      //   height: movingImage.naturalHeight,
+      //   left: target.left,
+      //   top: target.top,
+      //   clipPath,
+      // });
+      // // 判斷長寬是否為滿版來做調整並鎖定 X Y
+      // image.scaleToWidth(target.getScaledWidth());
+      // const isFullHeight = image.getScaledHeight() < target.height;
+      // if (isFullHeight) image.scaleToHeight(target.getScaledHeight());
+      // image.lockMovementY = isFullHeight;
+      // image.lockMovementX = !isFullHeight;
+
+      // image.clipPath = clipPath;
+      // visionBoard.add(image);
+
+      fabric.Image.fromURL(movingImage, (img) => {
+        const image = img.set({
+          // width: img.naturalWidth,
+          // height: img.naturalHeight,
+          left: target.left,
+          top: target.top,
+          clipPath,
+        });
+
+        image.scaleToWidth(target.getScaledWidth());
+        const isFullHeight = image.getScaledHeight() < target.height;
+        if (isFullHeight) image.scaleToHeight(target.getScaledHeight());
+        image.lockMovementY = isFullHeight;
+        image.lockMovementX = !isFullHeight;
+
+        image.clipPath = clipPath;
+
+        visionBoard.add(image); // 記得還是要加進 canvas 才會顯示出來呦
+
+        console.log(image.width, image.height);
+      });
+
+      console.log(visionBoard.toJSON());
+    }
+
+    visionBoard.on('drop', dropImage);
+
+    // return () => {visionBoard.off('drop')}
+  }, [visionBoard, draggingIndex]);
+
+  // useEffect(() => {
+  //   if (!visionBoard) return;
+
+  //   visionBoard.on('object:modified', () => {
+  //     setUndo([...undo, savedRecord]);
+  //   });
+  // }, [visionBoard]);
+
+  //換背景顏色
+  useEffect(() => {
+    if (visionBoard) {
+      visionBoard.setBackgroundColor(bgColor, () => {
+        visionBoard.renderAll();
+      });
+    }
+  }, [visionBoard, bgColor]);
+
+  useEffect(() => {
+    if (!visionBoard) return;
+    const activeObject = visionBoard.getActiveObject();
 
     if (activeObject && activeObject.type === 'i-text') {
-      // Update its properties with the current textConfig values
       activeObject.set({
-        fill: textConfig.color || defaultColor,
-        fontSize: textConfig.fontSize || defaultFontSize,
+        fill: textConfig.color,
+        fontSize: textConfig.fontSize,
       });
-      // Trigger canvas render and update state
-      textCanvas.renderAll();
-      setTextCanvas(textCanvas);
+      visionBoard.renderAll();
+      // setTextCanvas(textCanvas);
     }
   }, [textConfig]);
 
-  useEffect(() => {
-    if (!textCanvas) return;
-    const activeObject = textCanvas.getActiveObject();
+  // useEffect(() => {
+  //   if (!textCanvas) return;
+  //   const activeObject = textCanvas.getActiveObject();
 
-    if (activeObject && activeObject.type === 'i-text') {
-      // Update its properties with the current textConfig values
-      activeObject.set({
-        fill: textConfig.color || defaultColor,
-        fontSize: textConfig.fontSize || defaultFontSize,
-      });
-      // Trigger canvas render and update state
-      textCanvas.renderAll();
-      setTextCanvas(textCanvas);
-    }
-  }, []);
+  //   if (activeObject && activeObject.type === 'i-text') {
+  //     // Update its properties with the current textConfig values
+  //     activeObject.set({
+  //       fill: textConfig.color || defaultColor,
+  //       fontSize: textConfig.fontSize || defaultFontSize,
+  //     });
+  //     // Trigger canvas render and update state
+  //     textCanvas.renderAll();
+  //     setTextCanvas(textCanvas);
+  //   }
+  // }, [textConfig]);
 
-  useEffect(() => {
-    if (!textCanvas) return;
+  // useEffect(() => {
+  //   if (!textCanvas) return;
+  //   const activeObject = textCanvas.getActiveObject();
 
-    function handleSave() {
-      console.log(textCanvas.toJSON());
-    }
+  //   if (activeObject && activeObject.type === 'i-text') {
+  //     // Update its properties with the current textConfig values
+  //     activeObject.set({
+  //       fill: textConfig.color || defaultColor,
+  //       fontSize: textConfig.fontSize || defaultFontSize,
+  //     });
+  //     // Trigger canvas render and update state
+  //     textCanvas.renderAll();
+  //     setTextCanvas(textCanvas);
+  //   }
+  // }, []);
 
-    const timeoutId = setTimeout(handleSave, 10000);
+  // useEffect(() => {
+  //   if (!textCanvas) return;
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [textCanvas]);
+  //   function handleSave() {
+  //     console.log(textCanvas.toJSON());
+  //   }
+
+  //   const timeoutId = setTimeout(handleSave, 10000);
+
+  //   return () => {
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, [textCanvas]);
 
   function handleFileUpload(e) {
     const files = e.target.files;
@@ -262,13 +454,64 @@ export default function Compose() {
       fill: textConfig.color || defaultColor,
       fontSize: textConfig.fontSize || defaultFontSize,
     });
-    textCanvas.add(text).setActiveObject(text);
-
-    console.log(textCanvas.getActiveObject());
+    visionBoard.add(text).setActiveObject(text);
   }
 
+  function save() {
+    //Todo: 存到firestore
+    setSavedRecord(visionBoard.toJSON());
+  }
+
+  function load() {
+    //Todo: 從firestore取出資料
+    visionBoard.loadFromJSON(savedRecord);
+  }
+
+  function clear() {
+    visionBoard.clear();
+  }
   return (
     <Container>
+      <ToolWrapper>
+        <div>
+          <label>Back-ground color:</label>
+          <input
+            type="color"
+            value={bgColor}
+            onChange={(e) => setBgColor(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Text color:</label>
+          <input
+            type="color"
+            // defaultValue="#000"
+            value={textConfig.color}
+            onChange={(e) =>
+              setTextConfig({ ...textConfig, color: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <label>Font size:</label>
+          <input
+            type="range"
+            min="10"
+            max="40"
+            defaultValue="16"
+            value={textConfig.fontSize}
+            onChange={(e) =>
+              setTextConfig({ ...textConfig, fontSize: Number(e.target.value) })
+            }
+          />
+        </div>
+        <TextButton onClick={addText}>T</TextButton>
+        <button>undo</button>
+        <button>redo</button>
+        <button onClick={save}>Save</button>
+        <button onClick={load}>Load</button>
+        <button onClick={clear}>Clear</button>
+      </ToolWrapper>
       <ImageToolBar>
         <ImageUpload
           type="file"
@@ -292,32 +535,11 @@ export default function Compose() {
             ))}
         </ImageWrapper>
       </ImageToolBar>
-      <BackgroundColor>
-        <div>
-          <label>Text color:</label>
-          <input
-            type="color"
-            defaultValue="#000"
-            value={textConfig.color}
-            onChange={(e) =>
-              setTextConfig({ ...textConfig, color: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <label>Font size:</label>
-          <input
-            type="range"
-            min="10"
-            max="40"
-            defaultValue="16"
-            value={textConfig.fontSize}
-            onChange={(e) =>
-              setTextConfig({ ...textConfig, fontSize: Number(e.target.value) })
-            }
-          />
-        </div>
-        <TextButton onClick={addText}>T</TextButton>
+
+      <VisionBoard2 ref={canvasRef}>
+        <canvas id="canvas" />
+      </VisionBoard2>
+      {/* <BackgroundColor>
         <VisionBoard>
           <TopLeftBlock
             url={data[0].url}
@@ -354,7 +576,7 @@ export default function Compose() {
             <ColorBlock></ColorBlock>
           </BottomRightBlock>
         </VisionBoard>
-      </BackgroundColor>
+      </BackgroundColor> */}
     </Container>
   );
 }
