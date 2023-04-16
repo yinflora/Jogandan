@@ -49,20 +49,20 @@ const CATEGORY: Row = [
   '其他',
 ];
 
-const MONTHS: month[] = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
+// const MONTHS: month[] = [
+//   'Jan',
+//   'Feb',
+//   'Mar',
+//   'Apr',
+//   'May',
+//   'Jun',
+//   'Jul',
+//   'Aug',
+//   'Sep',
+//   'Oct',
+//   'Nov',
+//   'Dec',
+// ];
 const QUANTITY: Column = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
 // const Items: data = [5, 23, 20, 15, 60, 78, 100, 96, 3, 34, 66, 12];

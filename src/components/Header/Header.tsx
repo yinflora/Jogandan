@@ -46,6 +46,7 @@ export default function Header() {
     <Container>
       <Logo>JOGANDAN</Logo>
       <Nav>
+        <NavButton to="/">Home</NavButton>
         <NavButton to="/profile">Profile</NavButton>
         <NavButton to="/inventory">Inventory</NavButton>
         <NavButton to="/achievement">Achievement</NavButton>
