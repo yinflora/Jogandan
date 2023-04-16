@@ -1,3 +1,3 @@
 export default function Home() {
-  return <p>我是首頁</p>;
+  return <h1>Welcome to JOGANDAN</h1>;
 }

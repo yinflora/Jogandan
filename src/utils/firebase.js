@@ -370,3 +370,30 @@ export function getLiveBoard(id, setBoardData) {
     });
   });
 }
+
+export async function uploadTemplate(template) {
+  try {
+    const templatesRef = collection(db, 'templates');
+    const docRef = await addDoc(templatesRef, {
+      template,
+    });
+
+    const templateDocRef = doc(db, 'templates', docRef.id);
+
+    await updateDoc(templateDocRef, {
+      id: docRef.id,
+    });
+
+    alert('已成功加入！');
+  } catch (e) {
+    console.error('Error uploading items: ', e);
+  }
+}
+
+export async function getTemplate() {
+  //Todo: 記得換成活的id
+  const templatesRef = doc(db, 'templates', 'F5EdFgzy9ahKMkNhVyhk');
+  const docSnap = await getDoc(templatesRef);
+
+  return docSnap.data();
+}

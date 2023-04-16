@@ -2,7 +2,7 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import { fabric } from 'fabric';
 import styled from 'styled-components';
 import AuthContext from '../../context/authContext';
-import { storage } from '../../utils/firebase';
+import { storage, uploadTemplate, getTemplate } from '../../utils/firebase';
 import {
   ref,
   listAll,
@@ -18,9 +18,14 @@ const Container = styled.div`
 const ToolWrapper = styled.div`
   display: flex;
   width: 100%;
+  gap: 20px;
 `;
 
-const TextButton = styled.button``;
+const Button = styled.button`
+  border: 1px solid black;
+`;
+
+// const TextButton = styled.button``;
 
 const ImageUpload = styled.input``;
 
@@ -52,9 +57,11 @@ const VisionBoard2 = styled.div`
 export default function Compose() {
   const { uid } = useContext(AuthContext);
 
-  const [images, setImages] = useState<string[] | null>(null);
+  const [images, setImages] = useState(null);
   const [isUploaded, setIsUploaded] = useState(false);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [draggingIndex, setDraggingIndex] = useState(null);
+
+  // const [activeObject, setActiveObject] = useState(null);
 
   const [savedRecord, setSavedRecord] = useState(null);
   const [visionBoard, setVisionBoard] = useState(null);
@@ -67,10 +74,8 @@ export default function Compose() {
   // const [redo, setRedo] = useState([]);
 
   const canvasRef = useRef(null);
-  const storageRef = ref(storage, `/${uid}/images/`);
 
-  // const defaultColor = '#000';
-  // const defaultFontSize = 16;
+  const storageRef = ref(storage, `/${uid}/images/`);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -94,7 +99,7 @@ export default function Compose() {
       height: 240,
       left: 255,
       top: 5,
-      fill: 'black',
+      fill: '#7e807c',
       isClipFrame: true,
     });
 
@@ -103,7 +108,7 @@ export default function Compose() {
       height: 240,
       left: 5,
       top: 5,
-      fill: 'black',
+      fill: '#7e807c',
       isClipFrame: true,
     });
 
@@ -112,7 +117,7 @@ export default function Compose() {
       height: 240,
       left: 5,
       top: 5,
-      fill: 'black',
+      fill: '#7e807c',
       isClipFrame: true,
     });
 
@@ -121,7 +126,7 @@ export default function Compose() {
       height: 240,
       left: 5,
       top: 5,
-      fill: 'black',
+      fill: '#7e807c',
       isClipFrame: true,
     });
 
@@ -130,7 +135,7 @@ export default function Compose() {
       height: 100,
       left: 5,
       top: 5,
-      fill: 'black',
+      fill: '#acaea9',
       isClipFrame: true,
     });
 
@@ -139,8 +144,8 @@ export default function Compose() {
       height: 240,
       left: 5,
       top: 5,
-      fill: 'black',
-      isClipFrame: true,
+      fill: '#acaea9',
+      isClipFrame: false,
     });
 
     canvas.add(clipPathTopL);
@@ -159,6 +164,18 @@ export default function Compose() {
         backgroundColor: bgColor,
       });
 
+      async function loadTemplate() {
+        const data = await getTemplate();
+        console.log('Got template:', data.template);
+        // canvas.loadFromJSON(template);
+        canvas.loadFromJSON(
+          data.template
+          // canvas.renderAll.bind(canvas)
+        );
+      }
+
+      loadTemplate();
+
       // const clipPathTop = new fabric.Rect({
       //   width: 240,
       //   height: 240,
@@ -169,14 +186,15 @@ export default function Compose() {
       //   // strokeDashArray: [5, 5],
       //   fill: 'black',
       //   // selectable: false,
-      //   isClipFrame: true,
+      //   customProps: { isClipFrame: true },
+      //   // customProps: { isClipFrame: true },
       // });
 
       // const clipPathBottom = new fabric.Rect({
       //   width: 240,
       //   height: 240,
       //   left: 5,
-      //   top: 5,
+      //   top: 5, acaea9
       //   // stroke: 'red',
       //   // strokeWidth: 1,
       //   // strokeDashArray: [5, 5],
@@ -187,7 +205,7 @@ export default function Compose() {
 
       // canvas.add(clipPathTop);
       // canvas.add(clipPathBottom);
-      setLayout1(canvas);
+      // setLayout1(canvas);
 
       setVisionBoard(canvas);
       setSavedRecord(canvas.toJSON());
@@ -245,8 +263,11 @@ export default function Compose() {
     }
 
     visionBoard.on('drop', dropImage);
+
+    return () => visionBoard.off('drop', dropImage);
   }, [visionBoard, draggingIndex]);
 
+  //Todo: undo & redo
   // useEffect(() => {
   //   if (!visionBoard) return;
 
@@ -310,14 +331,20 @@ export default function Compose() {
     visionBoard.add(text).setActiveObject(text);
   }
 
-  function save() {
+  async function save() {
     //Todo: 存到firestore
     setSavedRecord(visionBoard.toJSON());
+
+    await uploadTemplate(JSON.stringify(visionBoard));
   }
 
   function load() {
     //Todo: 從firestore取出資料
+    // const template = await getTemplate();
+    // console.log('Got template:', template);
+
     visionBoard.loadFromJSON(savedRecord);
+    // visionBoard.loadFromJSON(template);
   }
 
   function clear() {
@@ -357,13 +384,14 @@ export default function Compose() {
               setTextConfig({ ...textConfig, fontSize: Number(e.target.value) })
             }
           />
+          <span>{textConfig.fontSize}</span>
         </div>
-        <TextButton onClick={addText}>T</TextButton>
+        <Button onClick={addText}>Text</Button>
         {/* <button>undo</button>
         <button>redo</button> */}
-        <button onClick={save}>Save</button>
-        <button onClick={load}>Load</button>
-        <button onClick={clear}>Clear</button>
+        <Button onClick={save}>Save</Button>
+        <Button onClick={load}>Load</Button>
+        <Button onClick={clear}>Clear</Button>
       </ToolWrapper>
       <ImageToolBar>
         <ImageUpload
