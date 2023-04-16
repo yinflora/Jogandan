@@ -6,7 +6,8 @@ import {
   getItemById,
   updateItem,
 } from '../../utils/firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+// import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, getDownloadURL } from 'firebase/storage';
 import { AuthContext } from '../../context/authContext';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -78,13 +79,12 @@ const SubImageContainer = styled.div`
 // `;
 
 const SubImageWrapper = styled.div`
-  /* display: ${({ isVisible }) => (isVisible ? 'flex' : 'none')}; */
   width: calc((100% - 20px) / 3);
   position: relative;
   flex-shrink: 0;
 `;
 
-const UploadBtn = styled.div<{ canAdd: string }>`
+const UploadBtn = styled.div<{ canAdd: boolean }>`
   position: absolute;
   top: calc(50% - 20px);
   right: calc(50% - 20px);
@@ -162,12 +162,21 @@ type EditProp = {
   isEdit: boolean;
 };
 
+type Form = {
+  name: string;
+  category: string;
+  status: string;
+  description: string;
+  images: string[];
+  [key: string]: any;
+};
+
 export default function Upload({ isEdit, setIsEdit }: EditProp) {
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
 
   const [images, setImages] = useState(Array(10).fill(''));
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<Form>({
     name: '',
     category: '',
     status: '',
@@ -180,7 +189,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   });
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     async function getItem() {
@@ -204,42 +213,69 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   //   }
   // },[isEdit]);
 
-  function handleFileUpload(e, limit) {
-    const files = e.target.files;
+  function handleFileUpload(
+    e: React.ChangeEvent<HTMLInputElement>,
+    limit: number
+  ) {
+    let files: FileList | null = e.target.files;
+
+    if (!files) return;
+
     if (files.length > limit) {
       alert(`最多只能上傳${limit}張圖片`);
-      e.target.value = null;
-      return false;
+      // e.target.value = null;
+      // return false;
+      files = null;
     }
 
+    if (!files) return;
+
     const storageRef = ref(storage, `/${uid}/images/`);
-    const urlList: string[] | [] = [];
+    const urlList: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const imageRef = ref(storageRef, `${file.name}`);
-      const uploadTask = uploadBytesResumable(imageRef, file);
+      // const uploadTask = uploadBytesResumable(imageRef, file);
 
-      uploadTask.on(
-        'state_changed',
-        null,
-        (err) => console.log(err),
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            urlList.push(url);
-            const imageList = [...images];
-            const startIndex = imageList.findIndex((image) => image === '');
-            imageList.splice(startIndex, urlList.length, ...urlList);
-            setImages(imageList);
-            setForm({ ...form, images: imageList });
-          });
-        }
-      );
+      getDownloadURL(imageRef).then((url: string) => {
+        urlList.push(url);
+        const imageList = [...images];
+        const startIndex = imageList.findIndex((image) => image === '');
+        imageList.splice(startIndex, urlList.length, ...urlList);
+        setImages(imageList);
+        setForm({ ...form, images: imageList });
+      });
+
+      // uploadTask.on(
+      //   'state_changed',
+      //   () => {}, // 處理函數
+      //   (err) => console.log(err),
+      //   async () => {
+      //     getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+      //       urlList.push(url);
+      //       const imageList = [...images];
+      //       const startIndex = imageList.findIndex((image) => image === '');
+      //       imageList.splice(startIndex, urlList.length, ...urlList);
+      //       setImages(imageList);
+      //       setForm({ ...form, images: imageList });
+      //     });
+
+      //     const url: string = await getDownloadURL(uploadTask.snapshot.ref);
+
+      //     urlList.push(url);
+      //     const imageList = [...images];
+      //     const startIndex = imageList.findIndex((image) => image === '');
+      //     imageList.splice(startIndex, urlList.length, ...urlList);
+      //     setImages(imageList);
+      //     setForm({ ...form, images: imageList });
+      //   }
+      // );
     }
-    return null;
+    // return null;
   }
 
-  function handleDeleted(index) {
+  function handleDeleted(index: number) {
     const imageList = [...images];
     imageList.splice(index, 1);
     const list = [...imageList, ''];
@@ -264,14 +300,17 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     setIsEdit(false);
   }
 
-  function handleDragOverImg(e, index) {
+  function handleDragOverImg(
+    e: React.DragEvent<HTMLDivElement>,
+    index: number
+  ) {
     e.preventDefault();
     if (draggingIndex !== null && draggingIndex !== index) {
       e.dataTransfer.dropEffect = 'copy';
     }
   }
 
-  function handleDrop(e, index) {
+  function handleDrop(e: React.DragEvent<HTMLDivElement>, index: number) {
     e.preventDefault();
     if (draggingIndex !== null && draggingIndex !== index) {
       const newImages = [...images];
@@ -284,9 +323,12 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     setDraggingIndex(null);
   }
 
-  function handleDragOver(e) {
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const container = containerRef.current;
+
+    if (!container) return;
+
     const rect = container.getBoundingClientRect();
     const containerLeft = rect.x - rect.width;
     const containerRight = rect.x + rect.width;
@@ -303,7 +345,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         inline: 'start',
       });
     }
-    // rest of the code
   }
 
   return (
@@ -345,12 +386,12 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
             >
               <div
                 draggable={images.some((image) => image !== '') ? true : false}
-                onDragStart={(e) => {
-                  e.target.style.opacity = '0.01';
+                onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
+                  e.currentTarget.style.opacity = '0.01';
                   setDraggingIndex(index);
                 }}
-                onDragEnd={(e) => {
-                  e.target.style.opacity = '1';
+                onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {
+                  e.currentTarget.style.opacity = '1';
                   setDraggingIndex(null);
                 }}
               >
@@ -419,6 +460,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     //   e.key === 'Enter' &&
                     //   setForm({ ...form, [input.key]: form[input.key] + ' ' })
                     // }
+                    rows={5}
+                    cols={33}
                   />
                 </div>
               );
@@ -435,7 +478,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               </div>
             );
           })}
-          <div>
+          {/* <div>
             <span>備註</span>
             <div
               style={{
@@ -452,7 +495,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 });
               }}
             />
-          </div>
+          </div> */}
 
           <input
             type="button"
