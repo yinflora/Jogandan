@@ -61,7 +61,7 @@ const Remind = styled.p`
 const SubImageContainer = styled.div`
   position: relative;
   display: flex;
-  width: 100%;
+  /* width: 100%; */
   margin-top: 10px;
   overflow-x: scroll;
   gap: 10px;
@@ -78,9 +78,10 @@ const SubImageContainer = styled.div`
 //   background-color: #000;
 // `;
 
-const SubImageWrapper = styled.div`
-  width: calc((100% - 20px) / 3);
+const SubImageWrapper = styled.div<{ isShow: boolean }>`
   position: relative;
+  display: ${({ isShow }) => (isShow ? 'block' : 'none')};
+  width: calc((100% - 20px) / 3);
   flex-shrink: 0;
 `;
 
@@ -104,6 +105,10 @@ const CancelBtn = styled.button`
   z-index: 2;
   font-size: 20px;
 `;
+
+// const SubImageBlock = styled.div<{ isShow: boolean }>`
+//   display: ${({ isShow }) => (isShow ? 'block' : 'none')};
+// `;
 
 const SubImage = styled.div<{ imageUrl: string }>`
   width: 100%;
@@ -332,13 +337,13 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     const rect = container.getBoundingClientRect();
     const containerLeft = rect.x - rect.width;
     const containerRight = rect.x + rect.width;
-    if (e.clientX > containerRight - 10) {
+    if (e.clientX > containerRight - 50) {
       container.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
         inline: 'end',
       });
-    } else if (e.clientX < containerLeft - 10) {
+    } else if (e.clientX < containerLeft - 50) {
       container.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
@@ -381,11 +386,18 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
             <SubImageWrapper
               key={index}
               onDragOver={(e) => handleDragOverImg(e, index)}
-              onDrop={(e) => handleDrop(e, index)}
+              onDrop={(e) => image !== '' && handleDrop(e, index)}
               // isVisible={image !== '' || index === images.indexOf('') + 1}
+              isShow={
+                images[index] !== '' ||
+                (images.every((image) => image === '') && index < 3) ||
+                (images.some((image) => image !== '') &&
+                  images.indexOf('') === index)
+              }
             >
               <div
-                draggable={images.some((image) => image !== '') ? true : false}
+                // draggable={images.some((image) => image !== '') ? true : false}
+                draggable={images[index] !== ''}
                 onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
                   e.currentTarget.style.opacity = '0.01';
                   setDraggingIndex(index);
