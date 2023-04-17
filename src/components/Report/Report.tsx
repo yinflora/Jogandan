@@ -124,12 +124,14 @@ export default function Report({ processedItems }: ReportProps) {
             y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
             height={item * HEIGHT_PER_QTY}
           />
-          <Qty
-            x={XTAG_START_AXIS + index * XTAG_SPACE}
-            y={YTAG_START_AXIS - item * HEIGHT_PER_QTY - 10}
-          >
-            {item}
-          </Qty>
+          {item !== 0 && (
+            <Qty
+              x={XTAG_START_AXIS + index * XTAG_SPACE}
+              y={YTAG_START_AXIS - item * HEIGHT_PER_QTY - 10}
+            >
+              {item}
+            </Qty>
+          )}
         </>
       ))}
     </Svg>

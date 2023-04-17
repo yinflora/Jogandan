@@ -53,6 +53,10 @@ const Qty = styled.div`
 
 const QtyTitle = styled.p``;
 
+const FilterBtn = styled.button`
+  border: 1px solid black;
+`;
+
 type Row = string[];
 
 const CATEGORIES: Row = [
@@ -213,6 +217,115 @@ export default function Profile() {
     return 'Rookie';
   }
 
+  function getLastWeek() {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    // 格式化日期为 YYYY-MM-DD
+    const formattedSevenDaysAgo = `${sevenDaysAgo.getFullYear()}-${String(
+      sevenDaysAgo.getMonth() + 1
+    ).padStart(2, '0')}-${String(sevenDaysAgo.getDate()).padStart(2, '0')}`;
+    return formattedSevenDaysAgo;
+  }
+
+  function getToday() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
+    return formattedDate;
+  }
+
+  function setThisMonth() {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    );
+    // 格式化日期为 YYYY-MM-DD
+    const formattedFirstDayOfMonth = `${firstDayOfMonth.getFullYear()}-${String(
+      firstDayOfMonth.getMonth() + 1
+    ).padStart(2, '0')}-${String(firstDayOfMonth.getDate()).padStart(2, '0')}`;
+    const formattedLastDayOfMonth = `${lastDayOfMonth.getFullYear()}-${String(
+      lastDayOfMonth.getMonth() + 1
+    ).padStart(2, '0')}-${String(lastDayOfMonth.getDate()).padStart(2, '0')}`;
+    setPeriod({
+      start: formattedFirstDayOfMonth,
+      end: formattedLastDayOfMonth,
+    });
+  }
+
+  function setLastMonth() {
+    const today = new Date();
+    const firstDayOfLastMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() - 1,
+      1
+    );
+    const lastDayOfLastMonth = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      0
+    );
+    // 格式化日期为 YYYY-MM-DD
+    const formattedFirstDayOfLastMonth = `${firstDayOfLastMonth.getFullYear()}-${String(
+      firstDayOfLastMonth.getMonth() + 1
+    ).padStart(2, '0')}-${String(firstDayOfLastMonth.getDate()).padStart(
+      2,
+      '0'
+    )}`;
+    const formattedLastDayOfLastMonth = `${lastDayOfLastMonth.getFullYear()}-${String(
+      lastDayOfLastMonth.getMonth() + 1
+    ).padStart(2, '0')}-${String(lastDayOfLastMonth.getDate()).padStart(
+      2,
+      '0'
+    )}`;
+    setPeriod({
+      start: formattedFirstDayOfLastMonth,
+      end: formattedLastDayOfLastMonth,
+    });
+  }
+
+  function setThisYear() {
+    const today = new Date();
+    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    const lastDayOfYear = new Date(today.getFullYear(), 11, 31);
+    // 格式化日期为 YYYY-MM-DD
+    const formattedFirstDayOfYear = `${firstDayOfYear.getFullYear()}-${String(
+      firstDayOfYear.getMonth() + 1
+    ).padStart(2, '0')}-${String(firstDayOfYear.getDate()).padStart(2, '0')}`;
+    const formattedLastDayOfYear = `${lastDayOfYear.getFullYear()}-${String(
+      lastDayOfYear.getMonth() + 1
+    ).padStart(2, '0')}-${String(lastDayOfYear.getDate()).padStart(2, '0')}`;
+    setPeriod({
+      start: formattedFirstDayOfYear,
+      end: formattedLastDayOfYear,
+    });
+  }
+
+  function setLastYear() {
+    const today = new Date();
+    const lastYearStartDate = new Date(today.getFullYear() - 1, 0, 1); // 去年的第一天
+    const lastYearEndDate = new Date(today.getFullYear() - 1, 11, 31); // 去年的最后一天
+    // 格式化日期为 YYYY-MM-DD
+    const formattedLastYearStartDate = `${lastYearStartDate.getFullYear()}-${String(
+      lastYearStartDate.getMonth() + 1
+    ).padStart(2, '0')}-${String(lastYearStartDate.getDate()).padStart(
+      2,
+      '0'
+    )}`;
+    const formattedLastYearEndDate = `${lastYearEndDate.getFullYear()}-${String(
+      lastYearEndDate.getMonth() + 1
+    ).padStart(2, '0')}-${String(lastYearEndDate.getDate()).padStart(2, '0')}`;
+    setPeriod({
+      start: formattedLastYearStartDate,
+      end: formattedLastYearEndDate,
+    });
+  }
+
   return (
     <>
       {/* <Title>Profile</Title> */}
@@ -235,6 +348,18 @@ export default function Profile() {
         value={period.end}
         onChange={(e) => setPeriod({ ...period, end: e.target.value })}
       />
+      <FilterBtn
+        onClick={() => setPeriod({ start: getLastWeek(), end: getToday() })}
+      >
+        過去7天
+      </FilterBtn>
+      <FilterBtn onClick={setThisMonth}>本月</FilterBtn>
+      <FilterBtn onClick={setLastMonth}>上個月</FilterBtn>
+      <FilterBtn onClick={setThisYear}>今年</FilterBtn>
+      <FilterBtn onClick={setLastYear}>去年</FilterBtn>
+      <FilterBtn onClick={() => setPeriod({ start: '', end: '' })}>
+        清空
+      </FilterBtn>
       {/* <VisionBoard></VisionBoard> */}
       <QtyWrapper>
         <Qty>{itemRef.current?.length}</Qty>
