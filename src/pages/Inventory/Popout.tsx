@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 
 import EditItem from '../Upload/Upload';
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const Overlay = styled.div`
   position: fixed;
@@ -92,6 +92,7 @@ const Content = styled.span``;
 const Description = styled.div`
   padding: 20px 0;
   overflow-y: scroll;
+  white-space: pre-wrap;
 `;
 
 const Edit = styled.button``;
@@ -118,6 +119,23 @@ type PopoutProp = {
 
 export default function Popout({ selectedItem }: PopoutProp) {
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
+
+  const intervalRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!selectedItem) return;
+
+    intervalRef.current = window.setInterval(() => {
+      const hasUrlImages = selectedItem[0].images.filter(
+        (image: string) => image !== ''
+      );
+      setActiveItemIndex((prev) =>
+        // prev === selectedItem[0].images.length - 1 ? 0 : prev + 1
+        prev === hasUrlImages.length - 1 ? 0 : prev + 1
+      );
+    }, 3000);
+  }, [selectedItem]);
 
   function formatTime(time: number) {
     const date = new Date(time * 1000);
@@ -140,11 +158,30 @@ export default function Popout({ selectedItem }: PopoutProp) {
         ) : (
           <Container>
             <ImageWrapper>
-              <MainImage src={firstItem.images[0]} />
+              {/* <MainImage src={firstItem.images[0]} /> */}
+              <MainImage src={firstItem.images[activeItemIndex]} />
               <SubImageWrapper>
                 {firstItem.images.map(
-                  (image: string) =>
-                    image !== '' && <SubImage key={image} src={image} />
+                  (image: string, index: number) =>
+                    image !== '' && (
+                      <SubImage
+                        key={image}
+                        src={image}
+                        onClick={() => {
+                          setActiveItemIndex(index);
+                          intervalRef.current &&
+                            window.clearInterval(intervalRef.current);
+                          intervalRef.current = window.setInterval(() => {
+                            const hasUrlImages = selectedItem[0].images.filter(
+                              (image: string) => image !== ''
+                            );
+                            setActiveItemIndex((prev) =>
+                              prev === hasUrlImages.length - 1 ? 0 : prev + 1
+                            );
+                          }, 5000);
+                        }}
+                      />
+                    )
                 )}
               </SubImageWrapper>
             </ImageWrapper>

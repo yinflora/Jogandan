@@ -106,6 +106,7 @@ function Achievement() {
       </>
     );
   }
+  return null;
 }
 
 export default Achievement;
