@@ -16,7 +16,7 @@ const Text = styled.text`
 `;
 
 const XTag = styled(Text)`
-  text-anchor: start;
+  text-anchor: middle;
 `;
 
 const YTag = styled(Text)`
@@ -26,6 +26,10 @@ const YTag = styled(Text)`
 const Rect = styled.rect`
   width: 25px;
   fill: #7e807c;
+`;
+
+const Qty = styled(Text)`
+  text-anchor: middle;
 `;
 
 type month = string;
@@ -114,11 +118,19 @@ export default function Report({ processedItems }: ReportProps) {
       ))}
 
       {processedItems.map((item: quantity, index: number) => (
-        <Rect
-          x={XTAG_START_AXIS + index * XTAG_SPACE}
-          y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
-          height={item * HEIGHT_PER_QTY}
-        />
+        <>
+          <Rect
+            x={XTAG_START_AXIS + index * XTAG_SPACE}
+            y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
+            height={item * HEIGHT_PER_QTY}
+          />
+          <Qty
+            x={XTAG_START_AXIS + index * XTAG_SPACE}
+            y={YTAG_START_AXIS - item * HEIGHT_PER_QTY - 10}
+          >
+            {item}
+          </Qty>
+        </>
       ))}
     </Svg>
   );

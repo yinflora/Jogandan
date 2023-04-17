@@ -21,6 +21,19 @@ const Fill = styled.div<LevelProp>`
   border-radius: inherit;
   transition: height 0.2s ease-in;
   height: ${({ percent }) => `${percent * 100}%`};
+  position: relative;
+  &:hover::before {
+    content: '${({ percent }) => `${Math.round(percent * 100)}%`}';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translate(-100%, -50%);
+    padding: 5px;
+    background-color: #fff;
+    color: #000;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  }
 `;
 
 const LevelWrapper = styled.div`
