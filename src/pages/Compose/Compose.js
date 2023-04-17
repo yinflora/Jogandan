@@ -13,7 +13,7 @@ import {
 import {
   ref,
   listAll,
-  uploadBytesResumable,
+  // uploadBytesResumable,
   getDownloadURL,
 } from 'firebase/storage';
 
@@ -335,21 +335,28 @@ export default function Compose() {
   function handleFileUpload(e) {
     const files = e.target.files;
 
+    // for (let i = 0; i < files.length; i++) {
+    //   const file = files[i];
+    //   const imageRef = ref(storageRef, `${file.name}`);
+    //   const uploadTask = uploadBytesResumable(imageRef, file);
+
+    //   uploadTask.on(
+    //     'state_changed',
+    //     null,
+    //     (err) => console.log(err),
+    //     () => {
+    //       getDownloadURL(uploadTask.snapshot.ref).then(() => {
+    //         setIsUploaded(!isUploaded);
+    //       });
+    //     }
+    //   );
+    // }
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const imageRef = ref(storageRef, `${file.name}`);
-      const uploadTask = uploadBytesResumable(imageRef, file);
 
-      uploadTask.on(
-        'state_changed',
-        null,
-        (err) => console.log(err),
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(() => {
-            setIsUploaded(!isUploaded);
-          });
-        }
-      );
+      getDownloadURL(imageRef).then(() => setIsUploaded(!isUploaded));
     }
     return null;
   }
@@ -377,12 +384,13 @@ export default function Compose() {
     // setSavedRecord(JSON.stringify(visionBoard));
 
     // await uploadTemplate(JSON.stringify(visionBoard));
-    const dataURL = visionBoard.toDataURL();
+    // const dataURL = visionBoard.toDataURL();
     await saveBoard(
       uid,
       boardIdRef.current,
       JSON.stringify(visionBoard),
-      dataURL
+      // dataURL
+      null
     );
   }
 

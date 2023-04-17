@@ -24,3 +24,6 @@ yarn-error.log*
 
 #algolia
 jogandan-2023-0be96345b3c5.json
+
+#firebase
+.firebase/
