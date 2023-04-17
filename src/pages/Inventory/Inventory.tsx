@@ -164,6 +164,10 @@ export default function Inventory() {
         filteredItems = itemsRef.current.filter((item) =>
           item.name.toLowerCase().includes(search.toLowerCase())
         );
+        setFilter({
+          category: '',
+          status: '',
+        });
       }
       setItems(filteredItems);
     }
@@ -190,6 +194,10 @@ export default function Inventory() {
         item.name.toLowerCase().includes(search.toLowerCase())
       );
       setItems(filteredItems);
+      setFilter({
+        category: '',
+        status: '',
+      });
     }
   }
 
