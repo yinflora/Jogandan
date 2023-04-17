@@ -127,7 +127,7 @@ export default function Popout({ selectedItem }: PopoutProp) {
     if (!selectedItem) return;
 
     intervalRef.current = window.setInterval(() => {
-      const hasUrlImages = selectedItem[0].images.filter(
+      const hasUrlImages = selectedItem.images.filter(
         (image: string) => image !== ''
       );
       setActiveItemIndex((prev) =>
@@ -147,8 +147,9 @@ export default function Popout({ selectedItem }: PopoutProp) {
     return date.toLocaleDateString('zh-TW', options);
   }
 
-  if (Array.isArray(selectedItem) && selectedItem.length > 0) {
-    const firstItem = selectedItem[0];
+  // if (Array.isArray(selectedItem) && selectedItem.length > 0) {
+  //   const firstItem = selectedItem[0];
+  if (selectedItem) {
     return (
       <Overlay>
         <Cancel to="/inventory">X</Cancel>
@@ -159,9 +160,9 @@ export default function Popout({ selectedItem }: PopoutProp) {
           <Container>
             <ImageWrapper>
               {/* <MainImage src={firstItem.images[0]} /> */}
-              <MainImage src={firstItem.images[activeItemIndex]} />
+              <MainImage src={selectedItem.images[activeItemIndex]} />
               <SubImageWrapper>
-                {firstItem.images.map(
+                {selectedItem.images.map(
                   (image: string, index: number) =>
                     image !== '' && (
                       <SubImage
@@ -172,7 +173,7 @@ export default function Popout({ selectedItem }: PopoutProp) {
                           intervalRef.current &&
                             window.clearInterval(intervalRef.current);
                           intervalRef.current = window.setInterval(() => {
-                            const hasUrlImages = selectedItem[0].images.filter(
+                            const hasUrlImages = selectedItem.images.filter(
                               (image: string) => image !== ''
                             );
                             setActiveItemIndex((prev) =>
@@ -187,21 +188,21 @@ export default function Popout({ selectedItem }: PopoutProp) {
             </ImageWrapper>
             <InfoWrapper>
               <FirstRow>
-                <Category>{firstItem.category}</Category>
-                {firstItem.status !== '已處理' && (
+                <Category>{selectedItem.category}</Category>
+                {selectedItem.status !== '已處理' && (
                   <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
                 )}
               </FirstRow>
-              <Name>{firstItem.name}</Name>
+              <Name>{selectedItem.name}</Name>
               <Row>
                 <Title>購買日期</Title>
-                <Content>{formatTime(firstItem.created.seconds)}</Content>
+                <Content>{formatTime(selectedItem.created.seconds)}</Content>
               </Row>
               <Row>
                 <Title>目前狀態</Title>
-                <Content>{firstItem.status}</Content>
+                <Content>{selectedItem.status}</Content>
               </Row>
-              <Description>{firstItem.description}</Description>
+              <Description>{selectedItem.description}</Description>
             </InfoWrapper>
           </Container>
         )}

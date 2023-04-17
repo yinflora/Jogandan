@@ -129,7 +129,7 @@ export default function Inventory() {
 
     async function fetchSelectedData() {
       const item: any = await getItemById(uid, id); //!記得改any
-      setSelectedItem(item);
+      setSelectedItem(item[0]);
     }
 
     if (id) {
