@@ -58,26 +58,57 @@ export default function SparkJoy() {
   // console.log(randomItems);
 
   useEffect(() => {
-    function getRandomElements() {
-      if (!items) return;
+    if (!items) return;
 
-      const filteredItems = items.filter((item) => item.status !== '已處理');
-      const randomIndexes = [];
+    const filteredItems = items.filter((item) => item.status !== '已處理');
 
-      while (randomIndexes.length < 10) {
-        const randomIndex = Math.floor(Math.random() * filteredItems.length);
-        if (!randomIndexes.includes(randomIndex)) {
-          randomIndexes.push(randomIndex);
-        }
+    function getRandomIndexes(n: number) {
+      const indexes = Array.from({ length: filteredItems.length }, (_, i) => i); // 創建包含 0 到 77 的陣列
+      for (let i = indexes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1)); // 生成 0 到 i 之間的隨機整數
+        [indexes[i], indexes[j]] = [indexes[j], indexes[i]]; // 交換 indexes[i] 和 indexes[j] 的位置
       }
+      return indexes.slice(0, n);
+    }
+
+    function getRandomElements() {
+      // const randomIndexes = [];
+
+      // while (randomIndexes.length < 10) {
+      //   const randomIndex = Math.floor(Math.random() * filteredItems.length);
+      //   if (!randomIndexes.includes(randomIndex)) {
+      //     randomIndexes.push(randomIndex);
+      //   }
+      // }
+      const randomIndexes = getRandomIndexes(10);
+      // console.log(randomIndexes);
+
       const selectedElements = randomIndexes.map(
         (index) => filteredItems[index]
       );
       setRandomItems(selectedElements);
+
+      // if (!items) return;
+
+      // const filteredItems = items.filter((item) => item.status !== '已處理');
+      // // const randomIndexes = [];
+      // const { length } = filteredItems;
+
+      // // Fisher-Yates shuffle algorithm
+      // for (let i = length - 1; i >= length - 10 && i >= 0; i--) {
+      //   const j = Math.floor(Math.random() * (i + 1));
+      //   [filteredItems[i], filteredItems[j]] = [
+      //     filteredItems[j],
+      //     filteredItems[i],
+      //   ];
+      // }
+
+      // const selectedElements = filteredItems.slice(length - 10, length);
+      // setRandomItems(selectedElements);
     }
+
     if (items) {
       getRandomElements();
-
       setCurrentIndex(items.length - 1);
     }
   }, [items]);

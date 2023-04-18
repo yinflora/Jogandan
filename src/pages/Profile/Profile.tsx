@@ -4,6 +4,7 @@ import { getItems } from '../../utils/firebase';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 
 import styled from 'styled-components';
 
@@ -137,6 +138,7 @@ export default function Profile() {
   // const [items, setItems] = useState<[] | null>(null);
   const [processedItems, setProcessedItems] = useState<[]>([]);
   // const [existingItems, setExistingItems] = useState<[]>([]);
+  const [canPlay, setCanPlay] = useState<boolean>(false);
 
   const itemRef = useRef<Items | null>(null);
 
@@ -178,9 +180,10 @@ export default function Profile() {
 
       //Todo: popout小遊戲
       if (isToday) {
-        return console.log('是今天');
+        console.log('是今天');
       } else if (isYesterday || date < today) {
-        return console.log('是昨天以前');
+        console.log('是昨天以前');
+        setCanPlay(true);
       }
       return null;
     }
@@ -354,6 +357,13 @@ export default function Profile() {
   return (
     <>
       {/* <Title>Profile</Title> */}
+
+      <div>
+        <button onClick={() => setCanPlay(false)}>X</button>
+        你今天TOUCH了嗎？
+        <Link to="/sparkJoy">馬上開始</Link>
+      </div>
+
       <Wrapper>
         <Image src={user.photoURL as string} />
         <InformationWrapper>
