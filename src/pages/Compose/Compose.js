@@ -14,7 +14,9 @@ import {
   ref,
   listAll,
   // uploadBytesResumable,
+  uploadBytes,
   getDownloadURL,
+  getMetadata,
 } from 'firebase/storage';
 
 const Container = styled.div`
@@ -88,10 +90,33 @@ export default function Compose() {
     const fetchImages = async () => {
       try {
         const res = await listAll(storageRef);
+        // const urls = await Promise.all(
+        //   // res.items.map((itemRef) => getDownloadURL(itemRef))
+        //   res.items.map((itemRef) => getMetadata(itemRef))
+        // );
+        const data = await Promise.all(
+          // res.items.map((itemRef) => getDownloadURL(itemRef))
+          res.items.map((itemRef) => getMetadata(itemRef))
+        );
+
         const urls = await Promise.all(
           res.items.map((itemRef) => getDownloadURL(itemRef))
         );
-        setImages(urls);
+
+        const newData = urls.reduce((acc, curr, index) => {
+          acc[index].url = curr;
+          return acc;
+        }, data);
+
+        newData.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+
+        const newUrls = newData.map((data) => data.url);
+
+        // console.log(newData);
+
+        // console.log(metaData, urls);
+        // setImages(urls.reverse());
+        setImages(newUrls);
       } catch (error) {
         console.log(error);
       }
@@ -372,7 +397,12 @@ export default function Compose() {
       const file = files[i];
       const imageRef = ref(storageRef, `${file.name}`);
 
-      getDownloadURL(imageRef).then(() => setIsUploaded(!isUploaded));
+      uploadBytes(imageRef, file).then(() => {
+        console.log('Uploaded a file!');
+        setIsUploaded(!isUploaded);
+      });
+
+      // getDownloadURL(imageRef).then(() => setIsUploaded(!isUploaded));
     }
     return null;
   }
