@@ -10,6 +10,7 @@ import Profile from './pages/Profile/Profile';
 // import Login from './pages/Login/Login';
 import Upload from './pages/Upload/Upload';
 import Inventory from './pages/Inventory/Inventory';
+import SparkJoy from './pages/SparkJoy/SparkJoy';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -37,6 +38,7 @@ root.render(
         </Route>
         <Route path="achievement" element={<Achievement />} />
         <Route path="compose" element={<Compose />} />
+        <Route path="sparkJoy" element={<SparkJoy />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
