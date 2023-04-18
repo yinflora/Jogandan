@@ -434,48 +434,27 @@ export default function Compose() {
     //Todo: 存到firestore
 
     // setSavedRecord(JSON.stringify(visionBoard));
-
     // await uploadTemplate(JSON.stringify(visionBoard));
+
     const dataURL = visionBoard.toDataURL();
+    const imageRef = ref(storageRef, `${boardIdRef.current}`);
 
-    // let newURL;
-
-    // visionBoard.toBlob((blob) => {
-    //   const url = URL.createObjectURL(blob);
-
-    //   // 在這裡使用 URL
-    //   const imageRef = ref(storageRef, `${boardIdRef.current}`);
-
-    //   uploadBytes(imageRef, url).then((snapshot) => {
-    //     getDownloadURL(snapshot.ref).then((url) => (newURL = url));
-    //     alert('儲存成功！');
-    //   });
+    // uploadString(imageRef, dataURL, 'data_url').then((snapshot) => {
+    //   getDownloadURL(snapshot.ref).then((url) => (newURL = url));
     // });
 
-    console.log(dataURL);
+    const snapshot = await uploadString(imageRef, dataURL, 'data_url');
+    const newURL = await getDownloadURL(snapshot.ref);
 
-    // await saveBoard(
-    //   uid,
-    //   boardIdRef.current,
-    //   JSON.stringify(visionBoard),
-    //   dataURL
-    //   // null
-    // );
+    console.log(newURL);
 
-    //   let newURL;
-    //   visionBoard.onload = () => {
-    //     visionBoard.toBlob((blob) => {
-    //       const url = URL.createObjectURL(blob);
-
-    //       const imageRef = ref(storageRef, `${boardIdRef.current}`);
-
-    //       uploadBytes(imageRef, url).then((snapshot) => {
-    //         getDownloadURL(snapshot.ref).then((url) => (newURL = url));
-    //         alert('儲存成功！');
-    //       });
-    //     });
-    //   };
-    //   console.log(newURL);
+    await saveBoard(
+      uid,
+      boardIdRef.current,
+      JSON.stringify(visionBoard),
+      newURL
+      // null
+    );
   }
 
   function load() {
