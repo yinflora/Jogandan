@@ -17,6 +17,7 @@ import {
   uploadBytes,
   getDownloadURL,
   getMetadata,
+  uploadString,
 } from 'firebase/storage';
 
 const Container = styled.div`
@@ -299,25 +300,29 @@ export default function Compose() {
 
       const movingImage = images[draggingIndex];
 
-      fabric.Image.fromURL(movingImage, (img) => {
-        const image = img.set({
-          // crossOrigin: 'Anonymous',
-          left: target.left,
-          top: target.top,
-          clipPath,
-        });
+      fabric.Image.fromURL(
+        movingImage,
+        (img) => {
+          const image = img.set({
+            // crossOrigin: 'anonymous',
+            left: target.left,
+            top: target.top,
+            clipPath,
+          });
 
-        // image.crossOrigin = 'Anonymous';
-        image.scaleToWidth(target.getScaledWidth());
-        const isFullHeight = image.getScaledHeight() < target.height;
-        if (isFullHeight) image.scaleToHeight(target.getScaledHeight());
-        image.lockMovementY = isFullHeight;
-        image.lockMovementX = !isFullHeight;
+          // image.crossOrigin = 'Anonymous';
+          image.scaleToWidth(target.getScaledWidth());
+          const isFullHeight = image.getScaledHeight() < target.height;
+          if (isFullHeight) image.scaleToHeight(target.getScaledHeight());
+          image.lockMovementY = isFullHeight;
+          image.lockMovementX = !isFullHeight;
 
-        image.clipPath = clipPath;
+          image.clipPath = clipPath;
 
-        visionBoard.add(image); // 記得還是要加進 canvas 才會顯示出來呦
-      });
+          visionBoard.add(image); // 記得還是要加進 canvas 才會顯示出來呦
+        },
+        { crossOrigin: 'anonymous' }
+      );
     }
 
     visionBoard.on('drop', dropImage);
@@ -427,17 +432,50 @@ export default function Compose() {
 
   async function save() {
     //Todo: 存到firestore
+
     // setSavedRecord(JSON.stringify(visionBoard));
 
     // await uploadTemplate(JSON.stringify(visionBoard));
-    // const dataURL = visionBoard.toDataURL();
-    await saveBoard(
-      uid,
-      boardIdRef.current,
-      JSON.stringify(visionBoard),
-      // dataURL
-      null
-    );
+    const dataURL = visionBoard.toDataURL();
+
+    // let newURL;
+
+    // visionBoard.toBlob((blob) => {
+    //   const url = URL.createObjectURL(blob);
+
+    //   // 在這裡使用 URL
+    //   const imageRef = ref(storageRef, `${boardIdRef.current}`);
+
+    //   uploadBytes(imageRef, url).then((snapshot) => {
+    //     getDownloadURL(snapshot.ref).then((url) => (newURL = url));
+    //     alert('儲存成功！');
+    //   });
+    // });
+
+    console.log(dataURL);
+
+    // await saveBoard(
+    //   uid,
+    //   boardIdRef.current,
+    //   JSON.stringify(visionBoard),
+    //   dataURL
+    //   // null
+    // );
+
+    //   let newURL;
+    //   visionBoard.onload = () => {
+    //     visionBoard.toBlob((blob) => {
+    //       const url = URL.createObjectURL(blob);
+
+    //       const imageRef = ref(storageRef, `${boardIdRef.current}`);
+
+    //       uploadBytes(imageRef, url).then((snapshot) => {
+    //         getDownloadURL(snapshot.ref).then((url) => (newURL = url));
+    //         alert('儲存成功！');
+    //       });
+    //     });
+    //   };
+    //   console.log(newURL);
   }
 
   function load() {
