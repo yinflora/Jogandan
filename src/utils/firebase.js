@@ -188,14 +188,7 @@ export async function getItemById(userId, itemId) {
 
 export async function updateItem(userId, itemId, itemRef) {
   try {
-    const itemDocRef = doc(
-      db,
-      'users',
-      // 'q1khIAOnt2ewvY4SQw1z65roVPD2',
-      userId,
-      'items',
-      itemId
-    );
+    const itemDocRef = doc(db, 'users', userId, 'items', itemId);
     const { images, name, category, status, description } = itemRef;
     await updateDoc(itemDocRef, {
       name,
@@ -205,8 +198,7 @@ export async function updateItem(userId, itemId, itemRef) {
       images,
       processedDate: status === '已處理' ? serverTimestamp() : '',
     });
-    // console.log('更新item成功');
-    alert('更新物品成功！');
+    // alert('更新物品成功！'); //!記得在upload加回來
   } catch (e) {
     console.error('Error uploading item: ', e);
   }

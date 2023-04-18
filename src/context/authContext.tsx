@@ -1,6 +1,7 @@
 import React, { useState, createContext, useEffect } from 'react';
-import { signin, signout, auth } from '../utils/firebase';
+import { signin, signout, auth, getItems } from '../utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { Timestamp } from 'firebase/firestore';
 
 type User = {
   uid: string;
@@ -9,11 +10,25 @@ type User = {
   photoURL: string | null;
 };
 
+type Item = {
+  id: string;
+  name: string;
+  status: string;
+  category: string;
+  created: Timestamp;
+  processedDate: string;
+  description: string;
+  images: string[];
+};
+
+type Items = Item[];
+
 type AuthContextType = {
   isLogin: boolean;
   loading: boolean;
   user: User;
   uid: string | null;
+  items: Items | null;
   login: () => Promise<void>;
   logout: () => void;
 };
@@ -28,6 +43,7 @@ export const AuthContext = createContext<AuthContextType>({
     photoURL: null,
   },
   uid: null,
+  items: null,
   login: async () => {},
   logout: () => {},
 });
@@ -47,6 +63,12 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     photoURL: null,
   });
   const [uid, setUid] = useState<string | null>(null);
+  const [items, setItems] = useState<Items | null>(null);
+
+  async function getUserItems(id: string) {
+    const itemList = await getItems(id);
+    setItems(itemList);
+  }
 
   useEffect(() => {
     onAuthStateChanged(auth, (userInfo) => {
@@ -59,6 +81,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           photoURL: userInfo.photoURL,
         });
         setIsLogin(true);
+        getUserItems(userInfo.uid);
         setUid(userInfo.uid);
         setLoading(false);
       } else {
@@ -101,6 +124,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         loading,
         user,
         uid,
+        items,
         login,
         logout,
       }}
