@@ -79,7 +79,6 @@ export default function Compose() {
   });
   // const [undo, setUndo] = useState([]);
   // const [redo, setRedo] = useState([]);
-
   const canvasRef = useRef(null);
   const boardIdRef = useRef(null);
 
@@ -300,6 +299,23 @@ export default function Compose() {
 
     return () => visionBoard.off('drop', dropImage);
   }, [visionBoard, draggingIndex]);
+
+  useEffect(() => {
+    if (!visionBoard) return;
+
+    function findActiveObject() {
+      const activeObject = visionBoard.getActiveObject();
+      console.log(activeObject);
+      if (activeObject && activeObject.type === 'i-text')
+        setTextConfig({
+          color: activeObject.fill,
+          fontSize: activeObject.fontSize,
+        });
+    }
+    visionBoard.on('mouse:down', findActiveObject);
+
+    return () => visionBoard.off('mouse:down', findActiveObject);
+  }, [visionBoard]);
 
   //Todo: undo & redo
   // useEffect(() => {
