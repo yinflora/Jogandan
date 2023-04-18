@@ -130,7 +130,7 @@ type Period = {
 // type ReportItems = number[] | [];
 
 export default function Profile() {
-  const { user, uid } = useContext(AuthContext);
+  const { user, uid, lastLoginInTime } = useContext(AuthContext);
 
   const [items, dispatch] = useReducer(reducer, []);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
@@ -161,8 +161,33 @@ export default function Profile() {
 
       setProcessedItems(qtyList);
     }
+
+    function compareTime() {
+      if (!lastLoginInTime) return;
+
+      const today = new Date();
+      const date = new Date(lastLoginInTime);
+      const isToday =
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+      const isYesterday =
+        date.getDate() === today.getDate() - 1 &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+
+      //Todo: popout小遊戲
+      if (isToday) {
+        return console.log('是今天');
+      } else if (isYesterday || date < today) {
+        return console.log('是昨天以前');
+      }
+      return null;
+    }
+
     fetchData();
-  }, [uid]);
+    compareTime();
+  }, [uid, lastLoginInTime]);
 
   useEffect(() => {
     function countItems() {

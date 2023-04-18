@@ -54,22 +54,25 @@ export default function SparkJoy() {
     []
   );
 
-  console.log(items);
-  console.log(randomItems);
+  // console.log(items);
+  // console.log(randomItems);
 
   useEffect(() => {
     function getRandomElements() {
       if (!items) return;
 
+      const filteredItems = items.filter((item) => item.status !== '已處理');
       const randomIndexes = [];
 
       while (randomIndexes.length < 10) {
-        const randomIndex = Math.floor(Math.random() * items.length);
+        const randomIndex = Math.floor(Math.random() * filteredItems.length);
         if (!randomIndexes.includes(randomIndex)) {
           randomIndexes.push(randomIndex);
         }
       }
-      const selectedElements = randomIndexes.map((index) => items[index]);
+      const selectedElements = randomIndexes.map(
+        (index) => filteredItems[index]
+      );
       setRandomItems(selectedElements);
     }
     if (items) {

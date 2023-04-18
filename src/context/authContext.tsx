@@ -29,6 +29,7 @@ type AuthContextType = {
   user: User;
   uid: string | null;
   items: Items | null;
+  lastLoginInTime: string | null | undefined;
   login: () => Promise<void>;
   logout: () => void;
 };
@@ -44,6 +45,7 @@ export const AuthContext = createContext<AuthContextType>({
   },
   uid: null,
   items: null,
+  lastLoginInTime: null,
   login: async () => {},
   logout: () => {},
 });
@@ -63,6 +65,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     photoURL: null,
   });
   const [uid, setUid] = useState<string | null>(null);
+  const [lastLoginInTime, setLastLoginInTime] = useState<
+    string | null | undefined
+  >(null);
   const [items, setItems] = useState<Items | null>(null);
 
   async function getUserItems(id: string) {
@@ -83,6 +88,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setIsLogin(true);
         getUserItems(userInfo.uid);
         setUid(userInfo.uid);
+        setLastLoginInTime(userInfo.metadata.lastSignInTime);
         setLoading(false);
       } else {
         setUser({
@@ -100,6 +106,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const login = async () => {
     const response = await signin();
+    setLastLoginInTime(response.metadata.lastSignInTime);
     setUser(response);
     setIsLogin(true);
     setLoading(false);
@@ -125,6 +132,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         user,
         uid,
         items,
+        lastLoginInTime,
         login,
         logout,
       }}
