@@ -1,3 +1,4 @@
+// import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const Svg = styled.svg`
@@ -82,19 +83,38 @@ const YTAG_START_AXIS: number = 550;
 const YTAG_SPACE: number = 50;
 const YTAG_X_AXIS: number = 30;
 const HEIGHT_PER_QTY: number = 5;
+const TEXT_SPACING: number = 12.5;
+const TEXT_TO_RECT: number = 10;
 
 type ReportProps = {
   processedItems: [];
 };
 
 export default function Report({ processedItems }: ReportProps) {
+  // const [qty, setQty] = useState<Column>([]);
+
+  // useEffect(() => {
+  //   if (!processedItems) return;
+
+  //   const maxQty = Math.max(...processedItems);
+  //   const minQty = Math.min(...processedItems);
+  //   const distance = (maxQty - minQty) / 10;
+  //   // console.log(maxQty, minQty, range);
+
+  //   const QUANTITY: Column = [];
+  //   for (let i = 0; i <= 10; i++) {
+  //     QUANTITY.push(Math.round((minQty + i * distance) * 100) / 100);
+  //   }
+  //   setQty(QUANTITY);
+  // }, [processedItems]);
+
   return (
     <Svg>
       <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
       {CATEGORY.map((item: month, index: number) => (
         <XTag
           key={item}
-          x={XTAG_START_AXIS + index * XTAG_SPACE}
+          x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}
           y={XTAG_Y_AXIS}
         >
           {item}
@@ -126,8 +146,8 @@ export default function Report({ processedItems }: ReportProps) {
           />
           {item !== 0 && (
             <Qty
-              x={XTAG_START_AXIS + index * XTAG_SPACE}
-              y={YTAG_START_AXIS - item * HEIGHT_PER_QTY - 10}
+              x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}
+              y={YTAG_START_AXIS - item * HEIGHT_PER_QTY - TEXT_TO_RECT}
             >
               {item}
             </Qty>
