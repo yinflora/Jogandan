@@ -357,13 +357,12 @@ export default function Profile() {
   return (
     <>
       {/* <Title>Profile</Title> */}
-
+      //Todo: 昨天以前才可以popout
       <div>
         <button onClick={() => setCanPlay(false)}>X</button>
         你今天TOUCH了嗎？
         <Link to="/sparkJoy">馬上開始</Link>
       </div>
-
       <Wrapper>
         <Image src={user.photoURL as string} />
         <InformationWrapper>
