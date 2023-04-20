@@ -36,6 +36,7 @@ type Item = {
 };
 
 type Items = Item[];
+type API = any; //!Fixme
 
 export default function SparkJoy() {
   const { uid, items } = useContext(AuthContext);
@@ -46,11 +47,18 @@ export default function SparkJoy() {
 
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
-  const childRefs = useMemo(
+  // const childRefs = useMemo<Array<React.RefObject<number>>>(
+  //   () =>
+  //     Array(10)
+  //       .fill(0)
+  //       .map(() => React.createRef()),
+  //   []
+  // );
+  const childRefs = useMemo<Array<React.RefObject<API>>>(
     () =>
       Array(10)
         .fill(0)
-        .map(() => React.createRef()),
+        .map(() => React.createRef<API>()),
     []
   );
 
@@ -113,14 +121,14 @@ export default function SparkJoy() {
     }
   }, [items]);
 
-  const updateCurrentIndex = (val) => {
+  const updateCurrentIndex = (val: number) => {
     setCurrentIndex(val);
     currentIndexRef.current = val;
   };
 
   // const canGoBack = currentIndex < randomItems.length - 1;
-  const canGoBack = currentIndex < 10;
-  const canSwipe = currentIndex >= 0;
+  const canGoBack = currentIndex && currentIndex < 10;
+  const canSwipe = currentIndex && currentIndex >= 0;
 
   // set last direction and decrease current index
   const swiped = (direction: string, idToDelete: string, index: number) => {
@@ -132,7 +140,7 @@ export default function SparkJoy() {
     console.log(`${id} (${index}) left the screen!`, currentIndexRef.current);
     // handle the case in which go back is pressed before card goes outOfFrame
 
-    currentIndexRef.current >= index && childRefs[index].current.restoreCard();
+    currentIndexRef.current! >= index && childRefs[index].current.restoreCard();
 
     // TODO: when quickly swipe and restore multiple times the same card,
     // it happens multiple outOfFrame events are queued and the card disappear
@@ -140,7 +148,7 @@ export default function SparkJoy() {
   };
 
   const swipe = async (direction: string) => {
-    if (canSwipe && currentIndex < randomItems.length) {
+    if (canSwipe && currentIndex < randomItems!.length) {
       await childRefs[currentIndex].current.swipe(direction); // Swipe the card!
     }
   };

@@ -1,11 +1,27 @@
-import { useContext } from 'react';
-import { AuthContext } from '../../context/authContext';
+import styled from 'styled-components';
 
-export default function Login() {
-  const { isLogin, login, logout } = useContext(AuthContext);
+const LoginBtn = styled.button`
+  width: 90px;
+  height: 35px;
+  font-size: 14px;
+  border: 1px solid ${({ color }) => color};
+  color: ${({ color }) => color};
 
-  if (isLogin) {
-    return <button onClick={logout}>LOGOUT</button>;
+  &:hover {
+    cursor: pointer;
   }
-  return <button onClick={login}>LOGIN</button>;
+`;
+
+type LoginProps = {
+  color: string;
+  children: string;
+  onClick: () => void;
+};
+
+export default function Login({ color, children, onClick }: LoginProps) {
+  return (
+    <LoginBtn onClick={onClick} color={color}>
+      {children}
+    </LoginBtn>
+  );
 }

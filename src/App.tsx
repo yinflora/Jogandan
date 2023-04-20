@@ -11,7 +11,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'TT Norms Pro', sans-serif;
   }
 
   button {
@@ -25,7 +25,7 @@ const GlobalStyle = createGlobalStyle`
 
   #root {
     min-height: 100vh;
-    padding: 140px 50px 50px;
+    padding-top: 150px;
     position: relative;
   }
 `;

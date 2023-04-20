@@ -143,6 +143,7 @@ export default function Profile() {
   const itemRef = useRef<Items | null>(null);
 
   // console.log('items', items);
+  console.log(canPlay);
 
   useEffect(() => {
     async function fetchData() {

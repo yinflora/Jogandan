@@ -548,6 +548,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                       )
                     }
                     multiple
+                    capture
                     style={{ display: 'none' }}
                   />
                   <label htmlFor="uploadImage">
@@ -599,6 +600,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                       )
                     }
                     multiple
+                    // capture
                     style={{ display: 'none' }}
                   />
                   <label htmlFor="uploadImage">
@@ -712,6 +714,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         accept="image/*"
         onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
         multiple
+        // capture
         style={{ display: 'none' }}
       />
       <label htmlFor="uploadImage">
