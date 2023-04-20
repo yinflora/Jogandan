@@ -1,24 +1,136 @@
 import React from 'react';
 import { useEffect, useRef, useState, useContext } from 'react';
-import { AuthContext } from '../../context/authContext';
 import { Link, useParams } from 'react-router-dom';
-import { getItems, getItemById } from '../../utils/firebase';
-import styled from 'styled-components';
-import Popout from './Popout';
 import { Timestamp } from 'firebase/firestore';
+import styled from 'styled-components';
+
+import { getItems, getItemById } from '../../utils/firebase';
+import { AuthContext } from '../../context/authContext';
+import Popout from './Popout';
+import Search from '../../components/Icon/Search';
+
+const Container = styled.div`
+  padding: 0 60px 0 150px;
+  color: #fff;
+`;
+
+const Background = styled.div`
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 500px;
+  background-color: #8d9ca4;
+`;
+
+const TopWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  margin-bottom: 100px;
+  justify-content: space-between;
+`;
 
 const Title = styled.h1`
-  font-size: 4rem;
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
 `;
-const Container = styled.div`
+
+const SearchField = styled.div`
+  width: 425px;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 15px;
+`;
+
+const SearchWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 45px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #fff;
+`;
+
+const SearchBar = styled.input`
+  width: 80%;
+  height: 100%;
+  overflow-x: scroll;
+  font-size: 1.25rem;
+  line-height: 100%;
+  color: #fff;
+`;
+
+const SearchBtn = styled.button`
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  cursor: pointer;
+`;
+
+const SearchText = styled.p`
+  font-size: 1.25rem;
+`;
+
+const ItemContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
 `;
 
 const FilterWrapper = styled.div`
+  display: flex;
   width: 20%;
   height: 100%;
+  margin-top: 105px;
+  flex-direction: column;
+  gap: 30px;
+`;
+
+const FilterTitle = styled.p`
+  font-size: 1.25rem;
+  letter-spacing: 0.2rem;
+  color: #000;
+`;
+
+const SubFilterWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  width: 50%;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const SubTitle = styled.p<{ isSelected: boolean }>`
+  font-size: 14px;
+  letter-spacing: 0.2rem;
+  color: ${({ isSelected }) => (isSelected ? '#8D9CA4' : '#cdcdcd')};
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const FilterButton = styled.button`
+  font-size: 14px;
+  color: #8d9ca4;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const Split = styled.div`
+  width: 50%;
+  height: 1px;
   background-color: #000;
 `;
 
@@ -27,8 +139,7 @@ const ProductWrapper = styled.div`
   width: 80%;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  grid-gap: 20px;
-  background-color: #828282;
+  grid-gap: 30px;
 `;
 
 const Product = styled(Link)`
@@ -44,29 +155,6 @@ const Image = styled.img`
 `;
 
 const Name = styled.p``;
-
-const TitleWrapper = styled.div`
-  display: flex;
-`;
-
-const FilterTitle = styled.p`
-  width: 100px;
-  color: #acaea9;
-`;
-
-const FilterButton = styled.button`
-  color: #acaea9;
-`;
-
-const SubFilterWrapper = styled.p`
-  color: #acaea9;
-`;
-
-const SubTitle = styled.p<{ isSelected: boolean }>`
-  color: ${({ isSelected }) => (isSelected ? 'red' : '#acaea9')};
-`;
-
-const SearchField = styled.input``;
 
 const SUBCATEGORY: string[] = [
   '居家生活',
@@ -202,14 +290,14 @@ export default function Inventory() {
   }
 
   return (
-    <>
-      <Title>Inventory</Title>
-      <p>Total: {items && itemsRef.current ? itemsRef.current.length : 0}</p>
-      {Object.values(filter).includes('') &&
+    <Container>
+      <TopWrapper>
+        <Title>Inventory</Title>
+        {/* {Object.values(filter).includes('') &&
         (() => {
           if (filter.category !== '' && filter.status !== '') {
             return (
-              <p>
+              <SearchText>
                 共
                 {items &&
                   items.filter(
@@ -218,42 +306,64 @@ export default function Inventory() {
                       item.status === filter.status
                   ).length}
                 件符合{filter.category}+{filter.status}的物品
-              </p>
+              </SearchText>
             );
           } else if (filter.category !== '') {
             return (
-              <p>
+              <SearchText>
                 共
                 {items &&
                   items.filter((item) => item.category === filter.category)
                     .length}
                 件符合{filter.category}的物品
-              </p>
+              </SearchText>
             );
           } else if (filter.status !== '') {
             return (
-              <p>
+              <SearchText>
                 共
                 {items &&
                   items.filter((item) => item.status === filter.status).length}
                 件符合{filter.status}的物品
-              </p>
+              </SearchText>
             );
           }
           return null;
-        })()}
-      <SearchField
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        onKeyDown={(e) => handleSearch(e)}
-      />
+        })()} */}
+        <SearchField>
+          <SearchWrapper>
+            <SearchBar
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => handleSearch(e)}
+            />
+            <SearchBtn>
+              <Search />
+            </SearchBtn>
+          </SearchWrapper>
+          <SearchText>
+            TOTAL：{items && itemsRef.current ? itemsRef.current.length : 0}
+          </SearchText>
+          {Object.values(filter).some((value) => value !== '') && (
+            <SearchText>
+              FILTER：
+              {filter.category !== '' && filter.status !== ''
+                ? `${filter.category}｜${filter.status}`
+                : filter.category !== ''
+                ? filter.category
+                : filter.status}
+            </SearchText>
+          )}
+        </SearchField>
+      </TopWrapper>
 
-      <Container>
+      <ItemContainer>
         <FilterWrapper>
           <FilterTitle onClick={() => setItems(itemsRef.current)}>
             All
           </FilterTitle>
+          <Split />
           <FilterTitle>Category</FilterTitle>
           <SubFilterWrapper>
             {SUBCATEGORY.map((category) => (
@@ -271,6 +381,8 @@ export default function Inventory() {
               </TitleWrapper>
             ))}
           </SubFilterWrapper>
+          <Split />
+
           <FilterTitle>Status</FilterTitle>
           <SubFilterWrapper>
             {SUBSTATUS.map((status) => (
@@ -299,7 +411,8 @@ export default function Inventory() {
             ))}
         </ProductWrapper>
         {isPopout && <Popout selectedItem={selectedItem} />}
-      </Container>
-    </>
+      </ItemContainer>
+      <Background />
+    </Container>
   );
 }

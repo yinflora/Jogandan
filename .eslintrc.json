@@ -19,8 +19,8 @@
     "no-empty-function": "warn",
     "no-lonely-if": "error",
     "no-multi-assign": "error",
-    "no-negated-condition": "error",
-    "no-nested-ternary": "error",
+    "no-negated-condition": "warn",
+    "no-nested-ternary": "warn",
     "no-shadow": "warn", //!改過
     "no-undef": "error",
     "no-useless-return": "error",

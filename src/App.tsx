@@ -23,6 +23,12 @@ const GlobalStyle = createGlobalStyle`
     text-decoration: none;
   }
 
+  input {
+    background-color: transparent;
+    outline: none;
+    border: none;
+  }
+
   #root {
     min-height: 100vh;
     padding-top: 150px;
