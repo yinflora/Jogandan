@@ -13,11 +13,11 @@ const Overlay = styled.div`
   display: flex;
   width: 100vw;
   height: 100vh;
-  padding: 10vh 15vw;
+  padding: 10vh 10vw;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   gap: 10px;
 `;
 
@@ -32,30 +32,38 @@ const Container = styled.div`
   height: 100%;
   padding: 40px 60px;
   gap: 60px;
-  background-color: #f1f2ed;
+  background-color: rgb(255, 255, 255, 0.7);
 `;
 
 const ImageWrapper = styled.div`
-  width: 40%;
+  display: flex;
+  /* width: 60%; */
 `;
 
 const MainImage = styled.img`
-  width: 100%;
-  padding: 5px;
+  /* width: 75%; */
+  /* height: 100%; */
+  width: 480px;
+  height: 480px;
+  padding: 10px;
   object-fit: cover;
   object-position: center;
-  aspect-ratio: 1/1;
+  /* aspect-ratio: 1/1; */
 `;
 
 const SubImageWrapper = styled.div`
   display: flex;
-  overflow-x: scroll;
+  flex-direction: column;
+  overflow-y: scroll;
   flex-wrap: nowrap;
 `;
 
 const SubImage = styled.img`
-  width: calc(100% / 3);
-  padding: 5px;
+  /* height: calc(100% / 4); */
+  /* width: 25%; */
+  width: 120px;
+  height: 120px;
+  padding: 10px;
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
@@ -64,30 +72,39 @@ const SubImage = styled.img`
 
 const InfoWrapper = styled.div`
   display: flex;
-  width: 60%;
+  width: 40%;
   flex-direction: column;
+  /* justify-content: space-between; */
+  color: #000;
+`;
+
+const FirstRow = styled.div`
+  display: flex;
   justify-content: space-between;
-  color: #acaea9;
 `;
 
 const Category = styled.span``;
 
+const Edit = styled.button`
+  font-size: 14px;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 const Name = styled.p`
+  margin-top: 30px;
   font-size: 2rem;
-  color: black;
+  font-weight: 600;
 `;
 
-const Row = styled.div`
-  padding: 20px 0;
-  border-bottom: 1px solid black;
+const Status = styled.p`
+  margin-top: 130px;
+  padding-bottom: 20px;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #000;
 `;
-
-const Title = styled.span`
-  display: inline-block;
-  width: 100px;
-`;
-
-const Content = styled.span``;
 
 const Description = styled.div`
   padding: 20px 0;
@@ -95,12 +112,23 @@ const Description = styled.div`
   white-space: pre-wrap;
 `;
 
-const Edit = styled.button``;
-
-const FirstRow = styled.div`
-  display: flex;
-  justify-content: space-between;
+const CreatedTime = styled.p`
+  margin-top: auto;
+  font-size: 14px;
+  text-align: end;
 `;
+
+// const Row = styled.div`
+//   padding: 20px 0;
+//   border-bottom: 1px solid black;
+// `;
+
+// const Title = styled.span`
+//   display: inline-block;
+//   width: 100px;
+// `;
+
+// const Content = styled.span``;
 
 type Item = {
   id: string;
@@ -131,10 +159,9 @@ export default function Popout({ selectedItem }: PopoutProp) {
         (image: string) => image !== ''
       );
       setActiveItemIndex((prev) =>
-        // prev === selectedItem[0].images.length - 1 ? 0 : prev + 1
         prev === hasUrlImages.length - 1 ? 0 : prev + 1
       );
-    }, 3000);
+    }, 5000);
   }, [selectedItem]);
 
   function formatTime(time: number) {
@@ -147,8 +174,6 @@ export default function Popout({ selectedItem }: PopoutProp) {
     return date.toLocaleDateString('zh-TW', options);
   }
 
-  // if (Array.isArray(selectedItem) && selectedItem.length > 0) {
-  //   const firstItem = selectedItem[0];
   if (selectedItem) {
     return (
       <Overlay>
@@ -159,8 +184,6 @@ export default function Popout({ selectedItem }: PopoutProp) {
         ) : (
           <Container>
             <ImageWrapper>
-              {/* <MainImage src={firstItem.images[0]} /> */}
-              <MainImage src={selectedItem.images[activeItemIndex]} />
               <SubImageWrapper>
                 {selectedItem.images.map(
                   (image: string, index: number) =>
@@ -185,24 +208,23 @@ export default function Popout({ selectedItem }: PopoutProp) {
                     )
                 )}
               </SubImageWrapper>
+              <MainImage src={selectedItem.images[activeItemIndex]} />
             </ImageWrapper>
+
             <InfoWrapper>
               <FirstRow>
                 <Category>{selectedItem.category}</Category>
                 {selectedItem.status !== '已處理' && (
-                  <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
+                  <Edit onClick={() => setIsEdit(true)}>• • •</Edit>
                 )}
               </FirstRow>
               <Name>{selectedItem.name}</Name>
-              <Row>
-                <Title>購買日期</Title>
-                <Content>{formatTime(selectedItem.created.seconds)}</Content>
-              </Row>
-              <Row>
-                <Title>目前狀態</Title>
-                <Content>{selectedItem.status}</Content>
-              </Row>
+              <Status>{selectedItem.status}</Status>
               <Description>{selectedItem.description}</Description>
+              <CreatedTime>
+                Created：
+                {formatTime(selectedItem.created.seconds)}
+              </CreatedTime>
             </InfoWrapper>
           </Container>
         )}

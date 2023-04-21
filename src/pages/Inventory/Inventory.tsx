@@ -259,10 +259,6 @@ export default function Inventory() {
         filteredItems = itemsRef.current.filter((item) =>
           item.name.toLowerCase().includes(search.toLowerCase())
         );
-        // setFilter({
-        //   category: '',
-        //   status: '',
-        // });
       }
       setItems(filteredItems);
     }
@@ -300,43 +296,6 @@ export default function Inventory() {
     <Container>
       <TopWrapper>
         <Title>Inventory</Title>
-        {/* {Object.values(filter).includes('') &&
-        (() => {
-          if (filter.category !== '' && filter.status !== '') {
-            return (
-              <SearchText>
-                共
-                {items &&
-                  items.filter(
-                    (item) =>
-                      item.category === filter.category &&
-                      item.status === filter.status
-                  ).length}
-                件符合{filter.category}+{filter.status}的物品
-              </SearchText>
-            );
-          } else if (filter.category !== '') {
-            return (
-              <SearchText>
-                共
-                {items &&
-                  items.filter((item) => item.category === filter.category)
-                    .length}
-                件符合{filter.category}的物品
-              </SearchText>
-            );
-          } else if (filter.status !== '') {
-            return (
-              <SearchText>
-                共
-                {items &&
-                  items.filter((item) => item.status === filter.status).length}
-                件符合{filter.status}的物品
-              </SearchText>
-            );
-          }
-          return null;
-        })()} */}
         <SearchField>
           <SearchWrapper>
             <SearchBar
@@ -379,26 +338,6 @@ export default function Inventory() {
           <SearchText>
             TOTAL：{items && itemsRef.current ? itemsRef.current.length : 0}
           </SearchText>
-          {/* {Object.values(filter).some((value) => value !== '') && (
-            <SearchText>
-              FILTER：
-              {filter.category !== '' && filter.status !== ''
-                ? `${filter.category}｜${filter.status}`
-                : filter.category !== ''
-                ? filter.category
-                : filter.status}
-            </SearchText>
-          )} */}
-          {/* <SearchText
-            isVisible={filter.category !== '' || filter.status !== ''}
-          >
-            FILTER：
-            {filter.category !== '' && filter.status !== ''
-              ? `${filter.category}｜${filter.status}`
-              : filter.category !== ''
-              ? filter.category
-              : filter.status}
-          </SearchText> */}
         </SearchField>
       </TopWrapper>
 

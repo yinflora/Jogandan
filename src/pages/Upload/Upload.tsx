@@ -6,11 +6,9 @@ import {
   getItemById,
   updateItem,
 } from '../../utils/firebase';
-// import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import {
   ref,
   getDownloadURL,
-  // uploadBytesResumable,
   uploadBytes,
   uploadString,
 } from 'firebase/storage';
@@ -32,7 +30,6 @@ const ImageWrapper = styled.div`
 `;
 
 const MainImage = styled.div<{ coverUrl: string }>`
-  /* position: relative; */
   width: 100%;
   object-fit: cover;
   object-position: center;
@@ -68,7 +65,6 @@ const Remind = styled.p`
 const SubImageContainer = styled.div`
   position: relative;
   display: flex;
-  /* width: 100%; */
   margin-top: 10px;
   overflow-x: scroll;
   gap: 10px;
