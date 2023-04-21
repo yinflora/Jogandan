@@ -10,7 +10,7 @@ import Popout from './Popout';
 import Search from '../../components/Icon/Search';
 
 const Container = styled.div`
-  padding: 0 60px 0 150px;
+  padding: 0 60px 60px 150px;
   color: #fff;
 `;
 
@@ -39,9 +39,10 @@ const Title = styled.h1`
 `;
 
 const SearchField = styled.div`
-  width: 425px;
   display: flex;
+  width: 425px;
   flex-direction: column;
+  flex-shrink: 1;
   align-items: end;
   gap: 15px;
 `;
@@ -85,7 +86,7 @@ const FilterWrapper = styled.div`
   display: flex;
   width: 20%;
   height: 100%;
-  margin-top: 105px;
+  margin-top: 70px;
   flex-direction: column;
   gap: 30px;
 `;
@@ -139,7 +140,8 @@ const ProductWrapper = styled.div`
   width: 80%;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  grid-gap: 30px;
+  grid-column-gap: 30px;
+  grid-row-gap: 60px;
 `;
 
 const Product = styled(Link)`
@@ -152,9 +154,14 @@ const Image = styled.img`
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
+  border: 0.5px solid #cdcdcd;
 `;
 
-const Name = styled.p``;
+const Name = styled.p`
+  margin-top: 30px;
+  letter-spacing: 0.1rem;
+  color: #000;
+`;
 
 const SUBCATEGORY: string[] = [
   '居家生活',
@@ -343,9 +350,36 @@ export default function Inventory() {
             </SearchBtn>
           </SearchWrapper>
           <SearchText>
+            FILTER：
+            {(() => {
+              if (filter.category === '' && filter.status === '') {
+                return 'All';
+              } else if (filter.category !== '' && filter.status !== '') {
+                return `${filter.category}｜${filter.status} (${
+                  items &&
+                  items.filter(
+                    (item) =>
+                      item.category === filter.category &&
+                      item.status === filter.status
+                  ).length
+                })`;
+              } else if (filter.category !== '') {
+                return `${filter.category} (${
+                  items &&
+                  items.filter((item) => item.category === filter.category)
+                    .length
+                })`;
+              }
+              return `${filter.status} (${
+                items &&
+                items.filter((item) => item.status === filter.status).length
+              })`;
+            })()}
+          </SearchText>
+          <SearchText>
             TOTAL：{items && itemsRef.current ? itemsRef.current.length : 0}
           </SearchText>
-          {Object.values(filter).some((value) => value !== '') && (
+          {/* {Object.values(filter).some((value) => value !== '') && (
             <SearchText>
               FILTER：
               {filter.category !== '' && filter.status !== ''
@@ -354,7 +388,17 @@ export default function Inventory() {
                 ? filter.category
                 : filter.status}
             </SearchText>
-          )}
+          )} */}
+          {/* <SearchText
+            isVisible={filter.category !== '' || filter.status !== ''}
+          >
+            FILTER：
+            {filter.category !== '' && filter.status !== ''
+              ? `${filter.category}｜${filter.status}`
+              : filter.category !== ''
+              ? filter.category
+              : filter.status}
+          </SearchText> */}
         </SearchField>
       </TopWrapper>
 
