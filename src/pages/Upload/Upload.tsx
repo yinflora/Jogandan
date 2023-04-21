@@ -14,23 +14,89 @@ import {
 } from 'firebase/storage';
 import { AuthContext } from '../../context/authContext';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 const Container = styled.div`
+  margin: 0 auto;
+  padding: 0 250px 60px;
+  color: #fff;
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+`;
+
+const PageTitle = styled.h1`
+  font-size: 3rem;
+  font-weight: 500;
+  letter-spacing: 0.4rem;
+  text-transform: uppercase;
+`;
+
+const ModeToggler = styled.button`
+  font-size: 1.25rem;
+  border-bottom: 1px solid #fff;
+  color: #fff;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const UploadContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
   padding: 40px 60px;
   gap: 60px;
-  background-color: #f1f2ed;
+  background-color: #000;
 `;
 
+// const ImageWrapper = styled.div`
+//   display: grid;
+//   width: 60%;
+//   grid-template-columns: repeat(5, 1fr);
+//   grid-template-rows: repeat(5, 1fr);
+//   grid-template-areas:
+//   'previous . . . .'
+//   'first '
+// ;
+// `;
+
 const ImageWrapper = styled.div`
-  width: 40%;
+  width: 60%;
+`;
+
+const PreviousBtn = styled.button`
+  color: #fff;
+`;
+
+const NextBtn = styled.button`
+  color: #fff;
+`;
+
+const SlideCount = styled.div`
+  color: #fff;
+`;
+
+const NowIndex = styled.span`
+  font-size: 1.5rem;
+  letter-spacing: 0.1rem;
+`;
+
+const TotalIndex = styled.span`
+  letter-spacing: 0.1rem;
+`;
+
+const ImageArea = styled.div`
+  display: flex;
 `;
 
 const MainImage = styled.div<{ coverUrl: string }>`
-  width: 100%;
+  /* width: 100%; */
+  height: 100%;
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
@@ -65,10 +131,13 @@ const Remind = styled.p`
 const SubImageContainer = styled.div`
   position: relative;
   display: flex;
-  margin-top: 10px;
-  overflow-x: scroll;
+  /* margin-top: 10px;
+  overflow-x: scroll; */
   gap: 10px;
   flex-wrap: nowrap;
+  flex-direction: column;
+  overflow-y: scroll;
+  align-items: stretch;
 `;
 
 // const NextPage = styled.div`
@@ -84,8 +153,11 @@ const SubImageContainer = styled.div`
 const SubImageWrapper = styled.div<{ isShow: boolean }>`
   position: relative;
   display: ${({ isShow }) => (isShow ? 'block' : 'none')};
-  width: calc((100% - 20px) / 3);
-  flex-shrink: 0;
+  /* width: calc((100% - 20px) / 4);
+  flex-shrink: 0; */
+  height: calc((100% - 20px) / 4);
+  aspect-ratio: 1/1;
+  flex-shrink: 0 0 25%;
 `;
 
 const UploadBtn = styled.div<{ canAdd: boolean }>`
@@ -123,12 +195,50 @@ const SubImage = styled.div<{ imageUrl: string }>`
     imageUrl === '' ? 'none' : `center / cover no-repeat url(${imageUrl})`};
 `;
 
-const InfoWrapper = styled.div`
+const InfoWrapper = styled.form`
   display: flex;
-  width: 60%;
+  width: 40%;
   flex-direction: column;
   justify-content: space-between;
-  color: #acaea9;
+`;
+
+const FieldWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const HalfFieldWrapper = styled(FieldWrapper)`
+  width: 50%;
+`;
+
+const FiledLabel = styled.label`
+  letter-spacing: 0.1rem;
+`;
+
+const TextInput = styled.input`
+  height: 30px;
+  letter-spacing: 0.1rem;
+  border-bottom: 1px solid #fff;
+`;
+
+const SelectWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+`;
+
+const SelectInput = styled.select`
+  height: 30px;
+  letter-spacing: 0.1rem;
+  border-bottom: 1px solid #fff;
+  color: #fff;
+`;
+
+const Description = styled.textarea`
+  resize: none;
+  border: 1px solid #fff;
+  background-color: transparent;
 `;
 
 const ItemWrapper = styled.div`
@@ -180,6 +290,24 @@ const TakePhoto = styled.button`
   right: 10px;
 `;
 
+const CATEGORY_OPTIONS = [
+  '請選擇類別',
+  '居家生活',
+  '服飾配件',
+  '美妝保養',
+  '3C產品',
+  '影音產品',
+  '書報雜誌',
+  '體育器材',
+  '寵物用品',
+  '食物及飲料',
+  '興趣及遊戲',
+  '紀念意義',
+  '其他',
+];
+
+const STATUS_OPTIONS = ['請選擇狀態', '保留', '處理中', '已處理'];
+
 const formInputs = [
   { label: '物品名稱', key: 'name' },
   {
@@ -206,11 +334,6 @@ const formInputs = [
     key: 'status',
     option: ['請選擇狀態', '保留', '處理中', '已處理'],
   },
-  // {
-  //   label: '加入贈物',
-  //   key: 'joinGiveaway',
-  //   option: ['請選擇是否加入', 'YES', 'NO'],
-  // },
   { label: '備註', key: 'description' },
 ];
 
@@ -502,22 +625,90 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   }
 
   return (
-    <>
-      <button onClick={() => setIsBulkMode(!isBulkMode)}>
-        {isBulkMode ? '單品上傳' : '批量上傳'}
-      </button>
-      <Container>
+    <Container>
+      <TitleWrapper>
+        <PageTitle>UPLOAD</PageTitle>
+        <ModeToggler onClick={() => setIsBulkMode(!isBulkMode)}>
+          {isBulkMode ? '單品上傳' : '批量上傳'}
+        </ModeToggler>
+      </TitleWrapper>
+
+      <UploadContainer>
         <ImageWrapper>
-          {showCamera ? (
-            <VideoWrapper>
-              <Video ref={videoRef} autoPlay />
-              <TakePhoto onClick={takePhoto}>Take Photo</TakePhoto>
-            </VideoWrapper>
-          ) : (
-            <MainImage coverUrl={images[0]}>
-              {images[0] === '' && (
-                <RemindWrapper>
-                  {/* {showCamera ? (
+          <PreviousBtn>^</PreviousBtn>
+          <ImageArea>
+            <SubImageContainer
+              ref={containerRef}
+              onDragOver={(e) => handleDragOver(e)}
+            >
+              {images.map((image, index) => (
+                <SubImageWrapper
+                  key={index}
+                  onDragOver={(e) => handleDragOverImg(e, index)}
+                  onDrop={(e) => image !== '' && handleDrop(e, index)}
+                  // isVisible={image !== '' || index === images.indexOf('') + 1}
+                  isShow={
+                    images[index] !== '' ||
+                    (images.every((image) => image === '') && index < 3) ||
+                    (images.some((image) => image !== '') &&
+                      images.indexOf('') === index)
+                  }
+                >
+                  <div
+                    // draggable={images.some((image) => image !== '') ? true : false}
+                    draggable={images[index] !== ''}
+                    onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
+                      e.currentTarget.style.opacity = '0.01';
+                      setDraggingIndex(index);
+                    }}
+                    onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {
+                      e.currentTarget.style.opacity = '1';
+                      setDraggingIndex(null);
+                    }}
+                  >
+                    <SubImage imageUrl={image}></SubImage>
+                    <input
+                      id="uploadImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        handleFileUpload(
+                          e,
+                          images.filter((item) => item === '').length
+                        )
+                      }
+                      multiple
+                      // capture
+                      style={{ display: 'none' }}
+                    />
+                    <label htmlFor="uploadImage">
+                      <UploadBtn
+                        canAdd={
+                          images.findIndex((item) => item === '') === index
+                        }
+                      >
+                        +
+                      </UploadBtn>
+                    </label>
+                    {images[index] !== '' && (
+                      <CancelBtn onClick={() => handleDeleted(index)}>
+                        X
+                      </CancelBtn>
+                    )}
+                  </div>
+                </SubImageWrapper>
+              ))}
+            </SubImageContainer>
+            {showCamera ? (
+              <VideoWrapper>
+                <Video ref={videoRef} autoPlay />
+                <TakePhoto onClick={takePhoto}>Take Photo</TakePhoto>
+              </VideoWrapper>
+            ) : (
+              <MainImage coverUrl={images[0]}>
+                {images[0] === '' && (
+                  <RemindWrapper>
+                    {/* {showCamera ? (
                 <div>
                   <video ref={videoRef} autoPlay />
                   <button onClick={takePhoto}>Take Photo</button>
@@ -526,183 +717,110 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 <button onClick={startCamera}>Open Camera</button>
               )} */}
 
-                  {/* {!showCamera && <button onClick={startCamera}>拍照上傳</button>} */}
-                  {!showCamera && (
-                    <button onClick={() => setShowCamera(true)}>
-                      拍照上傳
-                    </button>
-                  )}
+                    {/* {!showCamera && <button onClick={startCamera}>拍照上傳</button>} */}
+                    {!showCamera && (
+                      <button onClick={() => setShowCamera(true)}>
+                        拍照上傳
+                      </button>
+                    )}
 
-                  <input
-                    id="uploadImage"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) =>
-                      handleFileUpload(
-                        e,
-                        images.filter((item) => item === '').length
-                      )
-                    }
-                    multiple
-                    capture
-                    style={{ display: 'none' }}
-                  />
-                  <label htmlFor="uploadImage">
-                    <SelectImage>選擇照片</SelectImage>
-                  </label>
-                  <Remind>最多只能上傳 10 張</Remind>
-                </RemindWrapper>
-              )}
-            </MainImage>
-          )}
-          <SubImageContainer
-            ref={containerRef}
-            onDragOver={(e) => handleDragOver(e)}
-          >
-            {images.map((image, index) => (
-              <SubImageWrapper
-                key={index}
-                onDragOver={(e) => handleDragOverImg(e, index)}
-                onDrop={(e) => image !== '' && handleDrop(e, index)}
-                // isVisible={image !== '' || index === images.indexOf('') + 1}
-                isShow={
-                  images[index] !== '' ||
-                  (images.every((image) => image === '') && index < 3) ||
-                  (images.some((image) => image !== '') &&
-                    images.indexOf('') === index)
-                }
-              >
-                <div
-                  // draggable={images.some((image) => image !== '') ? true : false}
-                  draggable={images[index] !== ''}
-                  onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-                    e.currentTarget.style.opacity = '0.01';
-                    setDraggingIndex(index);
-                  }}
-                  onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {
-                    e.currentTarget.style.opacity = '1';
-                    setDraggingIndex(null);
-                  }}
-                >
-                  <SubImage imageUrl={image}></SubImage>
-                  <input
-                    id="uploadImage"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) =>
-                      handleFileUpload(
-                        e,
-                        images.filter((item) => item === '').length
-                      )
-                    }
-                    multiple
-                    // capture
-                    style={{ display: 'none' }}
-                  />
-                  <label htmlFor="uploadImage">
-                    <UploadBtn
-                      canAdd={images.findIndex((item) => item === '') === index}
-                    >
-                      +
-                    </UploadBtn>
-                  </label>
-                  {images[index] !== '' && (
-                    <CancelBtn onClick={() => handleDeleted(index)}>
-                      X
-                    </CancelBtn>
-                  )}
-                </div>
-              </SubImageWrapper>
-            ))}
-          </SubImageContainer>
+                    <input
+                      id="uploadImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        handleFileUpload(
+                          e,
+                          images.filter((item) => item === '').length
+                        )
+                      }
+                      multiple
+                      capture
+                      style={{ display: 'none' }}
+                    />
+                    <label htmlFor="uploadImage">
+                      <SelectImage>選擇照片</SelectImage>
+                    </label>
+                    <Remind>最多只能上傳 10 張</Remind>
+                  </RemindWrapper>
+                )}
+              </MainImage>
+            )}
+          </ImageArea>
+          <NextBtn>V</NextBtn>
+          <SlideCount>
+            <NowIndex>1</NowIndex>
+            <TotalIndex>/8</TotalIndex>
+          </SlideCount>
         </ImageWrapper>
         <InfoWrapper>
-          <form>
-            {formInputs.map((input) => {
-              if (input.option) {
-                return (
-                  <div>
-                    <label key={input.key}>{input.label}</label>
-                    <select
-                      onChange={(e) =>
-                        setForm({ ...form, [input.key]: e.target.value })
-                      }
-                    >
-                      {input.option.map((option) => (
-                        <option
-                          value={option}
-                          selected={option === form[input.key]}
-                        >
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                );
-              } else if (input.key === 'description') {
-                return (
-                  <div>
-                    <label key={input.key}>{input.label}</label>
-                    <textarea
-                      value={form[input.key]}
-                      onChange={(e) =>
-                        setForm({ ...form, [input.key]: e.target.value })
-                      }
-                      // onKeyDown={(e) =>
-                      //   e.key === 'Enter' &&
-                      //   setForm({ ...form, [input.key]: form[input.key] + ' ' })
-                      // }
-                      rows={5}
-                      cols={33}
-                    />
-                  </div>
-                );
-              }
-              return (
-                <div>
-                  <label key={input.key}>{input.label}</label>
-                  <input
-                    value={form[input.key]}
-                    onChange={(e) =>
-                      setForm({ ...form, [input.key]: e.target.value })
-                    }
-                  />
-                </div>
-              );
-            })}
-            {/* <div>
-            <span>備註</span>
-            <div
-              style={{
-                width: '100px',
-                height: '100px',
-                border: '1px solid black',
-              }}
-              contentEditable="true"
-              onInput={(e) => {
-                const description = e.target.innerText.replace('\n', '<br/>');
-                setForm({
-                  ...form,
-                  description,
-                });
-              }}
+          <FieldWrapper>
+            <FiledLabel>名稱</FiledLabel>
+            <TextInput
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
-          </div> */}
+          </FieldWrapper>
+          <SelectWrapper>
+            <HalfFieldWrapper>
+              <FiledLabel>分類</FiledLabel>
+              <SelectInput
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              >
+                {CATEGORY_OPTIONS.map((option) => (
+                  <option
+                    key={option}
+                    value={option}
+                    selected={option === form.category}
+                  >
+                    {option}
+                  </option>
+                ))}
+              </SelectInput>
+            </HalfFieldWrapper>
+            <HalfFieldWrapper>
+              <FiledLabel>狀態</FiledLabel>
+              <SelectInput
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+              >
+                {STATUS_OPTIONS.map((option) => (
+                  <option
+                    key={option}
+                    value={option}
+                    selected={option === form.status}
+                  >
+                    {option}
+                  </option>
+                ))}
+              </SelectInput>
+            </HalfFieldWrapper>
+          </SelectWrapper>
+          <FieldWrapper>
+            <FiledLabel>描述</FiledLabel>
+            <Description
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              rows={5}
+              cols={33}
+            />
+          </FieldWrapper>
 
-            <input
-              type="button"
-              value={isEdit ? '更新物品' : '上傳物品'}
-              disabled={
-                Object.values(form).includes('') ||
-                !images.some((image) => image !== '')
-              }
-              onClick={() =>
-                isEdit ? handleUpdateItems() : handleUploadItems(form)
-              }
-            />
-          </form>
+          <input
+            type="button"
+            value={isEdit ? '更新物品' : '上傳物品'}
+            disabled={
+              Object.values(form).includes('') ||
+              !images.some((image) => image !== '')
+            }
+            onClick={() =>
+              isEdit ? handleUpdateItems() : handleUploadItems(form)
+            }
+          />
         </InfoWrapper>
-      </Container>
+      </UploadContainer>
 
       <input
         id="uploadImage"
@@ -817,6 +935,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
           ))}
         </BulkContainer>
       </Container>
-    </>
+    </Container>
   );
 }

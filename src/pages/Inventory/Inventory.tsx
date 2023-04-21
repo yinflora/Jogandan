@@ -10,7 +10,9 @@ import Popout from './Popout';
 import Search from '../../components/Icon/Search';
 
 const Container = styled.div`
-  padding: 0 60px 60px 150px;
+  /* width: 1000px; */
+  margin: 0 auto;
+  padding: 0 250px 60px;
   color: #fff;
 `;
 
@@ -31,16 +33,16 @@ const TopWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const Title = styled.h1`
+const PageTitle = styled.h1`
   font-size: 3rem;
-  font-weight: 600;
-  letter-spacing: 0.2rem;
+  font-weight: 500;
+  letter-spacing: 0.4rem;
   text-transform: uppercase;
 `;
 
 const SearchField = styled.div`
   display: flex;
-  width: 425px;
+  width: 300px;
   flex-direction: column;
   flex-shrink: 1;
   align-items: end;
@@ -73,7 +75,7 @@ const SearchBtn = styled.button`
 `;
 
 const SearchText = styled.p`
-  font-size: 1.25rem;
+  /* font-size: 1.25rem; */
 `;
 
 const ItemContainer = styled.div`
@@ -84,7 +86,7 @@ const ItemContainer = styled.div`
 
 const FilterWrapper = styled.div`
   display: flex;
-  width: 20%;
+  width: 25%;
   height: 100%;
   margin-top: 70px;
   flex-direction: column;
@@ -95,6 +97,10 @@ const FilterTitle = styled.p`
   font-size: 1.25rem;
   letter-spacing: 0.2rem;
   color: #000;
+
+  &:first-of-type {
+    margin-bottom: 40px;
+  }
 `;
 
 const SubFilterWrapper = styled.div`
@@ -137,7 +143,7 @@ const Split = styled.div`
 
 const ProductWrapper = styled.div`
   display: grid;
-  width: 80%;
+  width: 75%;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(4, 1fr);
   grid-column-gap: 30px;
@@ -155,12 +161,19 @@ const Image = styled.img`
   object-position: center;
   aspect-ratio: 1/1;
   border: 0.5px solid #cdcdcd;
+
+  filter: grayscale(100%);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    filter: none;
+  }
 `;
 
 const Name = styled.p`
   margin-top: 30px;
   letter-spacing: 0.1rem;
-  color: #000;
+  color: #707070;
 `;
 
 const SUBCATEGORY: string[] = [
@@ -295,7 +308,7 @@ export default function Inventory() {
   return (
     <Container>
       <TopWrapper>
-        <Title>Inventory</Title>
+        <PageTitle>Inventory</PageTitle>
         <SearchField>
           <SearchWrapper>
             <SearchBar
@@ -346,7 +359,7 @@ export default function Inventory() {
           <FilterTitle onClick={() => setItems(itemsRef.current)}>
             All
           </FilterTitle>
-          <Split />
+          {/* <Split /> */}
           <FilterTitle>Category</FilterTitle>
           <SubFilterWrapper>
             {SUBCATEGORY.map((category) => (

@@ -4,8 +4,22 @@ import { getProcessedItems } from '../../utils/firebase';
 import styled from 'styled-components';
 import AuthContext from '../../context/authContext';
 
-const Title = styled.h1`
-  font-size: 4rem;
+const Background = styled.div`
+  position: absolute;
+  top: 175px;
+  z-index: -1;
+  width: 100vw;
+  height: 65vh;
+  background-color: #cdcdcd;
+`;
+
+const PageTitle = styled.h1`
+  margin-left: 125px;
+  font-size: 3rem;
+  font-weight: 500;
+  letter-spacing: 0.4rem;
+  text-transform: uppercase;
+  color: #000;
 `;
 
 const Image = styled.img`
@@ -14,15 +28,8 @@ const Image = styled.img`
 
 function Achievement() {
   const { uid } = useContext(AuthContext);
-  // const [galleryMode, setGalleryMode] = useState<boolean>(true);
   const [items, setItems] = useState<Array<any> | null>(null);
-  // const [years, setYears] = useState<[] | null>(null);
-  // const [selectedYear, setSelectedYear] = useState<number>(() =>
-  //   new Date().getFullYear()
-  // );
-  // const [filteredItems, setFilteredItems] = useState<[]>([]);
 
-  console.log(items);
   useEffect(() => {
     if (!uid) return;
     async function fetchData() {
@@ -31,67 +38,14 @@ function Achievement() {
         (a, b) => a.processedDate.seconds - b.processedDate.seconds
       );
       setItems(sortedItems);
-
-      // const yearsList = Array.from(
-      //   new Set(
-      //     processedItems.map((item) =>
-      //       new Date(item.processedDate.seconds * 1000).getFullYear()
-      //     )
-      //   )
-      // );
-      // setYears(yearsList);
     }
     fetchData();
   }, [uid]);
 
-  // useEffect(() => {
-  //   if (!items) return;
-
-  //   const selectedItems = items.filter(
-  //     (item) =>
-  //       new Date(item.processedDate.seconds * 1000).getFullYear() ===
-  //       selectedYear
-  //   );
-
-  //   const itemsByMonth = [];
-  //   for (let i = 0; i < 12; i++) {
-  //     const filteredItemsByMonth = selectedItems.filter(
-  //       (item) => new Date(item.processedDate.seconds * 1000).getMonth() === i
-  //     ).length;
-  //     itemsByMonth.push(filteredItemsByMonth);
-  //   }
-  //   // console.log(itemsByMonth);
-
-  //   setFilteredItems(itemsByMonth);
-  // }, [items, selectedYear]);
-
-  // if (items && years) {
   if (items) {
     return (
       <>
-        <Title>Achievement</Title>
-        {/* <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(Number(e.target.value))}
-        >
-          {years.map((year) => (
-            <option key={year} value={year} selected={year === selectedYear}>
-              {year}
-            </option>
-          ))}
-        </select>
-        <button onClick={() => setGalleryMode(true)}>Gallery</button>
-        <button onClick={() => setGalleryMode(false)}>Report</button>
-        {galleryMode ? (
-          <Gallery items={items} />
-        ) : (
-          <Report filteredItems={filteredItems} />
-        )}
-        <Level
-          percent={
-            items.filter((item) => item.status === '已處理').length / 100
-          }
-        /> */}
+        <PageTitle>Achievement</PageTitle>
         {items &&
           items.map((item) =>
             item.images.map(
@@ -103,6 +57,7 @@ function Achievement() {
                 )
             )
           )}
+        <Background />
       </>
     );
   }
