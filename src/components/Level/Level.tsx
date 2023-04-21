@@ -1,27 +1,30 @@
 import styled from 'styled-components';
 
 const Container = styled.div`
+  position: absolute;
+  top: 150px;
+  right: 60px;
   display: flex;
-  height: 100vh;
+  height: 75vh;
   gap: 20px;
 `;
 
 const Bar = styled.div`
   display: flex;
-  width: 15px;
+  width: 10px;
   height: 100%;
   flex-direction: column-reverse;
-  border-radius: 3px;
-  border: 1px solid #ccc;
+  border: 1px solid #8d9ca4;
 `;
 
 const Fill = styled.div<LevelProp>`
-  background-color: #000;
+  background-color: #8d9ca4;
   height: 100%;
   border-radius: inherit;
   transition: height 0.2s ease-in;
   height: ${({ percent }) => `${percent * 100}%`};
   position: relative;
+
   &:hover::before {
     content: '${({ percent }) => `${Math.round(percent * 100)}%`}';
     position: absolute;
@@ -30,9 +33,9 @@ const Fill = styled.div<LevelProp>`
     transform: translate(-100%, -50%);
     padding: 5px;
     background-color: #fff;
-    color: #000;
+    color: #8d9ca4;
     border-radius: 5px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -44,10 +47,11 @@ const LevelWrapper = styled.div`
 `;
 
 const Title = styled.p`
-  font-size: 1.5rem;
+  writing-mode: vertical-lr;
+  color: #8d9ca4;
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
 `;
-
-const Description = styled.p``;
 
 type LevelProp = {
   percent: number;
@@ -60,22 +64,10 @@ export default function Level({ percent }: LevelProp) {
         <Fill percent={percent} />
       </Bar>
       <LevelWrapper>
-        <div>
-          <Title>Master</Title>
-          <Description>完成 100 次斷捨離</Description>
-        </div>
-        <div>
-          <Title>Veteran</Title>
-          <Description>完成 50 次斷捨離</Description>
-        </div>
-        <div>
-          <Title>Seasoned</Title>
-          <Description>完成 10 次斷捨離</Description>
-        </div>
-        <div>
-          <Title>Rookie</Title>
-          <Description>完成初次斷捨離</Description>
-        </div>
+        <Title>Master</Title>
+        <Title>Veteran</Title>
+        <Title>Seasoned</Title>
+        <Title>Rookie</Title>
       </LevelWrapper>
     </Container>
   );

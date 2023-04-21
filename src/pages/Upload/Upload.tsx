@@ -92,6 +92,7 @@ const TotalIndex = styled.span`
 
 const ImageArea = styled.div`
   display: flex;
+  height: 500px;
 `;
 
 const MainImage = styled.div<{ coverUrl: string }>`
@@ -131,13 +132,14 @@ const Remind = styled.p`
 const SubImageContainer = styled.div`
   position: relative;
   display: flex;
+  height: 100%;
   /* margin-top: 10px;
   overflow-x: scroll; */
-  gap: 10px;
+  /* gap: 10px; */
   flex-wrap: nowrap;
   flex-direction: column;
   overflow-y: scroll;
-  align-items: stretch;
+  /* align-items: stretch; */
 `;
 
 // const NextPage = styled.div`
