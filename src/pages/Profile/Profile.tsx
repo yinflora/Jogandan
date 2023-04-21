@@ -4,47 +4,133 @@ import { getItems } from '../../utils/firebase';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
+const Container = styled.div`
+  margin: 0 auto;
+  padding: 0 300px 60px 150px;
 `;
 
-const Image = styled.img`
-  width: 100px;
-  height: 100px;
+const Background = styled.div`
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 120vh;
+  background-color: #fff;
+`;
+
+const WelcomeMessage = styled.p`
+  letter-spacing: 0.2rem;
+  line-height: 1.5rem;
+  text-transform: uppercase;
+  text-align: end;
+`;
+
+const UserInfo = styled.div`
+  display: flex;
+  align-items: end;
+  gap: 40px;
+`;
+
+const UserImage = styled.img`
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
 `;
 
-const InformationWrapper = styled.div`
+const InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 20px;
+`;
+
+const UserName = styled.p`
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+`;
+
+const UserGrade = styled.p`
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  color: #8d9ca4;
+`;
+
+const VisionBoard = styled.img`
+  width: 100%;
+  margin-top: 100px;
+  aspect-ratio: 4/5;
+  background-color: gray;
+`;
+
+const PeriodFilter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 150px;
+  color: #fff;
+`;
+
+const PeriodWrapper = styled.div`
+  display: flex;
+  align-items: center;
   gap: 10px;
 `;
 
-const Name = styled.p`
-  font-size: 2rem;
-`;
-
-const Grade = styled.p`
-  color: #acaea9;
-`;
-
 const Label = styled.label`
-  width: 50px;
+  width: 70px;
 `;
 
-const DateInput = styled.input``;
+const InputWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid #fff;
+`;
 
-// const VisionBoard = styled.div`
-//   width: 70vw;
-//   height: 60vh;
-//   background-color: gray;
-// `;
+const DateInput = styled.input`
+  width: 150px;
+  font-family: 'TT Norms Pro', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.2rem;
+  color: #fff;
+`;
+
+const Dash = styled.div`
+  width: 10px;
+  height: 1px;
+  background-color: #fff;
+`;
+
+const Cancel = styled.button`
+  color: #fff;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const FilterWrapper = styled.div``;
+
+const FilterBtn = styled.button`
+  /* width: 100px; */
+  padding: 0 20px;
+  border-left: 1px solid #fff;
+  letter-spacing: 0.1rem;
+  color: #fff;
+
+  &:first-of-type {
+    border: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
 
 const QtyWrapper = styled.div``;
 
@@ -53,10 +139,6 @@ const Qty = styled.div`
 `;
 
 const QtyTitle = styled.p``;
-
-const FilterBtn = styled.button`
-  border: 1px solid black;
-`;
 
 type Row = string[];
 
@@ -357,70 +439,95 @@ export default function Profile() {
 
   return (
     <>
-      {/* <Title>Profile</Title> */}
-      //Todo: 昨天以前才可以popout
-      <div>
+      <Container>
+        <WelcomeMessage>
+          WELCOME
+          <br />
+          BACK
+        </WelcomeMessage>
+
+        {/* <Title>Profile</Title> */}
+        {/* //Todo: 昨天以前才可以popout */}
+        {/* <div>
         <button onClick={() => setCanPlay(false)}>X</button>
         你今天TOUCH了嗎？
         <Link to="/sparkJoy">馬上開始</Link>
-      </div>
-      <Wrapper>
-        <Image src={user.photoURL as string} />
-        <InformationWrapper>
-          <Name>{user.displayName}</Name>
-          <Grade>{items && handleLevel()}</Grade>
-        </InformationWrapper>
-      </Wrapper>
-      <Label>Period:</Label>
-      <DateInput
-        type="date"
-        value={period.start}
-        onChange={(e) => setPeriod({ ...period, start: e.target.value })}
-      />
-      <span>~</span>
-      <DateInput
-        type="date"
-        value={period.end}
-        onChange={(e) => setPeriod({ ...period, end: e.target.value })}
-      />
-      <FilterBtn
-        onClick={() => setPeriod({ start: getLastWeek(), end: getToday() })}
-      >
-        過去7天
-      </FilterBtn>
-      <FilterBtn onClick={setThisMonth}>本月</FilterBtn>
-      <FilterBtn onClick={setLastMonth}>上個月</FilterBtn>
-      <FilterBtn onClick={setThisYear}>今年</FilterBtn>
-      <FilterBtn onClick={setLastYear}>去年</FilterBtn>
-      <FilterBtn onClick={() => setPeriod({ start: '', end: '' })}>
-        清空
-      </FilterBtn>
-      {/* <VisionBoard></VisionBoard> */}
-      <QtyWrapper>
-        <Qty>{itemRef.current?.length}</Qty>
-        <QtyTitle>現有物品總數量</QtyTitle>
-      </QtyWrapper>
-      <QtyWrapper>
-        <Qty>
-          {items?.filter((item: any) => item.status === '已處理').length}
-        </Qty>
-        <QtyTitle>減少數量</QtyTitle>
-      </QtyWrapper>
-      <QtyWrapper>
-        <Qty>
-          {items?.filter((item: any) => item.status !== '已處理').length}
-        </Qty>
-        <QtyTitle>增加數量</QtyTitle>
-      </QtyWrapper>
-      <Level
-        percent={
-          itemRef.current
-            ? itemRef.current.filter((item) => item.status === '已處理')
-                .length / 100
-            : 0
-        }
-      />
-      <Report processedItems={processedItems} />
+      </div> */}
+        <UserInfo>
+          <UserImage src={user.photoURL as string} />
+          <InfoWrapper>
+            <UserName>{user.displayName}</UserName>
+            <UserGrade>{items && handleLevel()}</UserGrade>
+          </InfoWrapper>
+        </UserInfo>
+
+        <Level
+          percent={
+            itemRef.current
+              ? itemRef.current.filter((item) => item.status === '已處理')
+                  .length / 100
+              : 0
+          }
+        />
+
+        <VisionBoard />
+
+        <PeriodFilter>
+          <PeriodWrapper>
+            <Label htmlFor="date">PERIOD</Label>
+            <InputWrapper>
+              <DateInput
+                id="date"
+                type="date"
+                value={period.start}
+                onChange={(e) =>
+                  setPeriod({ ...period, start: e.target.value })
+                }
+              />
+              <Dash />
+              <DateInput
+                id="date"
+                type="date"
+                value={period.end}
+                onChange={(e) => setPeriod({ ...period, end: e.target.value })}
+              />
+            </InputWrapper>
+            <Cancel onClick={() => setPeriod({ start: '', end: '' })}>X</Cancel>
+          </PeriodWrapper>
+
+          <FilterWrapper>
+            <FilterBtn
+              onClick={() =>
+                setPeriod({ start: getLastWeek(), end: getToday() })
+              }
+            >
+              過去 7 天
+            </FilterBtn>
+            <FilterBtn onClick={setThisMonth}>本月</FilterBtn>
+            <FilterBtn onClick={setLastMonth}>上個月</FilterBtn>
+            <FilterBtn onClick={setThisYear}>今年</FilterBtn>
+            <FilterBtn onClick={setLastYear}>去年</FilterBtn>
+          </FilterWrapper>
+        </PeriodFilter>
+        <QtyWrapper>
+          <Qty>{itemRef.current?.length}</Qty>
+          <QtyTitle>現有物品總數量</QtyTitle>
+        </QtyWrapper>
+        <QtyWrapper>
+          <Qty>
+            {items?.filter((item: any) => item.status === '已處理').length}
+          </Qty>
+          <QtyTitle>減少數量</QtyTitle>
+        </QtyWrapper>
+        <QtyWrapper>
+          <Qty>
+            {items?.filter((item: any) => item.status !== '已處理').length}
+          </Qty>
+          <QtyTitle>增加數量</QtyTitle>
+        </QtyWrapper>
+        <Report processedItems={processedItems} />
+      </Container>
+      <Background />
     </>
   );
 }

@@ -40,9 +40,11 @@ const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
 function App() {
   const location = useLocation();
 
-  const backgroundColor = location.pathname.includes('/upload')
-    ? '#8D9CA4'
-    : '#fff';
+  const backgroundColor =
+    location.pathname.includes('/upload') ||
+    location.pathname.includes('/profile')
+      ? '#8D9CA4'
+      : '#fff';
 
   return (
     <>
