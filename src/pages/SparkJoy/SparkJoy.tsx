@@ -4,24 +4,170 @@ import AuthContext from '../../context/authContext';
 import { Timestamp } from 'firebase/firestore';
 import styled from 'styled-components';
 import { updateItem } from '../../utils/firebase';
+import circle from './circle-blue.png';
+import cross from './cross-blue.png';
+import undo from './undo.png';
 
-const CardContainer = styled.div`
-  width: 90vw;
-  max-width: 260px;
-  height: 300px;
-  position: relative;
+import Check from '../../components/Icon/Check';
+import Cancel from '../../components/Icon/Cancel';
+
+const Container = styled.div`
+  display: flex;
+  width: 100vw;
+  /* height: 100vh; */
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
 `;
 
-const Card = styled.div`
+const Background = styled.div`
   position: absolute;
+  z-index: -1;
+  bottom: 0;
+  width: 100vw;
+  height: 250px;
+  background-color: #8d9ca4;
+`;
+
+const Choice = styled.p`
+  font-size: 4rem;
+  font-weight: 600;
+  line-height: 2.5rem;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  color: #8d9ca4;
+`;
+
+const Yes = styled(Choice)`
+  position: absolute;
+  z-index: -1;
+  /* right: 140px; */
+  right: 10%;
+  bottom: 250px;
+`;
+
+const No = styled(Choice)`
+  position: absolute;
+  z-index: -1;
+  /* left: 140px; */
+  left: 10%;
+  bottom: 250px;
+`;
+
+const QuestionText = styled.p`
+  position: relative;
+  font-size: 1.5rem;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  color: #000;
+
+  ::after {
+    content: '${(props) => (props.children as string).slice(-4)}';
+    color: #8d9ca4;
+    position: absolute;
+    right: 0;
+  }
+`;
+
+const CardContainer = styled.div`
+  position: relative;
+  width: 300px;
+  height: 450px;
+  margin: 20px auto 40px;
+`;
+
+const TinderCardWrapper = styled(TinderCard)`
+  position: absolute;
+  /* top: 170px; */
+  width: 100%;
+  height: 100%;
+  /* margin: 20px auto 40px; */
+  padding: 30px;
+  border-radius: 10px;
   background-color: #fff;
-  width: 80vw;
-  max-width: 260px;
-  height: 300px;
-  box-shadow: 0px 0px 60px 0px rgba(0, 0, 0, 0.3);
-  border-radius: 20px;
+  border: 1px solid black;
+
+  /* & :last-of-type {
+    box-shadow: 0px 4px 60px rgba(0, 0, 0, 0.1);
+  } */
+`;
+
+// const CardContainer = styled.div`
+//   /* width: 90vw; */
+//   /* max-width: 260px; */
+//   /* height: 300px; */
+//   position: absolute;
+//   width: 100%;
+//   height: 100%;
+//   /* margin: 20px auto 40px; */
+//   padding: 30px;
+//   /* background-color: #fff; */
+//   /* box-shadow: 0px 4px 60px rgba(0, 0, 0, 0.1); */
+// `;
+
+const Card = styled.div`
+  /* position: absolute; */
+  /* width: 80vw;
+  max-width: 300px;
+  height: 500px; */
+  width: 100%;
+  aspect-ratio: 1/1;
   background-size: cover;
   background-position: center;
+`;
+
+const InfoWrapper = styled.div`
+  display: flex;
+  padding-top: 20px;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const Category = styled.p`
+  /* margin-bottom: 10px; */
+  font-size: 0.75rem;
+  letter-spacing: 0.1rem;
+`;
+
+const Name = styled.p`
+  font-size: 1.5rem;
+  letter-spacing: 0.1rem;
+`;
+
+const StatusWrapper = styled.div`
+  display: flex;
+  /* width: 50px; */
+  margin: auto 0 0 auto;
+  /* height: 50px; */
+  flex-direction: column;
+  gap: 5px;
+  align-self: flex-end;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StatusIcon = styled.img`
+  width: 50px;
+  height: 50px;
+`;
+
+//!fixme
+const Undo = styled.img`
+  position: absolute;
+  /* top: 190px;
+  right: 530px; */
+  top: 0;
+  right: -40px;
+  width: 30px;
+  height: 30px;
+`;
+
+const Status = styled.p`
+  font-size: 1.25rem;
+  text-align: center;
+  letter-spacing: 0.1rem;
+  color: #8d9ca4;
 `;
 
 type Item = {
@@ -64,6 +210,7 @@ export default function SparkJoy() {
 
   // console.log(items);
   // console.log(randomItems);
+  console.log(lastDirection);
 
   useEffect(() => {
     if (!items) return;
@@ -162,6 +309,7 @@ export default function SparkJoy() {
   };
 
   async function handleLike(index: number) {
+    console.log('hihihihih');
     if (!randomItems) return;
 
     const updatedItem = randomItems[index];
@@ -186,19 +334,20 @@ export default function SparkJoy() {
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <h1>以下品項是否還讓你怦然心動呢？</h1>
+    <Container>
+      {/* <h1>以下品項是否還讓你怦然心動呢？</h1> */}
+      <QuestionText>Does it spark joy?</QuestionText>
+
+      {/* <TinderCardWrapper> */}
       <CardContainer>
+        <Undo
+          // style={{ backgroundColor: !canGoBack && '#c3c4d3' }}
+          src={undo}
+          onClick={() => goBack()}
+        />
         {randomItems &&
           randomItems.map((item, index) => (
-            <TinderCard
+            <TinderCardWrapper
               // className="swipe"
               // style={{ position: 'absolute' }}
               ref={childRefs[index]}
@@ -207,7 +356,8 @@ export default function SparkJoy() {
               // swipeRequirementType="position"
               // onSwipeRequirementFulfilled={() => alert('更新成功！')}
               onSwipe={(direction) => {
-                console.log(direction);
+                // console.log(direction);
+                console.log('酷東西');
                 swiped(direction, item.id, index);
                 if (direction === 'right') {
                   console.log('like!');
@@ -219,43 +369,46 @@ export default function SparkJoy() {
               }}
               onCardLeftScreen={() => outOfFrame(item.id, index)}
             >
-              <Card
-                style={{ backgroundImage: `url(${item.images[0]})` }}
-                // style={{
-                //   width: 50,
-                //   height: 100,
-                //   backgroundColor: '#828282',
-                //   backgroundImage: `url(${item.images[0]})`,
-                // }}
-                // className="card"
-              >
-                <p>{item.name}</p>
-                <p>{item.status}</p>
-              </Card>
-            </TinderCard>
+              {/* <CardContainer> */}
+              <Card style={{ backgroundImage: `url(${item.images[0]})` }} />
+              <InfoWrapper>
+                <Category>{item.category}</Category>
+                <Name>{item.name}</Name>
+                <StatusWrapper>
+                  <StatusIcon src={item.status === '保留' ? circle : cross} />
+                  <Status>{item.status}</Status>
+                </StatusWrapper>
+              </InfoWrapper>
+              {/* </CardContainer> */}
+            </TinderCardWrapper>
           ))}
       </CardContainer>
+      {/* </TinderCardWrapper> */}
       <div className="buttons">
         <button
           // style={{ backgroundColor: !canSwipe && '#c3c4d3' }}
           onClick={() => swipe('left')}
         >
-          Swipe left!
+          <Cancel />
         </button>
-        <button
-          // style={{ backgroundColor: !canGoBack && '#c3c4d3' }}
-          onClick={() => goBack()}
-        >
-          Undo swipe!
-        </button>
-        <button
+
+        {/* <button
           // style={{ backgroundColor: !canSwipe && '#c3c4d3' }}
           onClick={() => swipe('right')}
         >
           Swipe right!
+        </button> */}
+        <button
+          onClick={(e) => {
+            console.log('hihihih222');
+            e.preventDefault();
+            swipe('right');
+          }}
+        >
+          <Check />
         </button>
       </div>
-      {lastDirection ? (
+      {/* {lastDirection ? (
         <h2 key={lastDirection} className="infoText">
           You swiped {lastDirection}
         </h2>
@@ -263,7 +416,10 @@ export default function SparkJoy() {
         <h2 className="infoText">
           Swipe a card or press a button to get Restore Card button visible!
         </h2>
-      )}
-    </div>
+      )} */}
+      <Background />
+      <Yes>YES</Yes>
+      <No>NO</No>
+    </Container>
   );
 }
