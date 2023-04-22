@@ -1,19 +1,27 @@
-// import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const Svg = styled.svg`
-  display: block;
+  /* display: block;
   width: 1000px;
   height: 600px;
+  overflow: visible; */
+  transform: scale(0.85) translate(-10%, -15%);
+  /* transform: translate(2, 1); */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 `;
 
 const Line = styled.line`
-  stroke: #acaea9;
+  stroke: #fff;
 `;
 
 const Text = styled.text`
-  font-size: 12px;
-  fill: #acaea9;
+  font-size: 0.75rem;
+  fill: #fff;
 `;
 
 const XTag = styled(Text)`
@@ -26,7 +34,7 @@ const YTag = styled(Text)`
 
 const Rect = styled.rect`
   width: 25px;
-  fill: #7e807c;
+  fill: #fff;
 `;
 
 const Qty = styled(Text)`
@@ -54,23 +62,7 @@ const CATEGORY: Row = [
   '其他',
 ];
 
-// const MONTHS: month[] = [
-//   'Jan',
-//   'Feb',
-//   'Mar',
-//   'Apr',
-//   'May',
-//   'Jun',
-//   'Jul',
-//   'Aug',
-//   'Sep',
-//   'Oct',
-//   'Nov',
-//   'Dec',
-// ];
 const QUANTITY: Column = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-
-// const Items: data = [5, 23, 20, 15, 60, 78, 100, 96, 3, 34, 66, 12];
 
 const X_START_AXIS: number = 50;
 const X_END_AXIS: number = 1000;
@@ -91,25 +83,8 @@ type ReportProps = {
 };
 
 export default function Report({ processedItems }: ReportProps) {
-  // const [qty, setQty] = useState<Column>([]);
-
-  // useEffect(() => {
-  //   if (!processedItems) return;
-
-  //   const maxQty = Math.max(...processedItems);
-  //   const minQty = Math.min(...processedItems);
-  //   const distance = (maxQty - minQty) / 10;
-  //   // console.log(maxQty, minQty, range);
-
-  //   const QUANTITY: Column = [];
-  //   for (let i = 0; i <= 10; i++) {
-  //     QUANTITY.push(Math.round((minQty + i * distance) * 100) / 100);
-  //   }
-  //   setQty(QUANTITY);
-  // }, [processedItems]);
-
   return (
-    <Svg>
+    <Svg preserveAspectRatio="xMinYMin meet">
       <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
       {CATEGORY.map((item: month, index: number) => (
         <XTag
