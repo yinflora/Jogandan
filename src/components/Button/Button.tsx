@@ -31,6 +31,14 @@ const StyledButton = styled.button<ButtonProps>`
   &:hover {
     cursor: pointer;
   }
+
+  ${({ disabled }) =>
+    disabled &&
+    css`
+      &:hover {
+        cursor: not-allowed;
+      }
+    `}
 `;
 
 type ButtonProps = {

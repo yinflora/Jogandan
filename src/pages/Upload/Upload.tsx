@@ -175,11 +175,11 @@ const SubImageContainer = styled.div`
   height: 100%;
   /* margin-top: 10px;
   overflow-x: scroll; */
-  gap: 10px;
-  flex-wrap: nowrap;
+  /* gap: 10px; */
+  /* flex-wrap: nowrap; */
   flex-direction: column;
   overflow-y: scroll;
-  justify-content: center;
+  /* justify-content: center; */
   /* align-items: stretch; */
 `;
 
@@ -193,14 +193,17 @@ const SubImageContainer = styled.div`
 //   background-color: #000;
 // `;
 
-const SubImageWrapper = styled.div<{ isShow: boolean }>`
+// const SubImageWrapper = styled.div<{ isShow: boolean }>`
+/* display: ${({ isShow }) => (isShow ? 'block' : 'none')}; */
+
+const SubImageWrapper = styled.div`
   position: relative;
-  display: ${({ isShow }) => (isShow ? 'block' : 'none')};
   /* width: calc((100% - 20px) / 4);
   flex-shrink: 0; */
+  margin: 5px;
   height: calc((100% - 40px) / 4);
   aspect-ratio: 1/1;
-  /* flex-shrink: 0 0 25%; */
+  flex-shrink: 0 0 25%;
 `;
 
 // const UploadBtn = styled.div<{ canAdd: boolean }>`
@@ -482,7 +485,17 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
 
-  const [images, setImages] = useState(Array(10).fill(''));
+  // const [singleForm, setSingleForm] = useState<Form>({
+  //   name: '',
+  //   category: '',
+  //   status: '',
+  //   description: '',
+  //   images: [],
+  // });
+
+  // const [images, setImages] = useState(Array(10).fill(''));
+
+  const [images, setImages] = useState(Array(8).fill(''));
   const [form, setForm] = useState<Form>({
     name: '',
     category: '',
@@ -519,12 +532,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     if (isEdit && id) getItem();
   }, []);
 
-  // useEffect(() => {
-  //   if(!isEdit){
-
-  //   }
-  // },[isEdit]);
-
   useEffect(() => {
     if (!showCamera) return;
 
@@ -542,18 +549,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     }
     startCamera();
   }, [showCamera]);
-
-  // async function startCamera() {
-  //   if (!videoRef.current) return;
-
-  //   try {
-  //     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  //     videoRef.current.srcObject = stream;
-  //     setShowCamera(true);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
 
   function stopCamera() {
     if (!videoRef.current) return;
@@ -625,17 +620,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       const snapshot = await uploadBytes(imageRef, file);
       const url = await getDownloadURL(snapshot.ref);
 
-      // urlList.push(url);
-      // const imageList = [...images];
-      // const startIndex = imageList.findIndex((image) => image === '');
-      // imageList.splice(startIndex, urlList.length, ...urlList);
-      // setImages(imageList);
-      // setForm({ ...form, images: imageList });
-
       if (isBulkMode) {
         console.log('批量上傳');
         urlList.push({ images: [url] });
-        // setBulkImages(urlList);
       } else {
         console.log('單品上傳');
         urlList.push(url);
@@ -645,34 +632,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         setImages(imageList);
         setForm({ ...form, images: imageList });
       }
-
-      // urlList.push(url);
-      //   const imageList = [...images];
-      //   const startIndex = imageList.findIndex((image) => image === '');
-      //   imageList.splice(startIndex, urlList.length, ...urlList);
-      //   setImages(imageList);
-      //   setForm({ ...form, images: imageList });
-
-      // const uploadTask = uploadBytesResumable(imageRef, file);
-
-      // uploadTask.on(
-      //   'state_changed',
-      //   () => {}, // 處理函數
-      //   (err) => console.log(err),
-      //   () => {
-      //     getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-      //       urlList.push(url);
-      //       const imageList = [...images];
-      //       const startIndex = imageList.findIndex((image) => image === '');
-      //       imageList.splice(startIndex, urlList.length, ...urlList);
-      //       setImages(imageList);
-      //       setForm({ ...form, images: imageList });
-      //     });
-      //   }
-      // );
     }
     setBulkForms(urlList);
-    // return null;
   }
 
   function handleDeleted(index: number) {
@@ -812,12 +773,12 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     onDragOver={(e) => handleDragOverImg(e, index)}
                     onDrop={(e) => image !== '' && handleDrop(e, index)}
                     // isVisible={image !== '' || index === images.indexOf('') + 1}
-                    isShow={
-                      images[index] !== '' ||
-                      (images.every((image) => image === '') && index < 4) ||
-                      (images.some((image) => image !== '') &&
-                        images.indexOf('') === index)
-                    }
+                    // isShow={
+                    //   images[index] !== '' ||
+                    //   (images.every((image) => image === '') && index < 4) ||
+                    //   (images.some((image) => image !== '') &&
+                    //     images.indexOf('') === index)
+                    // }
                   >
                     <div
                       // draggable={images.some((image) => image !== '') ? true : false}
@@ -876,17 +837,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     {images[0] === '' && (
                       <RemindWrapper>
                         <ImageIcon src={image} />
-                        <Remind>最多上傳 10 張</Remind>
-                        {/* {showCamera ? (
-                <div>
-                  <video ref={videoRef} autoPlay />
-                  <button onClick={takePhoto}>Take Photo</button>
-                </div>
-              ) : (
-                <button onClick={startCamera}>Open Camera</button>
-              )} */}
-
-                        {/* {!showCamera && <button onClick={startCamera}>拍照上傳</button>} */}
+                        <Remind>最多上傳 8 張</Remind>
                         {!showCamera && (
                           <Button
                             buttonType="normal"
