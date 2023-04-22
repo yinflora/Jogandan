@@ -6,11 +6,11 @@ import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
 // import { Link } from 'react-router-dom';
 
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 const Container = styled.div`
   margin: 0 auto;
-  padding: 0 300px 60px 150px;
+  padding: 0 280px 60px 150px;
 `;
 
 const Background = styled.div`
@@ -117,7 +117,6 @@ const Cancel = styled.button`
 const FilterWrapper = styled.div``;
 
 const FilterBtn = styled.button`
-  /* width: 100px; */
   padding: 0 20px;
   border-left: 1px solid #fff;
   letter-spacing: 0.1rem;
@@ -132,13 +131,60 @@ const FilterBtn = styled.button`
   }
 `;
 
-const QtyWrapper = styled.div``;
-
-const Qty = styled.div`
-  font-size: 2rem;
+const AnalyzeWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 500px;
+  margin-top: 50px;
 `;
 
-const QtyTitle = styled.p``;
+const ReportWrapper = styled.div`
+  position: relative;
+  /* width: 100%; */
+  /* height: 100%; */
+  width: 100%;
+  height: 0;
+  padding-top: 60%;
+  /* background-color: #000; */
+  overflow: hidden;
+`;
+
+const QtyContainer = styled.div`
+  display: flex;
+  /* width: 10%; */
+  height: 100%;
+  /* padding-top: 50px; */
+  flex-direction: column;
+  /* justify-content: space-around; */
+  /* gap: 30px; */
+  /* margin-left: 20px; */
+`;
+
+const QtyWrapper = styled.div`
+  display: flex;
+  /* height: calc(100% / 3 - 20px); */
+  width: 120px;
+  height: 120px;
+  margin-top: 30px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* aspect-ratio: 1/1; */
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  text-align: center;
+`;
+
+const Qty = styled.div`
+  margin-bottom: 10px;
+  font-size: 3rem;
+`;
+
+const QtyTitle = styled.p`
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
+`;
 
 type Row = string[];
 
@@ -509,23 +555,31 @@ export default function Profile() {
             <FilterBtn onClick={setLastYear}>去年</FilterBtn>
           </FilterWrapper>
         </PeriodFilter>
-        <QtyWrapper>
-          <Qty>{itemRef.current?.length}</Qty>
-          <QtyTitle>現有物品總數量</QtyTitle>
-        </QtyWrapper>
-        <QtyWrapper>
-          <Qty>
-            {items?.filter((item: any) => item.status === '已處理').length}
-          </Qty>
-          <QtyTitle>減少數量</QtyTitle>
-        </QtyWrapper>
-        <QtyWrapper>
-          <Qty>
-            {items?.filter((item: any) => item.status !== '已處理').length}
-          </Qty>
-          <QtyTitle>增加數量</QtyTitle>
-        </QtyWrapper>
-        <Report processedItems={processedItems} />
+
+        <AnalyzeWrapper>
+          <ReportWrapper>
+            <Report processedItems={processedItems} />
+          </ReportWrapper>
+
+          <QtyContainer>
+            <QtyWrapper>
+              <Qty>{itemRef.current?.length}</Qty>
+              <QtyTitle>TOTAL</QtyTitle>
+            </QtyWrapper>
+            <QtyWrapper>
+              <Qty>
+                {items?.filter((item: any) => item.status === '已處理').length}
+              </Qty>
+              <QtyTitle>REDUCE</QtyTitle>
+            </QtyWrapper>
+            <QtyWrapper>
+              <Qty>
+                {items?.filter((item: any) => item.status !== '已處理').length}
+              </Qty>
+              <QtyTitle>INCREASE</QtyTitle>
+            </QtyWrapper>
+          </QtyContainer>
+        </AnalyzeWrapper>
       </Container>
       <Background />
     </>
