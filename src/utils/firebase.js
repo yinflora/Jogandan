@@ -96,6 +96,7 @@ async function createUser(userAuth) {
 
 export async function uploadItems(userId, form) {
   try {
+    console.log('有進來嗎...');
     const { name, category, status, description, images } = form;
     const itemsRef = collection(
       db,

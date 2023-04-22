@@ -46,7 +46,8 @@ type ButtonProps = {
   buttonType: 'dark' | 'normal' | 'light';
   children: string;
   disabled?: boolean;
-  onClick?: () => void;
+  // eslint-disable-next-line no-unused-vars
+  onClick?: (param?: any) => void;
 };
 
 export default function Button({
