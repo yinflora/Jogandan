@@ -22,13 +22,14 @@ import Button from '../../components/Button/Button';
 
 const Container = styled.div`
   margin: 0 auto;
-  padding: 0 250px 60px;
+  padding: 0 250px;
   color: #fff;
 `;
 
 const TitleWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  /* width: 100%; */
+  /* justify-content: space-between; */
   align-items: end;
 `;
 
@@ -39,7 +40,8 @@ const PageTitle = styled.h1`
   text-transform: uppercase;
 `;
 
-const ModeToggler = styled.button`
+const ModeToggler = styled.button<{ isBulkMode: boolean }>`
+  margin-left: ${({ isBulkMode }) => (isBulkMode ? '10px' : 'auto')};
   font-size: 1.25rem;
   border-bottom: 1px solid #fff;
   color: #fff;
@@ -47,6 +49,12 @@ const ModeToggler = styled.button`
   &:hover {
     cursor: pointer;
   }
+`;
+
+const BulkUploadWrapper = styled.div`
+  display: flex;
+  margin-left: auto;
+  gap: 20px;
 `;
 
 const UploadContainer = styled.div`
@@ -95,6 +103,14 @@ const BtnWrapper = styled.div`
 
 // `;
 
+const BulkCountWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 80px;
+  justify-content: end;
+  align-items: center;
+`;
+
 const SlideCount = styled.div`
   color: #fff;
 `;
@@ -120,7 +136,11 @@ const MainImageWrapper = styled.div`
   aspect-ratio: 1/1;
 `;
 
-const MainImage = styled.div<{ coverUrl: string }>`
+// const MainImage = styled.div<{ coverUrl: string }>`
+/* background: ${({ coverUrl }) =>
+    coverUrl === '' ? 'none' : `center / cover no-repeat url(${coverUrl})`}; */
+
+const MainImage = styled.div`
   /* width: 100%; */
   /* height: 100%; */
   object-fit: cover;
@@ -128,8 +148,6 @@ const MainImage = styled.div<{ coverUrl: string }>`
   aspect-ratio: 1/1;
   border: 1px dashed #fff;
   background-color: rgb(255, 255, 255, 0.2);
-  /* background: ${({ coverUrl }) =>
-    coverUrl === '' ? 'none' : `center / cover no-repeat url(${coverUrl})`}; */
 `;
 
 const ImageIcon = styled.img`
@@ -649,7 +667,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     if (isBulkMode) {
       setBulkForms([]);
     } else {
-      setImages(Array(10).fill(''));
+      // setImages(Array(10).fill(''));
+      setImages(Array(8).fill(''));
       setForm({
         name: '',
         category: '',
@@ -724,38 +743,70 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     <Container>
       <TitleWrapper>
         <PageTitle>UPLOAD</PageTitle>
-        <ModeToggler onClick={() => setIsBulkMode(!isBulkMode)}>
+        <ModeToggler
+          isBulkMode={isBulkMode && bulkForms.length > 0}
+          onClick={() => {
+            setIsBulkMode(!isBulkMode);
+            setBulkForms([]);
+          }}
+        >
           {isBulkMode ? '單品上傳' : '批量上傳'}
         </ModeToggler>
+        {bulkForms.length > 0 && (
+          <BulkUploadWrapper>
+            <input
+              id="uploadImage"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
+              multiple
+              // capture
+              style={{ display: 'none' }}
+            />
+            <label htmlFor="uploadImage">
+              <Button buttonType="light" onClick={handleSelectImage}>
+                選擇照片
+              </Button>
+            </label>
+            <Button
+              buttonType="dark"
+              onClick={() => bulkForms.map((item) => handleUploadItems(item))}
+            >
+              確認上傳
+            </Button>
+          </BulkUploadWrapper>
+        )}
       </TitleWrapper>
 
       {isBulkMode ? (
-        <BulkImageWrapper>
-          <ImageIcon src={image} />
-          <Remind>選擇照片進行批量上傳</Remind>
-          <RemindBlack> 最多只能選擇 16 張</RemindBlack>
-          <input
-            id="uploadImage"
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
-            multiple
-            // capture
-            style={{ display: 'none' }}
-          />
-          {/* <label htmlFor="uploadImage">
+        bulkForms.length === 0 && (
+          <BulkImageWrapper>
+            <ImageIcon src={image} />
+            <Remind>選擇照片進行批量上傳</Remind>
+            <RemindBlack> 最多只能選擇 16 張</RemindBlack>
+            <input
+              id="uploadImage"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
+              multiple
+              // capture
+              style={{ display: 'none' }}
+            />
+            {/* <label htmlFor="uploadImage">
         <SelectImage>
           選擇照片進行批量上傳
           <br />
           最多只能選擇 16 張
         </SelectImage>
       </label> */}
-          <label htmlFor="uploadImage">
-            <Button buttonType="dark" onClick={handleSelectImage}>
-              選擇照片
-            </Button>
-          </label>
-        </BulkImageWrapper>
+            <label htmlFor="uploadImage">
+              <Button buttonType="dark" onClick={handleSelectImage}>
+                選擇照片
+              </Button>
+            </label>
+          </BulkImageWrapper>
+        )
       ) : (
         <UploadContainer>
           <ImageWrapper>
@@ -833,44 +884,41 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 </VideoWrapper>
               ) : (
                 <MainImageWrapper>
-                  <MainImage coverUrl={images[0]}>
-                    {images[0] === '' && (
-                      <RemindWrapper>
-                        <ImageIcon src={image} />
-                        <Remind>最多上傳 8 張</Remind>
-                        {!showCamera && (
-                          <Button
-                            buttonType="normal"
-                            onClick={() => setShowCamera(true)}
-                          >
-                            拍照上傳
-                          </Button>
-                        )}
+                  <MainImage>
+                    {/* {images[0] === '' && ( */}
+                    <RemindWrapper>
+                      <ImageIcon src={image} />
+                      <Remind>最多上傳 8 張</Remind>
+                      {/* {!showCamera && ( */}
+                      <Button
+                        buttonType="normal"
+                        onClick={() => setShowCamera(true)}
+                      >
+                        拍照上傳
+                      </Button>
+                      {/* )} */}
 
-                        <input
-                          id="uploadImage"
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleFileUpload(
-                              e,
-                              images.filter((item) => item === '').length
-                            )
-                          }
-                          multiple
-                          capture
-                          style={{ display: 'none' }}
-                        />
-                        <label htmlFor="uploadImage">
-                          <Button
-                            buttonType="normal"
-                            onClick={handleSelectImage}
-                          >
-                            選擇照片
-                          </Button>
-                        </label>
-                      </RemindWrapper>
-                    )}
+                      <input
+                        id="uploadImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          handleFileUpload(
+                            e,
+                            images.filter((item) => item === '').length
+                          )
+                        }
+                        multiple
+                        capture
+                        style={{ display: 'none' }}
+                      />
+                      <label htmlFor="uploadImage">
+                        <Button buttonType="normal" onClick={handleSelectImage}>
+                          選擇照片
+                        </Button>
+                      </label>
+                    </RemindWrapper>
+                    {/* )} */}
                   </MainImage>
                 </MainImageWrapper>
               )}
@@ -956,9 +1004,10 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
           /> */}
             <Button
               buttonType="dark"
-              onClick={() =>
-                isEdit ? handleUpdateItems() : handleUploadItems(form)
-              }
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.preventDefault();
+                isEdit ? handleUpdateItems() : handleUploadItems(form);
+              }}
               disabled={
                 Object.values(form).includes('') ||
                 !images.some((image) => image !== '')
@@ -969,98 +1018,83 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
           </InfoWrapper>
         </UploadContainer>
       )}
-      <input
-        id="uploadImage"
-        type="file"
-        accept="image/*"
-        onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
-        multiple
-        // capture
-        style={{ display: 'none' }}
-      />
-      {/* <label htmlFor="uploadImage">
-        <SelectImage>
-          選擇照片進行批量上傳
-          <br />
-          最多只能選擇 16 張
-        </SelectImage>
-      </label> */}
-      <label htmlFor="uploadImage">
-        <Button buttonType="light" onClick={handleSelectImage}>
-          選擇照片
-        </Button>
-      </label>
-      <Button
-        buttonType="dark"
-        onClick={() => bulkForms.map((item) => handleUploadItems(item))}
-      >
-        確認上傳
-      </Button>
-      <SlideCount>
-        <NowIndex>1</NowIndex>
-        <TotalIndex>/8</TotalIndex>
-      </SlideCount>
-      {/* <Container> */}
-      <BulkContainer>
-        {bulkForms.map((form, index) => (
-          <BulkItemWrapper key={index}>
-            <BulkImage imageUrl={form.images[0]} />
-            <BulkInfoWrapper>
-              <BulkFieldWrapper>
-                <FiledLabel>名稱</FiledLabel>
-                <BulkTextInput
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-              </BulkFieldWrapper>
-              <BulkFieldWrapper>
-                <FiledLabel>分類</FiledLabel>
-                <BulkSelectInput
-                  onChange={(e) =>
-                    setForm({ ...form, category: e.target.value })
-                  }
-                >
-                  {CATEGORY_OPTIONS.map((option) => (
-                    <option
-                      key={option}
-                      value={option}
-                      selected={option === form.category}
+
+      {bulkForms.length > 0 && (
+        <>
+          <BulkCountWrapper>
+            <SlideCount>
+              <NowIndex>1</NowIndex>
+              <TotalIndex>/8</TotalIndex>
+            </SlideCount>
+          </BulkCountWrapper>
+
+          {/* <Container> */}
+          <BulkContainer>
+            {bulkForms.map((form, index) => (
+              <BulkItemWrapper key={index}>
+                <BulkImage imageUrl={form.images[0]} />
+                <BulkInfoWrapper>
+                  <BulkFieldWrapper>
+                    <FiledLabel>名稱</FiledLabel>
+                    <BulkTextInput
+                      type="text"
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                    />
+                  </BulkFieldWrapper>
+                  <BulkFieldWrapper>
+                    <FiledLabel>分類</FiledLabel>
+                    <BulkSelectInput
+                      onChange={(e) =>
+                        setForm({ ...form, category: e.target.value })
+                      }
                     >
-                      {option}
-                    </option>
-                  ))}
-                </BulkSelectInput>
-              </BulkFieldWrapper>
-              <BulkFieldWrapper>
-                <FiledLabel>狀態</FiledLabel>
-                <BulkSelectInput
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                >
-                  {STATUS_OPTIONS.map((option) => (
-                    <option
-                      key={option}
-                      value={option}
-                      selected={option === form.status}
+                      {CATEGORY_OPTIONS.map((option) => (
+                        <option
+                          key={option}
+                          value={option}
+                          selected={option === form.category}
+                        >
+                          {option}
+                        </option>
+                      ))}
+                    </BulkSelectInput>
+                  </BulkFieldWrapper>
+                  <BulkFieldWrapper>
+                    <FiledLabel>狀態</FiledLabel>
+                    <BulkSelectInput
+                      onChange={(e) =>
+                        setForm({ ...form, status: e.target.value })
+                      }
                     >
-                      {option}
-                    </option>
-                  ))}
-                </BulkSelectInput>
-              </BulkFieldWrapper>
-              <FieldWrapper>
-                <FiledLabel>描述</FiledLabel>
-                <Description
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                />
-              </FieldWrapper>
-            </BulkInfoWrapper>
-          </BulkItemWrapper>
-        ))}
-      </BulkContainer>
+                      {STATUS_OPTIONS.map((option) => (
+                        <option
+                          key={option}
+                          value={option}
+                          selected={option === form.status}
+                        >
+                          {option}
+                        </option>
+                      ))}
+                    </BulkSelectInput>
+                  </BulkFieldWrapper>
+                  <FieldWrapper>
+                    <FiledLabel>描述</FiledLabel>
+                    <Description
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm({ ...form, description: e.target.value })
+                      }
+                    />
+                  </FieldWrapper>
+                </BulkInfoWrapper>
+              </BulkItemWrapper>
+            ))}
+          </BulkContainer>
+        </>
+      )}
       {/* </Container> */}
     </Container>
   );
