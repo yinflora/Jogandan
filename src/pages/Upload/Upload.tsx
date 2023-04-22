@@ -15,6 +15,10 @@ import {
 import { AuthContext } from '../../context/authContext';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import photo from './photo.png';
+import image from './image.png';
+import Chevron from '../../components/Icon/Chevron';
+import Button from '../../components/Button/Button';
 
 const Container = styled.div`
   margin: 0 auto;
@@ -49,9 +53,9 @@ const UploadContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  padding: 40px 60px;
+  padding: 40px 0;
   gap: 60px;
-  background-color: #000;
+  /* background-color: #000; */
 `;
 
 // const ImageWrapper = styled.div`
@@ -66,16 +70,30 @@ const UploadContainer = styled.div`
 // `;
 
 const ImageWrapper = styled.div`
-  width: 60%;
+  /* width: 60%; */
 `;
 
-const PreviousBtn = styled.button`
-  color: #fff;
+const ChangeSlideBtn = styled.button`
+  display: flex;
+  width: 88px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
 `;
 
-const NextBtn = styled.button`
-  color: #fff;
+const BtnWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
+
+// const PreviousBtn = styled.button`
+
+// `;
+
+// const NextBtn = styled.button`
+
+// `;
 
 const SlideCount = styled.div`
   color: #fff;
@@ -83,27 +101,48 @@ const SlideCount = styled.div`
 
 const NowIndex = styled.span`
   font-size: 1.5rem;
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.4rem;
 `;
 
 const TotalIndex = styled.span`
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.4rem;
 `;
 
 const ImageArea = styled.div`
   display: flex;
-  height: 500px;
+  height: 400px;
+`;
+
+const MainImageWrapper = styled.div`
+  height: 100%;
+  margin-left: 5px;
+  padding: 5px;
+  aspect-ratio: 1/1;
 `;
 
 const MainImage = styled.div<{ coverUrl: string }>`
   /* width: 100%; */
-  height: 100%;
+  /* height: 100%; */
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
-  border: 1px solid #acaea9;
-  background: ${({ coverUrl }) =>
-    coverUrl === '' ? 'none' : `center / cover no-repeat url(${coverUrl})`};
+  border: 1px dashed #fff;
+  background-color: rgb(255, 255, 255, 0.2);
+  /* background: ${({ coverUrl }) =>
+    coverUrl === '' ? 'none' : `center / cover no-repeat url(${coverUrl})`}; */
+`;
+
+const ImageIcon = styled.img`
+  width: 60px;
+  height: 60px;
+`;
+
+const PhotoIcon = styled.img`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
 `;
 
 const RemindWrapper = styled.div`
@@ -116,17 +155,18 @@ const RemindWrapper = styled.div`
   gap: 10px;
 `;
 
-const SelectImage = styled.div`
-  width: 100px;
-  height: 30px;
-  background-color: #acaea9;
-  border-radius: 5px;
-  line-height: 30px;
-  text-align: center;
-`;
+// const SelectImage = styled.div`
+//   width: 100px;
+//   height: 30px;
+//   background-color: #acaea9;
+//   border-radius: 5px;
+//   line-height: 30px;
+//   text-align: center;
+// `;
 
 const Remind = styled.p`
-  color: #acaea9;
+  margin-bottom: 30px;
+  color: #fff;
 `;
 
 const SubImageContainer = styled.div`
@@ -135,10 +175,11 @@ const SubImageContainer = styled.div`
   height: 100%;
   /* margin-top: 10px;
   overflow-x: scroll; */
-  /* gap: 10px; */
+  gap: 10px;
   flex-wrap: nowrap;
   flex-direction: column;
   overflow-y: scroll;
+  justify-content: center;
   /* align-items: stretch; */
 `;
 
@@ -157,23 +198,23 @@ const SubImageWrapper = styled.div<{ isShow: boolean }>`
   display: ${({ isShow }) => (isShow ? 'block' : 'none')};
   /* width: calc((100% - 20px) / 4);
   flex-shrink: 0; */
-  height: calc((100% - 20px) / 4);
+  height: calc((100% - 40px) / 4);
   aspect-ratio: 1/1;
-  flex-shrink: 0 0 25%;
+  /* flex-shrink: 0 0 25%; */
 `;
 
-const UploadBtn = styled.div<{ canAdd: boolean }>`
-  position: absolute;
-  top: calc(50% - 20px);
-  right: calc(50% - 20px);
-  display: ${({ canAdd }) => (canAdd ? 'block' : 'none')};
-  width: 40px;
-  height: 40px;
-  border: 1px solid #acaea9;
-  border-radius: 50%;
-  font-size: 40px;
-  text-align: center;
-`;
+// const UploadBtn = styled.div<{ canAdd: boolean }>`
+//   position: absolute;
+//   top: calc(50% - 20px);
+//   right: calc(50% - 20px);
+//   display: ${({ canAdd }) => (canAdd ? 'block' : 'none')};
+//   width: 40px;
+//   height: 40px;
+//   border: 1px solid #acaea9;
+//   border-radius: 50%;
+//   font-size: 40px;
+//   text-align: center;
+// `;
 
 const CancelBtn = styled.button`
   position: absolute;
@@ -192,16 +233,26 @@ const SubImage = styled.div<{ imageUrl: string }>`
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
-  border: 1px solid #acaea9;
+  border: 1px solid #fff;
   background: ${({ imageUrl }) =>
     imageUrl === '' ? 'none' : `center / cover no-repeat url(${imageUrl})`};
 `;
 
 const InfoWrapper = styled.form`
   display: flex;
-  width: 40%;
+  /* width: 40%; */
+  padding: 40px 0;
+  flex-grow: 1;
   flex-direction: column;
   justify-content: space-between;
+`;
+
+const BulkInfoWrapper = styled(InfoWrapper)`
+  display: flex;
+  padding: 0;
+  /* flex: 0 1 calc(50% - 250px); */
+  /* flex-direction: column;
+  justify-content: space-between; */
 `;
 
 const FieldWrapper = styled.div`
@@ -210,18 +261,32 @@ const FieldWrapper = styled.div`
   gap: 10px;
 `;
 
+const BulkFieldWrapper = styled(FieldWrapper)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* gap: 10px; */
+  border-bottom: 1px solid #fff;
+`;
+
 const HalfFieldWrapper = styled(FieldWrapper)`
   width: 50%;
 `;
 
 const FiledLabel = styled.label`
   letter-spacing: 0.1rem;
+  /* line-height: 30px; */
 `;
 
 const TextInput = styled.input`
   height: 30px;
   letter-spacing: 0.1rem;
   border-bottom: 1px solid #fff;
+  color: #fff;
+`;
+
+const BulkTextInput = styled(TextInput)`
+  border: none;
 `;
 
 const SelectWrapper = styled.div`
@@ -237,10 +302,20 @@ const SelectInput = styled.select`
   color: #fff;
 `;
 
+const BulkSelectInput = styled(SelectInput)`
+  height: 30px;
+  letter-spacing: 0.1rem;
+  border: none;
+  color: #fff;
+`;
+
 const Description = styled.textarea`
+  padding: 10px;
   resize: none;
   border: 1px solid #fff;
+  outline: none;
   background-color: transparent;
+  color: #fff;
 `;
 
 const ItemWrapper = styled.div`
@@ -250,33 +325,83 @@ const ItemWrapper = styled.div`
   border: 1px solid black;
 `;
 
-const BulkContainer = styled.div`
-  display: grid;
+const BulkImageWrapper = styled.div`
+  display: flex;
   width: 100%;
-  /* height: 100%; */
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(10, 1fr);
+  height: 500px;
+  margin: 40px 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #fff;
+  background-color: rgb(255, 255, 255, 0.2);
+  gap: 10px;
+`;
+
+const RemindBlack = styled(Remind)`
+  color: rgba(0, 0, 0, 0.6);
+`;
+
+// const BulkContainer = styled.div`
+//   display: grid;
+//   width: 100%;
+//   height: 100%;
+//   grid-template-columns: repeat(2, 1fr);
+//   grid-template-rows: repeat(10, 250px);
+//   /* padding: 20px; */
+//   gap: 30px;
+//   background-color: #f7f7f7;
+// `;
+
+const BulkContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-wrap: wrap;
   /* padding: 20px; */
-  gap: 60px;
-  background-color: #f7f7f7;
+  justify-content: space-between;
+  gap: 20px;
+  /* background-color: #000; */
 `;
 
 const BulkItemWrapper = styled(ItemWrapper)`
-  /* height: 15vh; */
-  width: 100%;
+  width: calc(50% - 10px);
+  /* max-width: 50%; */
+  max-width: calc(50% - 10px);
+  height: 250px;
+  padding: 25px;
+  flex: 1;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
 `;
 
+// const ItemWrapper = styled.div`
+//   display: flex;
+//   width: 100%;
+//   height: 30vh;
+//   border: 1px solid black;
+// `;
+
 const BulkImage = styled(SubImage)`
-  width: auto;
-  padding-top: 30%;
+  /* width: auto;
+  padding-top: 30%; */
+
   /* object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
   border: 1px solid #acaea9; */
+
+  width: 200px;
+  height: 200px;
 `;
 
 const VideoWrapper = styled.div`
   position: relative;
+  height: 100%;
+  margin-left: 5px;
+  padding: 5px;
+  aspect-ratio: 1/1;
 `;
 
 const Video = styled.video`
@@ -286,11 +411,11 @@ const Video = styled.video`
   aspect-ratio: 1/1;
 `;
 
-const TakePhoto = styled.button`
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-`;
+// const TakePhoto = styled.button`
+//   position: absolute;
+//   bottom: 10px;
+//   right: 10px;
+// `;
 
 const CATEGORY_OPTIONS = [
   '請選擇類別',
@@ -310,34 +435,34 @@ const CATEGORY_OPTIONS = [
 
 const STATUS_OPTIONS = ['請選擇狀態', '保留', '處理中', '已處理'];
 
-const formInputs = [
-  { label: '物品名稱', key: 'name' },
-  {
-    label: '物品類別',
-    key: 'category',
-    option: [
-      '請選擇類別',
-      '居家生活',
-      '服飾配件',
-      '美妝保養',
-      '3C產品',
-      '影音產品',
-      '書報雜誌',
-      '體育器材',
-      '寵物用品',
-      '食物及飲料',
-      '興趣及遊戲',
-      '紀念意義',
-      '其他',
-    ],
-  },
-  {
-    label: '物品狀態',
-    key: 'status',
-    option: ['請選擇狀態', '保留', '處理中', '已處理'],
-  },
-  { label: '備註', key: 'description' },
-];
+// const formInputs = [
+//   { label: '物品名稱', key: 'name' },
+//   {
+//     label: '物品類別',
+//     key: 'category',
+//     option: [
+//       '請選擇類別',
+//       '居家生活',
+//       '服飾配件',
+//       '美妝保養',
+//       '3C產品',
+//       '影音產品',
+//       '書報雜誌',
+//       '體育器材',
+//       '寵物用品',
+//       '食物及飲料',
+//       '興趣及遊戲',
+//       '紀念意義',
+//       '其他',
+//     ],
+//   },
+//   {
+//     label: '物品狀態',
+//     key: 'status',
+//     option: ['請選擇狀態', '保留', '處理中', '已處理'],
+//   },
+//   { label: '備註', key: 'description' },
+// ];
 
 type EditProp = {
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
@@ -626,6 +751,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     }
   }
 
+  function handleSelectImage() {
+    // e.preventDefault();
+    const uploadImage = document.getElementById('uploadImage');
+    if (uploadImage) {
+      uploadImage.click();
+    }
+  }
+
   return (
     <Container>
       <TitleWrapper>
@@ -635,41 +768,71 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         </ModeToggler>
       </TitleWrapper>
 
-      <UploadContainer>
-        <ImageWrapper>
-          <PreviousBtn>^</PreviousBtn>
-          <ImageArea>
-            <SubImageContainer
-              ref={containerRef}
-              onDragOver={(e) => handleDragOver(e)}
-            >
-              {images.map((image, index) => (
-                <SubImageWrapper
-                  key={index}
-                  onDragOver={(e) => handleDragOverImg(e, index)}
-                  onDrop={(e) => image !== '' && handleDrop(e, index)}
-                  // isVisible={image !== '' || index === images.indexOf('') + 1}
-                  isShow={
-                    images[index] !== '' ||
-                    (images.every((image) => image === '') && index < 3) ||
-                    (images.some((image) => image !== '') &&
-                      images.indexOf('') === index)
-                  }
-                >
-                  <div
-                    // draggable={images.some((image) => image !== '') ? true : false}
-                    draggable={images[index] !== ''}
-                    onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-                      e.currentTarget.style.opacity = '0.01';
-                      setDraggingIndex(index);
-                    }}
-                    onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {
-                      e.currentTarget.style.opacity = '1';
-                      setDraggingIndex(null);
-                    }}
+      {isBulkMode ? (
+        <BulkImageWrapper>
+          <ImageIcon src={image} />
+          <Remind>選擇照片進行批量上傳</Remind>
+          <RemindBlack> 最多只能選擇 16 張</RemindBlack>
+          <input
+            id="uploadImage"
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
+            multiple
+            // capture
+            style={{ display: 'none' }}
+          />
+          {/* <label htmlFor="uploadImage">
+        <SelectImage>
+          選擇照片進行批量上傳
+          <br />
+          最多只能選擇 16 張
+        </SelectImage>
+      </label> */}
+          <label htmlFor="uploadImage">
+            <Button buttonType="dark" onClick={handleSelectImage}>
+              選擇照片
+            </Button>
+          </label>
+        </BulkImageWrapper>
+      ) : (
+        <UploadContainer>
+          <ImageWrapper>
+            <ChangeSlideBtn>
+              <Chevron rotateDeg={0} />
+            </ChangeSlideBtn>
+            <ImageArea>
+              <SubImageContainer
+                ref={containerRef}
+                onDragOver={(e) => handleDragOver(e)}
+              >
+                {images.map((image, index) => (
+                  <SubImageWrapper
+                    key={index}
+                    onDragOver={(e) => handleDragOverImg(e, index)}
+                    onDrop={(e) => image !== '' && handleDrop(e, index)}
+                    // isVisible={image !== '' || index === images.indexOf('') + 1}
+                    isShow={
+                      images[index] !== '' ||
+                      (images.every((image) => image === '') && index < 4) ||
+                      (images.some((image) => image !== '') &&
+                        images.indexOf('') === index)
+                    }
                   >
-                    <SubImage imageUrl={image}></SubImage>
-                    <input
+                    <div
+                      // draggable={images.some((image) => image !== '') ? true : false}
+                      draggable={images[index] !== ''}
+                      onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
+                        e.currentTarget.style.opacity = '0.01';
+                        setDraggingIndex(index);
+                      }}
+                      onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {
+                        e.currentTarget.style.opacity = '1';
+                        setDraggingIndex(null);
+                      }}
+                    >
+                      <SubImage imageUrl={image}></SubImage>
+                      {/* <input
                       id="uploadImage"
                       type="file"
                       accept="image/*"
@@ -691,26 +854,30 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                       >
                         +
                       </UploadBtn>
-                    </label>
-                    {images[index] !== '' && (
-                      <CancelBtn onClick={() => handleDeleted(index)}>
-                        X
-                      </CancelBtn>
-                    )}
-                  </div>
-                </SubImageWrapper>
-              ))}
-            </SubImageContainer>
-            {showCamera ? (
-              <VideoWrapper>
-                <Video ref={videoRef} autoPlay />
-                <TakePhoto onClick={takePhoto}>Take Photo</TakePhoto>
-              </VideoWrapper>
-            ) : (
-              <MainImage coverUrl={images[0]}>
-                {images[0] === '' && (
-                  <RemindWrapper>
-                    {/* {showCamera ? (
+                    </label> */}
+                      {images[index] !== '' && (
+                        <CancelBtn onClick={() => handleDeleted(index)}>
+                          X
+                        </CancelBtn>
+                      )}
+                    </div>
+                  </SubImageWrapper>
+                ))}
+              </SubImageContainer>
+              {showCamera ? (
+                <VideoWrapper>
+                  <Video ref={videoRef} autoPlay />
+                  {/* <TakePhoto onClick={takePhoto}>Take Photo</TakePhoto> */}
+                  <PhotoIcon src={photo} onClick={takePhoto} />
+                </VideoWrapper>
+              ) : (
+                <MainImageWrapper>
+                  <MainImage coverUrl={images[0]}>
+                    {images[0] === '' && (
+                      <RemindWrapper>
+                        <ImageIcon src={image} />
+                        <Remind>最多上傳 10 張</Remind>
+                        {/* {showCamera ? (
                 <div>
                   <video ref={videoRef} autoPlay />
                   <button onClick={takePhoto}>Take Photo</button>
@@ -719,98 +886,113 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 <button onClick={startCamera}>Open Camera</button>
               )} */}
 
-                    {/* {!showCamera && <button onClick={startCamera}>拍照上傳</button>} */}
-                    {!showCamera && (
-                      <button onClick={() => setShowCamera(true)}>
-                        拍照上傳
-                      </button>
+                        {/* {!showCamera && <button onClick={startCamera}>拍照上傳</button>} */}
+                        {!showCamera && (
+                          <Button
+                            buttonType="normal"
+                            onClick={() => setShowCamera(true)}
+                          >
+                            拍照上傳
+                          </Button>
+                        )}
+
+                        <input
+                          id="uploadImage"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            handleFileUpload(
+                              e,
+                              images.filter((item) => item === '').length
+                            )
+                          }
+                          multiple
+                          capture
+                          style={{ display: 'none' }}
+                        />
+                        <label htmlFor="uploadImage">
+                          <Button
+                            buttonType="normal"
+                            onClick={handleSelectImage}
+                          >
+                            選擇照片
+                          </Button>
+                        </label>
+                      </RemindWrapper>
                     )}
+                  </MainImage>
+                </MainImageWrapper>
+              )}
+            </ImageArea>
+            <BtnWrapper>
+              <ChangeSlideBtn>
+                <Chevron rotateDeg={180} />
+              </ChangeSlideBtn>
 
-                    <input
-                      id="uploadImage"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        handleFileUpload(
-                          e,
-                          images.filter((item) => item === '').length
-                        )
-                      }
-                      multiple
-                      capture
-                      style={{ display: 'none' }}
-                    />
-                    <label htmlFor="uploadImage">
-                      <SelectImage>選擇照片</SelectImage>
-                    </label>
-                    <Remind>最多只能上傳 10 張</Remind>
-                  </RemindWrapper>
-                )}
-              </MainImage>
-            )}
-          </ImageArea>
-          <NextBtn>V</NextBtn>
-          <SlideCount>
-            <NowIndex>1</NowIndex>
-            <TotalIndex>/8</TotalIndex>
-          </SlideCount>
-        </ImageWrapper>
-        <InfoWrapper>
-          <FieldWrapper>
-            <FiledLabel>名稱</FiledLabel>
-            <TextInput
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-          </FieldWrapper>
-          <SelectWrapper>
-            <HalfFieldWrapper>
-              <FiledLabel>分類</FiledLabel>
-              <SelectInput
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-              >
-                {CATEGORY_OPTIONS.map((option) => (
-                  <option
-                    key={option}
-                    value={option}
-                    selected={option === form.category}
-                  >
-                    {option}
-                  </option>
-                ))}
-              </SelectInput>
-            </HalfFieldWrapper>
-            <HalfFieldWrapper>
-              <FiledLabel>狀態</FiledLabel>
-              <SelectInput
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-              >
-                {STATUS_OPTIONS.map((option) => (
-                  <option
-                    key={option}
-                    value={option}
-                    selected={option === form.status}
-                  >
-                    {option}
-                  </option>
-                ))}
-              </SelectInput>
-            </HalfFieldWrapper>
-          </SelectWrapper>
-          <FieldWrapper>
-            <FiledLabel>描述</FiledLabel>
-            <Description
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              rows={5}
-              cols={33}
-            />
-          </FieldWrapper>
+              <SlideCount>
+                <NowIndex>1</NowIndex>
+                <TotalIndex>/8</TotalIndex>
+              </SlideCount>
+            </BtnWrapper>
+          </ImageWrapper>
+          <InfoWrapper>
+            <FieldWrapper>
+              <FiledLabel>名稱</FiledLabel>
+              <TextInput
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </FieldWrapper>
+            <SelectWrapper>
+              <HalfFieldWrapper>
+                <FiledLabel>分類</FiledLabel>
+                <SelectInput
+                  onChange={(e) =>
+                    setForm({ ...form, category: e.target.value })
+                  }
+                >
+                  {CATEGORY_OPTIONS.map((option) => (
+                    <option
+                      key={option}
+                      value={option}
+                      selected={option === form.category}
+                    >
+                      {option}
+                    </option>
+                  ))}
+                </SelectInput>
+              </HalfFieldWrapper>
+              <HalfFieldWrapper>
+                <FiledLabel>狀態</FiledLabel>
+                <SelectInput
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                >
+                  {STATUS_OPTIONS.map((option) => (
+                    <option
+                      key={option}
+                      value={option}
+                      selected={option === form.status}
+                    >
+                      {option}
+                    </option>
+                  ))}
+                </SelectInput>
+              </HalfFieldWrapper>
+            </SelectWrapper>
+            <FieldWrapper>
+              <FiledLabel>描述</FiledLabel>
+              <Description
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                rows={5}
+                cols={33}
+              />
+            </FieldWrapper>
 
-          <input
+            {/* <input
             type="button"
             value={isEdit ? '更新物品' : '上傳物品'}
             disabled={
@@ -820,10 +1002,22 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
             onClick={() =>
               isEdit ? handleUpdateItems() : handleUploadItems(form)
             }
-          />
-        </InfoWrapper>
-      </UploadContainer>
-
+          /> */}
+            <Button
+              buttonType="dark"
+              onClick={() =>
+                isEdit ? handleUpdateItems() : handleUploadItems(form)
+              }
+              disabled={
+                Object.values(form).includes('') ||
+                !images.some((image) => image !== '')
+              }
+            >
+              {isEdit ? '確認更新' : '確認上傳'}
+            </Button>
+          </InfoWrapper>
+        </UploadContainer>
+      )}
       <input
         id="uploadImage"
         type="file"
@@ -833,110 +1027,90 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         // capture
         style={{ display: 'none' }}
       />
+      {/* <label htmlFor="uploadImage">
+        <SelectImage>
+          選擇照片進行批量上傳
+          <br />
+          最多只能選擇 16 張
+        </SelectImage>
+      </label> */}
       <label htmlFor="uploadImage">
-        <SelectImage>選擇照片</SelectImage>
+        <Button buttonType="light" onClick={handleSelectImage}>
+          選擇照片
+        </Button>
       </label>
-      <button onClick={() => bulkForms.map((item) => handleUploadItems(item))}>
+      <Button
+        buttonType="dark"
+        onClick={() => bulkForms.map((item) => handleUploadItems(item))}
+      >
         確認上傳
-      </button>
-      <Container>
-        <BulkContainer>
-          {bulkForms.map((form, index) => (
-            <BulkItemWrapper key={index}>
-              <BulkImage imageUrl={form.images[0]} />
-              <InfoWrapper>
-                <form>
-                  {formInputs.map((input) => {
-                    if (input.option) {
-                      return (
-                        <div>
-                          <label key={input.key}>{input.label}</label>
-                          <select
-                            onChange={
-                              (e) =>
-                                // setBulkForms([
-                                //   ...bulkForms,
-                                //   {
-                                //     ...bulkForms[index],
-                                //     [input.key]: e.target.value,
-                                //   },
-                                // ])
-
-                                {
-                                  const newBulkForms = [...bulkForms];
-                                  newBulkForms[index][input.key] =
-                                    e.target.value;
-                                  setBulkForms(newBulkForms);
-                                }
-
-                              // setForm({ ...form, [input.key]: e.target.value })
-                            }
-                          >
-                            {input.option.map((option) => (
-                              <option
-                                value={option}
-                                selected={option === form[input.key]}
-                              >
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      );
-                    } else if (input.key === 'description') {
-                      return (
-                        <div>
-                          <label key={input.key}>{input.label}</label>
-                          <textarea
-                            value={form[input.key]}
-                            onChange={
-                              (e) => {
-                                const newBulkForms = [...bulkForms];
-                                newBulkForms[index][input.key] = e.target.value;
-                                setBulkForms(newBulkForms);
-                              }
-                              // setForm({ ...form, [input.key]: e.target.value })
-                            }
-                            rows={5}
-                            cols={33}
-                          />
-                        </div>
-                      );
-                    }
-                    return (
-                      <div>
-                        <label key={input.key}>{input.label}</label>
-                        <input
-                          value={form[input.key]}
-                          onChange={
-                            (e) => {
-                              const newBulkForms = [...bulkForms];
-                              newBulkForms[index][input.key] = e.target.value;
-                              setBulkForms(newBulkForms);
-                            }
-                            // setForm({ ...form, [input.key]: e.target.value })
-                          }
-                        />
-                      </div>
-                    );
-                  })}
-                  {/* <input
-                    type="button"
-                    value={isEdit ? '更新物品' : '上傳物品'}
-                    disabled={
-                      Object.values(form).includes('') ||
-                      !images.some((image) => image !== '')
-                    }
-                    onClick={() =>
-                      isEdit ? handleUpdateItems() : handleUploadItems()
-                    }
-                  /> */}
-                </form>
-              </InfoWrapper>
-            </BulkItemWrapper>
-          ))}
-        </BulkContainer>
-      </Container>
+      </Button>
+      <SlideCount>
+        <NowIndex>1</NowIndex>
+        <TotalIndex>/8</TotalIndex>
+      </SlideCount>
+      {/* <Container> */}
+      <BulkContainer>
+        {bulkForms.map((form, index) => (
+          <BulkItemWrapper key={index}>
+            <BulkImage imageUrl={form.images[0]} />
+            <BulkInfoWrapper>
+              <BulkFieldWrapper>
+                <FiledLabel>名稱</FiledLabel>
+                <BulkTextInput
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </BulkFieldWrapper>
+              <BulkFieldWrapper>
+                <FiledLabel>分類</FiledLabel>
+                <BulkSelectInput
+                  onChange={(e) =>
+                    setForm({ ...form, category: e.target.value })
+                  }
+                >
+                  {CATEGORY_OPTIONS.map((option) => (
+                    <option
+                      key={option}
+                      value={option}
+                      selected={option === form.category}
+                    >
+                      {option}
+                    </option>
+                  ))}
+                </BulkSelectInput>
+              </BulkFieldWrapper>
+              <BulkFieldWrapper>
+                <FiledLabel>狀態</FiledLabel>
+                <BulkSelectInput
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                >
+                  {STATUS_OPTIONS.map((option) => (
+                    <option
+                      key={option}
+                      value={option}
+                      selected={option === form.status}
+                    >
+                      {option}
+                    </option>
+                  ))}
+                </BulkSelectInput>
+              </BulkFieldWrapper>
+              <FieldWrapper>
+                <FiledLabel>描述</FiledLabel>
+                <Description
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                />
+              </FieldWrapper>
+            </BulkInfoWrapper>
+          </BulkItemWrapper>
+        ))}
+      </BulkContainer>
+      {/* </Container> */}
     </Container>
   );
 }
