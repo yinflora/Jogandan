@@ -1,18 +1,13 @@
 import styled from 'styled-components';
 
 const Svg = styled.svg`
-  /* display: block;
-  width: 1000px;
-  height: 600px;
-  overflow: visible; */
-  transform: scale(0.85) translate(-10%, -15%);
-  /* transform: translate(2, 1); */
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   overflow: visible;
+  transform: scale(0.85) translate(-10%, -15%);
 `;
 
 const Line = styled.line`
@@ -43,7 +38,6 @@ const Qty = styled(Text)`
 
 type month = string;
 type quantity = number;
-// type data = number[];
 type Row = string[];
 type Column = number[];
 

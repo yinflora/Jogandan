@@ -140,24 +140,16 @@ const AnalyzeWrapper = styled.div`
 
 const ReportWrapper = styled.div`
   position: relative;
-  /* width: 100%; */
-  /* height: 100%; */
   width: 100%;
   height: 0;
   padding-top: 60%;
-  /* background-color: #000; */
   overflow: hidden;
 `;
 
 const QtyContainer = styled.div`
   display: flex;
-  /* width: 10%; */
   height: 100%;
-  /* padding-top: 50px; */
   flex-direction: column;
-  /* justify-content: space-around; */
-  /* gap: 30px; */
-  /* margin-left: 20px; */
 `;
 
 const QtyWrapper = styled.div`
