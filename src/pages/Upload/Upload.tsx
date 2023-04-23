@@ -28,8 +28,6 @@ const Container = styled.div`
 
 const TitleWrapper = styled.div`
   display: flex;
-  /* width: 100%; */
-  /* justify-content: space-between; */
   align-items: end;
 `;
 
@@ -63,23 +61,9 @@ const UploadContainer = styled.div`
   height: 100%;
   padding: 40px 0;
   gap: 60px;
-  /* background-color: #000; */
 `;
 
-// const ImageWrapper = styled.div`
-//   display: grid;
-//   width: 60%;
-//   grid-template-columns: repeat(5, 1fr);
-//   grid-template-rows: repeat(5, 1fr);
-//   grid-template-areas:
-//   'previous . . . .'
-//   'first '
-// ;
-// `;
-
-const ImageWrapper = styled.div`
-  /* width: 60%; */
-`;
+const ImageWrapper = styled.div``;
 
 const ChangeSlideBtn = styled.button`
   display: flex;
@@ -94,14 +78,6 @@ const BtnWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-
-// const PreviousBtn = styled.button`
-
-// `;
-
-// const NextBtn = styled.button`
-
-// `;
 
 const BulkCountWrapper = styled.div`
   display: flex;
@@ -173,15 +149,6 @@ const RemindWrapper = styled.div`
   gap: 10px;
 `;
 
-// const SelectImage = styled.div`
-//   width: 100px;
-//   height: 30px;
-//   background-color: #acaea9;
-//   border-radius: 5px;
-//   line-height: 30px;
-//   text-align: center;
-// `;
-
 const Remind = styled.p`
   margin-bottom: 30px;
   color: #fff;
@@ -191,51 +158,20 @@ const SubImageContainer = styled.div`
   position: relative;
   display: flex;
   height: 100%;
-  /* margin-top: 10px;
-  overflow-x: scroll; */
-  /* gap: 10px; */
-  /* flex-wrap: nowrap; */
   flex-direction: column;
   overflow-y: scroll;
-  /* justify-content: center; */
-  /* align-items: stretch; */
 `;
-
-// const NextPage = styled.div`
-//   position: absolute;
-//   top: 0;
-//   right: 0;
-//   z-index: 1;
-//   width: 30px;
-//   height: 100%;
-//   background-color: #000;
-// `;
 
 // const SubImageWrapper = styled.div<{ isShow: boolean }>`
 /* display: ${({ isShow }) => (isShow ? 'block' : 'none')}; */
 
 const SubImageWrapper = styled.div`
   position: relative;
-  /* width: calc((100% - 20px) / 4);
-  flex-shrink: 0; */
-  margin: 5px;
   height: calc((100% - 40px) / 4);
+  margin: 5px;
   aspect-ratio: 1/1;
   flex-shrink: 0 0 25%;
 `;
-
-// const UploadBtn = styled.div<{ canAdd: boolean }>`
-//   position: absolute;
-//   top: calc(50% - 20px);
-//   right: calc(50% - 20px);
-//   display: ${({ canAdd }) => (canAdd ? 'block' : 'none')};
-//   width: 40px;
-//   height: 40px;
-//   border: 1px solid #acaea9;
-//   border-radius: 50%;
-//   font-size: 40px;
-//   text-align: center;
-// `;
 
 const CancelBtn = styled.button`
   position: absolute;
@@ -244,10 +180,6 @@ const CancelBtn = styled.button`
   z-index: 2;
   font-size: 20px;
 `;
-
-// const SubImageBlock = styled.div<{ isShow: boolean }>`
-//   display: ${({ isShow }) => (isShow ? 'block' : 'none')};
-// `;
 
 const SubImage = styled.div<{ imageUrl: string }>`
   width: 100%;
@@ -271,9 +203,6 @@ const InfoWrapper = styled.form`
 const BulkInfoWrapper = styled(InfoWrapper)`
   display: flex;
   padding: 0;
-  /* flex: 0 1 calc(50% - 250px); */
-  /* flex-direction: column;
-  justify-content: space-between; */
 `;
 
 const FieldWrapper = styled.div`
@@ -286,7 +215,6 @@ const BulkFieldWrapper = styled(FieldWrapper)`
   display: flex;
   flex-direction: row;
   align-items: center;
-  /* gap: 10px; */
   border-bottom: 1px solid #fff;
 `;
 
@@ -296,7 +224,6 @@ const HalfFieldWrapper = styled(FieldWrapper)`
 
 const FiledLabel = styled.label`
   letter-spacing: 0.1rem;
-  /* line-height: 30px; */
 `;
 
 const TextInput = styled.input`
@@ -363,31 +290,17 @@ const RemindBlack = styled(Remind)`
   color: rgba(0, 0, 0, 0.6);
 `;
 
-// const BulkContainer = styled.div`
-//   display: grid;
-//   width: 100%;
-//   height: 100%;
-//   grid-template-columns: repeat(2, 1fr);
-//   grid-template-rows: repeat(10, 250px);
-//   /* padding: 20px; */
-//   gap: 30px;
-//   background-color: #f7f7f7;
-// `;
-
 const BulkContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
   flex-wrap: wrap;
-  /* padding: 20px; */
   justify-content: space-between;
   gap: 20px;
-  /* background-color: #000; */
 `;
 
 const BulkItemWrapper = styled(ItemWrapper)`
   width: calc(50% - 10px);
-  /* max-width: 50%; */
   max-width: calc(50% - 10px);
   height: 250px;
   padding: 25px;
@@ -397,22 +310,7 @@ const BulkItemWrapper = styled(ItemWrapper)`
   border: none;
 `;
 
-// const ItemWrapper = styled.div`
-//   display: flex;
-//   width: 100%;
-//   height: 30vh;
-//   border: 1px solid black;
-// `;
-
 const BulkImage = styled(SubImage)`
-  /* width: auto;
-  padding-top: 30%; */
-
-  /* object-fit: cover;
-  object-position: center;
-  aspect-ratio: 1/1;
-  border: 1px solid #acaea9; */
-
   width: 200px;
   height: 200px;
 `;
@@ -432,12 +330,6 @@ const Video = styled.video`
   aspect-ratio: 1/1;
 `;
 
-// const TakePhoto = styled.button`
-//   position: absolute;
-//   bottom: 10px;
-//   right: 10px;
-// `;
-
 const CATEGORY_OPTIONS = [
   '請選擇類別',
   '居家生活',
@@ -455,35 +347,6 @@ const CATEGORY_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = ['請選擇狀態', '保留', '處理中', '已處理'];
-
-// const formInputs = [
-//   { label: '物品名稱', key: 'name' },
-//   {
-//     label: '物品類別',
-//     key: 'category',
-//     option: [
-//       '請選擇類別',
-//       '居家生活',
-//       '服飾配件',
-//       '美妝保養',
-//       '3C產品',
-//       '影音產品',
-//       '書報雜誌',
-//       '體育器材',
-//       '寵物用品',
-//       '食物及飲料',
-//       '興趣及遊戲',
-//       '紀念意義',
-//       '其他',
-//     ],
-//   },
-//   {
-//     label: '物品狀態',
-//     key: 'status',
-//     option: ['請選擇狀態', '保留', '處理中', '已處理'],
-//   },
-//   { label: '備註', key: 'description' },
-// ];
 
 type EditProp = {
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
@@ -520,10 +383,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     status: '',
     description: '',
     images,
-    // joinGiveaway: '',
-    // created: '',
-    // isGifted: '',
-    // processedDate: '',
   });
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [showCamera, setShowCamera] = useState<boolean>(false);
@@ -621,8 +480,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
     if (files.length > limit) {
       alert(`最多只能上傳${limit}張圖片`);
-      // e.target.value = null;
-      // return false;
       files = null;
     }
 
@@ -639,10 +496,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       const url = await getDownloadURL(snapshot.ref);
 
       if (isBulkMode) {
-        console.log('批量上傳');
         urlList.push({ images: [url] });
       } else {
-        console.log('單品上傳');
         urlList.push(url);
         const imageList = [...images];
         const startIndex = imageList.findIndex((image) => image === '');
@@ -741,42 +596,43 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
   return (
     <Container>
-      <TitleWrapper>
-        <PageTitle>UPLOAD</PageTitle>
-        <ModeToggler
-          isBulkMode={isBulkMode && bulkForms.length > 0}
-          onClick={() => {
-            setIsBulkMode(!isBulkMode);
-            setBulkForms([]);
-          }}
-        >
-          {isBulkMode ? '單品上傳' : '批量上傳'}
-        </ModeToggler>
-        {bulkForms.length > 0 && (
-          <BulkUploadWrapper>
-            <input
-              id="uploadImage"
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
-              multiple
-              // capture
-              style={{ display: 'none' }}
-            />
-            <label htmlFor="uploadImage">
-              <Button buttonType="light" onClick={handleSelectImage}>
-                選擇照片
+      {!isEdit && (
+        <TitleWrapper>
+          <PageTitle>UPLOAD</PageTitle>
+          <ModeToggler
+            isBulkMode={isBulkMode && bulkForms.length > 0}
+            onClick={() => {
+              setIsBulkMode(!isBulkMode);
+              setBulkForms([]);
+            }}
+          >
+            {isBulkMode ? '單品上傳' : '批量上傳'}
+          </ModeToggler>
+          {bulkForms.length > 0 && (
+            <BulkUploadWrapper>
+              <input
+                id="uploadImage"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
+                multiple
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="uploadImage">
+                <Button buttonType="light" onClick={handleSelectImage}>
+                  選擇照片
+                </Button>
+              </label>
+              <Button
+                buttonType="dark"
+                onClick={() => bulkForms.map((item) => handleUploadItems(item))}
+              >
+                確認上傳
               </Button>
-            </label>
-            <Button
-              buttonType="dark"
-              onClick={() => bulkForms.map((item) => handleUploadItems(item))}
-            >
-              確認上傳
-            </Button>
-          </BulkUploadWrapper>
-        )}
-      </TitleWrapper>
+            </BulkUploadWrapper>
+          )}
+        </TitleWrapper>
+      )}
 
       {isBulkMode ? (
         bulkForms.length === 0 && (
@@ -790,16 +646,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               accept="image/*"
               onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
               multiple
-              // capture
               style={{ display: 'none' }}
             />
-            {/* <label htmlFor="uploadImage">
-        <SelectImage>
-          選擇照片進行批量上傳
-          <br />
-          最多只能選擇 16 張
-        </SelectImage>
-      </label> */}
             <label htmlFor="uploadImage">
               <Button buttonType="dark" onClick={handleSelectImage}>
                 選擇照片
@@ -823,16 +671,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     key={index}
                     onDragOver={(e) => handleDragOverImg(e, index)}
                     onDrop={(e) => image !== '' && handleDrop(e, index)}
-                    // isVisible={image !== '' || index === images.indexOf('') + 1}
-                    // isShow={
-                    //   images[index] !== '' ||
-                    //   (images.every((image) => image === '') && index < 4) ||
-                    //   (images.some((image) => image !== '') &&
-                    //     images.indexOf('') === index)
-                    // }
                   >
                     <div
-                      // draggable={images.some((image) => image !== '') ? true : false}
                       draggable={images[index] !== ''}
                       onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
                         e.currentTarget.style.opacity = '0.01';
@@ -844,29 +684,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                       }}
                     >
                       <SubImage imageUrl={image}></SubImage>
-                      {/* <input
-                      id="uploadImage"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        handleFileUpload(
-                          e,
-                          images.filter((item) => item === '').length
-                        )
-                      }
-                      multiple
-                      // capture
-                      style={{ display: 'none' }}
-                    />
-                    <label htmlFor="uploadImage">
-                      <UploadBtn
-                        canAdd={
-                          images.findIndex((item) => item === '') === index
-                        }
-                      >
-                        +
-                      </UploadBtn>
-                    </label> */}
                       {images[index] !== '' && (
                         <CancelBtn onClick={() => handleDeleted(index)}>
                           X
@@ -879,25 +696,20 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               {showCamera ? (
                 <VideoWrapper>
                   <Video ref={videoRef} autoPlay />
-                  {/* <TakePhoto onClick={takePhoto}>Take Photo</TakePhoto> */}
                   <PhotoIcon src={photo} onClick={takePhoto} />
                 </VideoWrapper>
               ) : (
                 <MainImageWrapper>
                   <MainImage>
-                    {/* {images[0] === '' && ( */}
                     <RemindWrapper>
                       <ImageIcon src={image} />
                       <Remind>最多上傳 8 張</Remind>
-                      {/* {!showCamera && ( */}
                       <Button
                         buttonType="normal"
                         onClick={() => setShowCamera(true)}
                       >
                         拍照上傳
                       </Button>
-                      {/* )} */}
-
                       <input
                         id="uploadImage"
                         type="file"
@@ -918,7 +730,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                         </Button>
                       </label>
                     </RemindWrapper>
-                    {/* )} */}
                   </MainImage>
                 </MainImageWrapper>
               )}
@@ -990,18 +801,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 cols={33}
               />
             </FieldWrapper>
-
-            {/* <input
-            type="button"
-            value={isEdit ? '更新物品' : '上傳物品'}
-            disabled={
-              Object.values(form).includes('') ||
-              !images.some((image) => image !== '')
-            }
-            onClick={() =>
-              isEdit ? handleUpdateItems() : handleUploadItems(form)
-            }
-          /> */}
             <Button
               buttonType="dark"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
@@ -1028,7 +827,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
             </SlideCount>
           </BulkCountWrapper>
 
-          {/* <Container> */}
           <BulkContainer>
             {bulkForms.map((form, index) => (
               <BulkItemWrapper key={index}>
@@ -1095,7 +893,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
           </BulkContainer>
         </>
       )}
-      {/* </Container> */}
     </Container>
   );
 }

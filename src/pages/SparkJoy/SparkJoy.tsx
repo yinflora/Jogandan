@@ -152,7 +152,6 @@ const StatusIcon = styled.img`
   height: 50px;
 `;
 
-//!fixme
 const Undo = styled.img`
   position: absolute;
   /* top: 190px;
@@ -161,6 +160,10 @@ const Undo = styled.img`
   right: -40px;
   width: 30px;
   height: 30px;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Status = styled.p`
