@@ -199,7 +199,7 @@ export async function updateItem(userId, itemId, itemRef) {
       images,
       processedDate: status === '已處理' ? serverTimestamp() : '',
     });
-    // alert('更新物品成功！'); //!記得在upload加回來
+    alert('更新成功！'); //!記得在upload加回來
   } catch (e) {
     console.error('Error uploading item: ', e);
   }
