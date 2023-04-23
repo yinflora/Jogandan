@@ -18,7 +18,6 @@ const Container = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
 `;
 
 const Background = styled.div`

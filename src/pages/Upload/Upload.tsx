@@ -489,6 +489,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
     const storageRef = ref(storage, `/${uid}/images/`);
     const urlList: any = isBulkMode ? [...bulkForms] : []; //!Fixme
+    const updateList = [...images];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -499,8 +500,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
       if (isBulkMode) {
         urlList.push({ images: [url] });
+      } else if (isEdit) {
+        updateList.push(url);
       } else {
-        console.log('Enter...');
         urlList.push(url);
         const imageList = [...images];
         const startIndex = imageList.findIndex((image) => image === '');
@@ -511,6 +513,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     }
 
     if (isBulkMode) setBulkForms(urlList);
+    if (isEdit) setImages(updateList);
   }
 
   function handleDeleted(index: number) {
@@ -541,7 +544,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   }
 
   async function handleUpdateItems() {
-    await updateItem(uid, id, form);
+    const updatedForm = { ...form, images };
+    await updateItem(uid, id, updatedForm);
     setIsEdit(false);
   }
 
@@ -727,7 +731,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                         onChange={(e) =>
                           handleFileUpload(
                             e,
-                            images.filter((item) => item === '').length
+                            8 - images.filter((item) => item !== '').length
                           )
                         }
                         multiple
