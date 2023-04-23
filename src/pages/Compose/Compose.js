@@ -2,12 +2,7 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import { fabric } from 'fabric';
 import styled from 'styled-components/macro';
 import AuthContext from '../../context/authContext';
-import {
-  storage,
-  getTemplate,
-  setNewBoard,
-  saveBoard,
-} from '../../utils/firebase';
+import { storage, setNewBoard, saveBoard } from '../../utils/firebase';
 import {
   ref,
   listAll,
@@ -26,6 +21,7 @@ import undo from './undo.png';
 
 const Container = styled.div`
   margin: 0 auto;
+  padding: 0 150px;
 `;
 
 const Background = styled.div`
@@ -39,7 +35,6 @@ const Background = styled.div`
 `;
 
 const PageTitle = styled.h1`
-  margin-left: 250px;
   font-size: 3rem;
   font-weight: 500;
   letter-spacing: 0.4rem;
@@ -49,7 +44,7 @@ const PageTitle = styled.h1`
 
 const BoardContainer = styled.div`
   display: flex;
-  width: 80%;
+  width: 100%;
   height: calc(100vh - 198px);
   margin: 0 auto;
   padding-top: 30px;
@@ -193,7 +188,7 @@ const VisionBoard = styled.div`
   width: 625px;
   height: 475px;
   margin: 0 auto;
-  background-color: #000;
+  box-shadow: 0px 4px 90px 10px rgba(0, 0, 0, 0.1);
 `;
 
 export default function Compose() {
@@ -202,11 +197,8 @@ export default function Compose() {
   const [images, setImages] = useState(null);
   const [isUploaded, setIsUploaded] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState(null);
-  // const [activeObject, setActiveObject] = useState(null);
-
-  const [savedRecord, setSavedRecord] = useState(null);
   const [visionBoard, setVisionBoard] = useState(null);
-  const [bgColor, setBgColor] = useState('#fbfbf9');
+  const [bgColor, setBgColor] = useState('#F4F3EF');
   const [textConfig, setTextConfig] = useState({
     color: '#000',
     fontSize: 16,
@@ -216,6 +208,20 @@ export default function Compose() {
   const boardIdRef = useRef(null);
 
   const storageRef = ref(storage, `/${uid}/images/`);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const canvas = new fabric.Canvas('canvas', {
+        width: 625,
+        height: 475,
+        backgroundColor: bgColor,
+      });
+
+      setLayout(canvas);
+      setVisionBoard(canvas);
+      // setSavedRecord(JSON.stringify(canvas));
+    }
+  }, [canvasRef]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -246,6 +252,97 @@ export default function Compose() {
     fetchImages();
   }, [uid, isUploaded]);
 
+  useEffect(() => {
+    if (!uid || !visionBoard) return;
+
+    //確認是否有建立過
+    async function createBoard() {
+      const id = localStorage.getItem('boardId');
+      if (id) {
+        boardIdRef.current = id;
+      } else {
+        const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
+        localStorage.setItem('boardId', boardId);
+        boardIdRef.current = boardId;
+      }
+    }
+    createBoard();
+
+    function findActiveObject() {
+      const activeObject = visionBoard.getActiveObject();
+
+      if (activeObject && activeObject.type === 'i-text')
+        setTextConfig({
+          color: activeObject.fill,
+          fontSize: activeObject.fontSize,
+        });
+    }
+    visionBoard.on('mouse:down', findActiveObject);
+
+    return () => visionBoard.off('mouse:down', findActiveObject);
+  }, [uid, visionBoard]);
+
+  useEffect(() => {
+    if (!visionBoard) return;
+
+    visionBoard.setBackgroundColor(bgColor, () => {
+      visionBoard.renderAll();
+    });
+
+    const activeObject = visionBoard.getActiveObject();
+
+    if (activeObject && activeObject.type === 'i-text') {
+      activeObject.set({
+        fill: textConfig.color,
+        fontSize: textConfig.fontSize,
+      });
+      visionBoard.renderAll();
+    }
+  }, [visionBoard, bgColor, textConfig]);
+
+  useEffect(() => {
+    if (!visionBoard || draggingIndex === null || images === null) return;
+
+    function dropImage(e) {
+      const target = e.target;
+      let clipPath;
+
+      if (!target.isClipFrame) return;
+
+      target.clipPath = null;
+      target.clone((cloned) => (clipPath = cloned));
+      clipPath.absolutePositioned = true;
+
+      const movingImage = images[draggingIndex];
+
+      fabric.Image.fromURL(
+        movingImage,
+        (img) => {
+          const image = img.set({
+            left: target.left,
+            top: target.top,
+            clipPath,
+          });
+
+          image.scaleToWidth(target.getScaledWidth());
+          const isFullHeight = image.getScaledHeight() < target.height;
+          if (isFullHeight) image.scaleToHeight(target.getScaledHeight());
+          image.lockMovementY = isFullHeight;
+          image.lockMovementX = !isFullHeight;
+
+          image.clipPath = clipPath;
+
+          visionBoard.add(image);
+        },
+        { crossOrigin: 'anonymous' }
+      );
+    }
+
+    visionBoard.on('drop', dropImage);
+
+    return () => visionBoard.off('drop', dropImage);
+  }, [visionBoard, draggingIndex]);
+
   function handleFileUpload(e) {
     const files = e.target.files;
 
@@ -265,9 +362,173 @@ export default function Compose() {
     }
   }
 
+  function addText() {
+    const newText = new fabric.IText('Enter Here...', {
+      top: 10,
+      left: 10,
+      fill: textConfig.color,
+      charSpacing: 20,
+      lineHeight: 1.25,
+      fontFamily: 'TT Norms Pro',
+      fontSize: textConfig.fontSize,
+      selectable: true,
+      hasControls: false,
+    });
+    visionBoard.add(newText).setActiveObject(newText);
+  }
+
+  function clear() {
+    visionBoard.clear();
+    setLayout(visionBoard);
+    visionBoard.setBackgroundColor('#F4F3EF', () => {
+      visionBoard.renderAll();
+    });
+  }
+
+  async function saveProject() {
+    const dataURL = visionBoard.toDataURL('image/png', 1);
+    const imageRef = ref(storageRef, `${boardIdRef.current}`);
+
+    const snapshot = await uploadString(imageRef, dataURL, 'data_url');
+    const newURL = await getDownloadURL(snapshot.ref);
+
+    await saveBoard(
+      uid,
+      boardIdRef.current,
+      JSON.stringify(visionBoard),
+      newURL
+    );
+  }
+
+  function setLayout(canvas) {
+    const clipPathTopL = new fabric.Rect({
+      width: 130,
+      height: 90,
+      left: 120,
+      top: 53,
+      fill: 'rgba(141, 156, 164, 0.5)',
+      selectable: false,
+      isClipFrame: true,
+    });
+
+    const clipPathTopR = new fabric.Rect({
+      width: 195,
+      height: 90,
+      left: 256,
+      top: 53,
+      fill: 'rgba(141, 156, 164, 0.5)',
+      selectable: false,
+      isClipFrame: true,
+    });
+
+    const clipPathMiddleL = new fabric.Rect({
+      width: 130,
+      height: 190,
+      left: 120,
+      top: 149,
+      fill: 'rgba(141, 156, 164, 0.5)',
+      selectable: false,
+      isClipFrame: true,
+    });
+
+    const clipPathMiddleR = new fabric.Rect({
+      width: 250,
+      height: 150,
+      left: 256,
+      top: 149,
+      fill: 'rgba(141, 156, 164, 0.5)',
+      selectable: false,
+      isClipFrame: true,
+    });
+
+    const clipPathBottom = new fabric.Rect({
+      width: 77,
+      height: 77,
+      left: 173,
+      top: 345,
+      fill: 'rgba(141, 156, 164, 0.5)',
+      selectable: false,
+      isClipFrame: true,
+    });
+
+    const textArea = new fabric.IText('Enter Your Goal...', {
+      width: 250,
+      height: 117,
+      left: 266,
+      top: 315,
+      padding: 10,
+      fill: '#8D9CA4',
+      charSpacing: 20,
+      lineHeight: 1.25,
+      fontFamily: 'TT Norms Pro',
+      fontSize: textConfig.fontSize,
+      selectable: true,
+      hasControls: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      lockScalingX: true,
+      lockScalingY: true,
+    });
+
+    const period = new fabric.IText('/2023', {
+      left: 556,
+      top: 18,
+      fill: '#8D9CA4',
+      charSpacing: 20,
+      lineHeight: 1.25,
+      fontFamily: 'TT Norms Pro',
+      fontSize: textConfig.fontSize,
+      selectable: true,
+      hasControls: false,
+      lockMovementY: true,
+      lockScalingX: true,
+      lockScalingY: true,
+    });
+
+    const boardText = new fabric.IText('VISION\nBOARD', {
+      left: 18,
+      top: 423,
+      fill: '#8D9CA4',
+      charSpacing: 20,
+      lineHeight: 1.25,
+      fontFamily: 'TT Norms Pro',
+      fontSize: textConfig.fontSize,
+      selectable: true,
+      hasControls: false,
+      lockMovementY: true,
+      lockScalingX: true,
+      lockScalingY: true,
+    });
+
+    const visionText = new fabric.Text('Vision\nPictures', {
+      left: 60,
+      top: 53,
+      fill: '#D9CCC1',
+      fontFamily: 'TT Norms Pro',
+      textAlign: 'right',
+      charSpacing: 20,
+      fontSize: 14,
+    });
+
+    canvas.add(
+      clipPathTopL,
+      clipPathTopR,
+      clipPathMiddleL,
+      clipPathMiddleR,
+      clipPathBottom,
+      textArea,
+      visionText,
+      period,
+      boardText
+    );
+
+    canvas.add(textArea).setActiveObject(textArea);
+  }
+
   return (
     <Container>
       <PageTitle>VISION BOARD</PageTitle>
+
       <BoardContainer>
         <UploadContainer>
           <input
@@ -304,6 +565,7 @@ export default function Compose() {
               ))}
           </ImageWrapper>
         </UploadContainer>
+
         <VisionBoardContainer>
           <SettingWrapper>
             <ToolWrapper>
@@ -347,13 +609,17 @@ export default function Compose() {
                 <FontSize>{textConfig.fontSize}</FontSize>
               </ToolBar>
             </ToolWrapper>
+
             <ActionWrapper>
-              <ActionIconL src={text} />
-              <ActionIconM src={save} />
-              <ActionIconM src={undo} />
+              <ActionIconL src={text} onClick={addText} />
+              <ActionIconM src={undo} onClick={clear} />
+              <ActionIconM src={save} onClick={saveProject} />
             </ActionWrapper>
           </SettingWrapper>
-          <VisionBoard />
+
+          <VisionBoard ref={canvasRef}>
+            <canvas id="canvas" />
+          </VisionBoard>
         </VisionBoardContainer>
       </BoardContainer>
       <Background />
