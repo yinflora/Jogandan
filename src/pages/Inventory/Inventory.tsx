@@ -162,7 +162,7 @@ const Image = styled.img`
   aspect-ratio: 1/1;
   border: 0.5px solid #cdcdcd;
 
-  filter: grayscale(100%);
+  filter: grayscale(50%);
   transition: all 0.2s ease-in-out;
 
   &:hover {
