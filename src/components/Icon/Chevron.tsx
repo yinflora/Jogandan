@@ -5,17 +5,18 @@ const StyledChevron = styled.svg<ChevronProps>`
 `;
 
 type ChevronProps = {
+  size?: number;
   rotateDeg: number;
   color?: string;
 };
 
-export default function Chevron({ rotateDeg, color }: ChevronProps) {
+export default function Chevron({ size, rotateDeg, color }: ChevronProps) {
   return (
     <StyledChevron
       rotateDeg={rotateDeg}
       xmlns="http://www.w3.org/2000/svg"
-      width="60"
-      height="60"
+      width={size ? size : '60'}
+      height={size ? size : '60'}
       viewBox="0 0 24 24"
       stroke-width="0.5"
       stroke={color ? color : '#ffffff'}
