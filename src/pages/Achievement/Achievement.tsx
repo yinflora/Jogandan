@@ -24,6 +24,12 @@ const PageTitle = styled.h1`
 
 const Image = styled.img`
   height: 100px;
+  filter: grayscale(100%);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    filter: none;
+  }
 `;
 
 function Achievement() {
