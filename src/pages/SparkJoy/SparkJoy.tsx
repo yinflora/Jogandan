@@ -328,11 +328,11 @@ export default function SparkJoy() {
     if (!randomItems) return;
 
     const updatedItem = randomItems[index];
-    updatedItem.status = '處理中';
+    updatedItem.status = '待處理';
     await updateItem(uid, updatedItem.id, updatedItem);
 
     const updatedRandomItems = [...randomItems];
-    updatedRandomItems[index].status = '處理中';
+    updatedRandomItems[index].status = '待處理';
     setRandomItems(updatedRandomItems);
   }
 
