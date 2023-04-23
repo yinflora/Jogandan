@@ -191,6 +191,10 @@ export default function Popout({ selectedItem }: PopoutProp) {
         prev === hasUrlImages.length - 1 ? 0 : prev + 1
       );
     }, 5000);
+
+    return () => {
+      intervalRef.current && window.clearInterval(intervalRef.current);
+    };
   }, [selectedItem]);
 
   function formatTime(time: number) {
