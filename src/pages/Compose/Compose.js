@@ -84,6 +84,7 @@ const ImageWrapper = styled.div`
   flex-wrap: wrap;
   overflow-y: scroll;
   gap: 10px;
+  align-items: start;
 `;
 
 const Image = styled.img`
