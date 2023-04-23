@@ -346,7 +346,7 @@ const CATEGORY_OPTIONS = [
   '其他',
 ];
 
-const STATUS_OPTIONS = ['請選擇狀態', '保留', '處理中', '已處理'];
+const STATUS_OPTIONS = ['請選擇狀態', '保留', '待處理', '已處理'];
 
 type EditProp = {
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
@@ -392,6 +392,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const BULK_LIMIT = 16;
 
   useEffect(() => {
     async function getItem() {
@@ -486,7 +488,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     if (!files) return;
 
     const storageRef = ref(storage, `/${uid}/images/`);
-    const urlList: any = []; //!Fixme
+    const urlList: any = isBulkMode ? [...bulkForms] : []; //!Fixme
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -498,6 +500,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       if (isBulkMode) {
         urlList.push({ images: [url] });
       } else {
+        console.log('Enter...');
         urlList.push(url);
         const imageList = [...images];
         const startIndex = imageList.findIndex((image) => image === '');
@@ -506,7 +509,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         setForm({ ...form, images: imageList });
       }
     }
-    setBulkForms(urlList);
+
+    if (isBulkMode) setBulkForms(urlList);
   }
 
   function handleDeleted(index: number) {
@@ -518,7 +522,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   }
 
   async function handleUploadItems(form: Form) {
-    await uploadItems(uid, form);
+    const itemId = await uploadItems(uid, form);
+    if (itemId) alert('成功加入！');
+
     if (isBulkMode) {
       setBulkForms([]);
     } else {
@@ -614,7 +620,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 id="uploadImage"
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
+                onChange={(e) =>
+                  handleFileUpload(e, BULK_LIMIT - bulkForms.length)
+                }
                 multiple
                 style={{ display: 'none' }}
               />
@@ -644,7 +652,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               id="uploadImage"
               type="file"
               accept="image/*"
-              onChange={(e) => handleFileUpload(e, 10 - bulkForms.length)}
+              onChange={(e) =>
+                handleFileUpload(e, BULK_LIMIT - bulkForms.length)
+              }
               multiple
               style={{ display: 'none' }}
             />
@@ -822,8 +832,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         <>
           <BulkCountWrapper>
             <SlideCount>
-              <NowIndex>1</NowIndex>
-              <TotalIndex>/8</TotalIndex>
+              <NowIndex>{bulkForms.length}</NowIndex>
+              <TotalIndex>/{BULK_LIMIT}</TotalIndex>
             </SlideCount>
           </BulkCountWrapper>
 
@@ -837,17 +847,24 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     <BulkTextInput
                       type="text"
                       value={form.name}
-                      onChange={(e) =>
-                        setForm({ ...form, name: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const newForm = [...bulkForms];
+                        newForm[index].name = e.target.value;
+                        setBulkForms(newForm);
+                      }}
                     />
                   </BulkFieldWrapper>
                   <BulkFieldWrapper>
                     <FiledLabel>分類</FiledLabel>
                     <BulkSelectInput
-                      onChange={(e) =>
-                        setForm({ ...form, category: e.target.value })
-                      }
+                      // onChange={(e) =>
+                      //   setForm({ ...form, category: e.target.value })
+                      // }
+                      onChange={(e) => {
+                        const newForm = [...bulkForms];
+                        newForm[index].category = e.target.value;
+                        setBulkForms(newForm);
+                      }}
                     >
                       {CATEGORY_OPTIONS.map((option) => (
                         <option
@@ -863,9 +880,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                   <BulkFieldWrapper>
                     <FiledLabel>狀態</FiledLabel>
                     <BulkSelectInput
-                      onChange={(e) =>
-                        setForm({ ...form, status: e.target.value })
-                      }
+                      // onChange={(e) =>
+                      //   setForm({ ...form, status: e.target.value })
+                      // }
+                      onChange={(e) => {
+                        const newForm = [...bulkForms];
+                        newForm[index].status = e.target.value;
+                        setBulkForms(newForm);
+                      }}
                     >
                       {STATUS_OPTIONS.map((option) => (
                         <option
@@ -882,9 +904,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     <FiledLabel>描述</FiledLabel>
                     <Description
                       value={form.description}
-                      onChange={(e) =>
-                        setForm({ ...form, description: e.target.value })
-                      }
+                      // onChange={(e) =>
+                      //   setForm({ ...form, description: e.target.value })
+                      // }
+                      onChange={(e) => {
+                        const newForm = [...bulkForms];
+                        newForm[index].description = e.target.value;
+                        setBulkForms(newForm);
+                      }}
                     />
                   </FieldWrapper>
                 </BulkInfoWrapper>

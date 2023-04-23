@@ -96,7 +96,6 @@ async function createUser(userAuth) {
 
 export async function uploadItems(userId, form) {
   try {
-    console.log('有進來嗎...');
     const { name, category, status, description, images } = form;
     const itemsRef = collection(
       db,
@@ -116,7 +115,7 @@ export async function uploadItems(userId, form) {
       // isGifted: '',
       processedDate: status === '已處理' ? serverTimestamp() : '',
     });
-    console.log('Item uploaded with ID: ', docRef.id);
+    // console.log('Item uploaded with ID: ', docRef.id);
 
     const itemDocRef = doc(
       db,
@@ -131,7 +130,8 @@ export async function uploadItems(userId, form) {
       id: docRef.id,
     });
 
-    alert('已成功加入！');
+    // alert('已成功加入！');
+    return docRef.id;
   } catch (e) {
     console.error('Error uploading items: ', e);
   }

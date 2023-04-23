@@ -121,7 +121,7 @@ const FirstRow = styled.div`
 `;
 
 const Category = styled.span`
-  margin-bottom: 20我px;
+  margin-bottom: 20px;
 `;
 
 const Edit = styled.img`

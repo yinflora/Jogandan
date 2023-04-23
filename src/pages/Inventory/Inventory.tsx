@@ -191,7 +191,7 @@ const SUBCATEGORY: string[] = [
   '其他',
 ];
 
-const SUBSTATUS: string[] = ['保留', '處理中', '已處理'];
+const SUBSTATUS: string[] = ['保留', '待處理', '已處理'];
 
 type Item = {
   id: string;
