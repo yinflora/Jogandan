@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, useRef, useReducer } from 'react';
 import { AuthContext } from '../../context/authContext';
-import { getItems } from '../../utils/firebase';
+import { getItems, getBoard } from '../../utils/firebase';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
@@ -63,7 +63,7 @@ const UserGrade = styled.p`
 const VisionBoard = styled.img`
   width: 100%;
   margin-top: 100px;
-  aspect-ratio: 4/5;
+  aspect-ratio: 625/475;
   background-color: gray;
 `;
 
@@ -259,6 +259,7 @@ export default function Profile() {
   const [processedItems, setProcessedItems] = useState<[]>([]);
   // const [existingItems, setExistingItems] = useState<[]>([]);
   const [canPlay, setCanPlay] = useState<boolean>(false);
+  const [boardUrl, setBoardUrl] = useState<string>('');
 
   const itemRef = useRef<Items | null>(null);
 
@@ -268,6 +269,11 @@ export default function Profile() {
   useEffect(() => {
     async function fetchData() {
       const data = await getItems(uid);
+
+      const boardId = localStorage.getItem('boardId');
+      const board = await getBoard(uid, boardId);
+      if (board) setBoardUrl(board.url);
+
       itemRef.current = data;
       dispatch({ type: 'FETCH_DATA', payload: { data } });
 
@@ -508,7 +514,7 @@ export default function Profile() {
           }
         />
 
-        <VisionBoard />
+        <VisionBoard src={boardUrl} />
 
         <PeriodFilter>
           <PeriodWrapper>
