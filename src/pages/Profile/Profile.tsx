@@ -5,7 +5,6 @@ import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
 // import { Link } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
 import styled from 'styled-components/macro';
 
@@ -99,6 +98,12 @@ const DateInput = styled.input`
   font-size: 1rem;
   letter-spacing: 0.2rem;
   color: #fff;
+
+  &[type='date']::-webkit-calendar-picker-indicator {
+    /* 修改日曆icon顏色 */
+    color: #fff;
+    filter: invert(1);
+  }
 `;
 
 const Dash = styled.div`
@@ -179,48 +184,48 @@ const QtyTitle = styled.p`
   letter-spacing: 0.2rem;
 `;
 
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-`;
+// const Overlay = styled.div`
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   z-index: 1;
+//   display: flex;
+//   width: 100vw;
+//   height: 100vh;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   background-color: rgba(0, 0, 0, 0.5);
+// `;
 
-const Toast = styled.div`
-  position: relative;
-  display: flex;
-  width: 600px;
-  height: 600px;
-  background-color: #fff;
-  justify-content: center;
-  align-items: end;
-`;
+// const Toast = styled.div`
+//   position: relative;
+//   display: flex;
+//   width: 600px;
+//   height: 600px;
+//   background-color: #fff;
+//   justify-content: center;
+//   align-items: end;
+// `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1.25rem;
-`;
+// const CloseButton = styled.button`
+//   position: absolute;
+//   top: 10px;
+//   right: 10px;
+//   font-size: 1.25rem;
+// `;
 
-const LinkButton = styled.button`
-  width: 300px;
-  height: 50px;
-  /* margin: 0 auto; */
-  background-color: #8d9ca4;
-`;
+// const LinkButton = styled.button`
+//   width: 300px;
+//   height: 50px;
+//   /* margin: 0 auto; */
+//   background-color: #8d9ca4;
+// `;
 
-const StyledLink = styled(Link)`
-  font-size: 1.5rem;
-  color: #fff;
-`;
+// const StyledLink = styled(Link)`
+//   font-size: 1.5rem;
+//   color: #fff;
+// `;
 
 type Row = string[];
 
@@ -617,20 +622,20 @@ export default function Profile() {
       </Container>
       <Background />
       {/* //Todo: 昨天以前才可以popout */}
-      <div>
+      {/* <div>
         <button onClick={() => setCanPlay(false)}>X</button>
         你今天TOUCH了嗎？
-        {/* <Link to="/sparkJoy">馬上開始</Link> */}
-      </div>
+        <Link to="/sparkJoy">馬上開始</Link>
+      </div> */}
 
-      <Overlay>
+      {/* <Overlay>
         <Toast>
-          <CloseButton>X</CloseButton>
+          <CloseButton onClick={() => setCanPlay(false)}>X</CloseButton>
           <LinkButton>
             <StyledLink to="/sparkJoy">立刻去玩</StyledLink>
           </LinkButton>
         </Toast>
-      </Overlay>
+      </Overlay> */}
     </>
   );
 }
