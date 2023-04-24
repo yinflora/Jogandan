@@ -879,7 +879,10 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 isEdit ? handleUpdateItems() : handleUploadItems(singleForm);
               }}
               disabled={
-                Object.values(singleForm).includes('') ||
+                // Object.values(singleForm).includes('') ||
+                singleForm.name === '' ||
+                singleForm.category === '' ||
+                singleForm.status === '' ||
                 !singleForm.images.some((image) => image !== '')
               }
             >
