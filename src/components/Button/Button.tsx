@@ -5,6 +5,7 @@ const StyledButton = styled.button<ButtonProps>`
   min-height: 50px;
   width: ${({ width }) => width};
   font-size: 1rem;
+  letter-spacing: 0.1rem;
 
   ${({ buttonType }) => {
     if (buttonType === 'dark') {
