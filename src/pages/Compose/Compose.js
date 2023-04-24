@@ -210,6 +210,8 @@ export default function Compose() {
 
   const storageRef = ref(storage, `/${uid}/images/`);
 
+  console.log(images);
+
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = new fabric.Canvas('canvas', {
