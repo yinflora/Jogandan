@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getProcessedItems } from '../../utils/firebase';
 import styled, { css } from 'styled-components';
 import AuthContext from '../../context/authContext';
@@ -191,22 +191,22 @@ const Image = styled.img<{ index: number }>`
   }}
 `;
 
-const TEST = [
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2FFZREFYiz7oHMzh0X8FHf?alt=media&token=e2d305d6-5f00-40bb-ae2a-5e112628cc13',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fbailey-alexander-K6Lcwxkt9Vw-unsplash.jpeg?alt=media&token=7652e7ff-da85-43fa-916d-390d0bae70b0',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fandrea-davis-kroxgnt9Uzw-unsplash.jpeg?alt=media&token=5aaf6781-019b-4867-8b24-b2f21fd3d8ae',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fcd958b9b8b46d0f31e9779afac60585f.jpeg?alt=media&token=39cccf1e-6431-4450-93e9-e0b46b180538',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2F8fc103d2fa521ea28693e5ca558e1bf4.jpeg?alt=media&token=d74570c4-ec0b-40a5-afb6-a79d3e58f06c',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Ftest?alt=media&token=658afb30-c335-4d4d-b77c-ad8aa460edd7',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fkatja-rooke-77JACslA8G0-unsplash.jpeg?alt=media&token=595522d4-4216-4cc3-b84f-db12290a140d',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fsarah-brown-oa7pqZmmhuA-unsplash.jpeg?alt=media&token=7c76d3ae-f95c-4c84-bfcf-25f7d9faa3cd',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2FIMG_0150.JPG?alt=media&token=7d317374-d566-4685-9d53-e428fe1e182c',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fsamantha-gades-BlIhVfXbi9s-unsplash.jpeg?alt=media&token=f717bb9e-b34b-42d4-b48e-75beeba0037a',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fval-stoker-ggeI8TyPeZM-unsplash.jpeg?alt=media&token=7b4f441c-09da-4918-98d7-0e9d5a89df45',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Ff7fcbefcae9380411b301fea29e4079e.jpeg?alt=media&token=0deeb8c8-bc76-445c-9a52-f9c10ed971f8',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fe34cc7b93c0a82e785c76e272fa228a4.jpeg?alt=media&token=1edcd8fa-6f8e-4ac7-8c7a-8c1231b5158e',
-  'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fca6fe7475dd59d9830db67dc9d71b56a.jpeg?alt=media&token=f24e49c9-d925-4784-b498-261e2c8fcd09',
-];
+// const TEST = [
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2FFZREFYiz7oHMzh0X8FHf?alt=media&token=e2d305d6-5f00-40bb-ae2a-5e112628cc13',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fbailey-alexander-K6Lcwxkt9Vw-unsplash.jpeg?alt=media&token=7652e7ff-da85-43fa-916d-390d0bae70b0',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fandrea-davis-kroxgnt9Uzw-unsplash.jpeg?alt=media&token=5aaf6781-019b-4867-8b24-b2f21fd3d8ae',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fcd958b9b8b46d0f31e9779afac60585f.jpeg?alt=media&token=39cccf1e-6431-4450-93e9-e0b46b180538',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2F8fc103d2fa521ea28693e5ca558e1bf4.jpeg?alt=media&token=d74570c4-ec0b-40a5-afb6-a79d3e58f06c',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Ftest?alt=media&token=658afb30-c335-4d4d-b77c-ad8aa460edd7',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fkatja-rooke-77JACslA8G0-unsplash.jpeg?alt=media&token=595522d4-4216-4cc3-b84f-db12290a140d',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fsarah-brown-oa7pqZmmhuA-unsplash.jpeg?alt=media&token=7c76d3ae-f95c-4c84-bfcf-25f7d9faa3cd',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2FIMG_0150.JPG?alt=media&token=7d317374-d566-4685-9d53-e428fe1e182c',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fsamantha-gades-BlIhVfXbi9s-unsplash.jpeg?alt=media&token=f717bb9e-b34b-42d4-b48e-75beeba0037a',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fval-stoker-ggeI8TyPeZM-unsplash.jpeg?alt=media&token=7b4f441c-09da-4918-98d7-0e9d5a89df45',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Ff7fcbefcae9380411b301fea29e4079e.jpeg?alt=media&token=0deeb8c8-bc76-445c-9a52-f9c10ed971f8',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fe34cc7b93c0a82e785c76e272fa228a4.jpeg?alt=media&token=1edcd8fa-6f8e-4ac7-8c7a-8c1231b5158e',
+//   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/kyZjoKtIpCe0c3ZrItSubP8mAle2%2Fimages%2Fca6fe7475dd59d9830db67dc9d71b56a.jpeg?alt=media&token=f24e49c9-d925-4784-b498-261e2c8fcd09',
+// ];
 
 function Achievement() {
   const { uid } = useContext(AuthContext);
@@ -240,10 +240,18 @@ function Achievement() {
             )
           )} */}
         <ScrollSection>
+          {items &&
+            items.map((item, index) => (
+              <Link key={index} to={`/inventory/${item.id}`}>
+                <Image src={item.images[0]} index={index} />
+              </Link>
+            ))}
+        </ScrollSection>
+        {/* <ScrollSection>
           {TEST.map((item, index) => (
             <Image src={item} index={index} />
           ))}
-        </ScrollSection>
+        </ScrollSection> */}
 
         <Background />
       </>

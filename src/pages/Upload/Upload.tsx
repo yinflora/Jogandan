@@ -175,10 +175,33 @@ const SubImageWrapper = styled.div`
 
 const CancelBtn = styled.button`
   position: absolute;
+  z-index: 2;
   top: 0;
   right: 0;
-  z-index: 2;
-  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  font-size: 1rem;
+  text-align: center;
+  background-color: rgb(0, 0, 0, 0.6);
+  color: #fff;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const CoverText = styled.p`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 25px;
+  font-size: 1rem;
+  line-height: 25px;
+  text-align: center;
+  /* background-color: rgba(141, 156, 164, 0.7); */
+  background-color: rgb(0, 0, 0, 0.6);
+  color: #fff;
 `;
 
 const SubImage = styled.div<{ imageUrl: string }>`
@@ -703,7 +726,10 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                           X
                         </CancelBtn>
                       )}
+                      {index === 0 && <CoverText>封面</CoverText>}
                     </div>
+                    {/* {images[index] === 0 && <CoverText>封面</CoverText>}
+                    {images[index] === 0 && <CoverText>封面</CoverText>} */}
                   </SubImageWrapper>
                 ))}
               </SubImageContainer>
