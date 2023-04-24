@@ -601,8 +601,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     index: number
   ) {
     e.preventDefault();
-    if (draggingIndex !== null && draggingIndex !== index) {
+    if (
+      draggingIndex !== null &&
+      draggingIndex !== index &&
+      singleForm.images[index]
+    ) {
       e.dataTransfer.dropEffect = 'copy';
+    } else {
+      e.dataTransfer.dropEffect = 'none';
     }
   }
 
