@@ -112,7 +112,13 @@ const MainImageWrapper = styled.div`
   aspect-ratio: 1/1;
 `;
 
+// const MainImage = styled.div<{ coverUrl: string }>`
+/* background: ${({ coverUrl }) =>
+    coverUrl === '' ? 'none' : `center / cover no-repeat url(${coverUrl})`}; */
+
 const MainImage = styled.div`
+  /* width: 100%; */
+  /* height: 100%; */
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
@@ -156,6 +162,9 @@ const SubImageContainer = styled.div`
   overflow-y: scroll;
 `;
 
+// const SubImageWrapper = styled.div<{ isShow: boolean }>`
+/* display: ${({ isShow }) => (isShow ? 'block' : 'none')}; */
+
 const SubImageWrapper = styled.div`
   position: relative;
   height: calc((100% - 40px) / 4);
@@ -190,6 +199,7 @@ const CoverText = styled.p`
   font-size: 1rem;
   line-height: 25px;
   text-align: center;
+  /* background-color: rgba(141, 156, 164, 0.7); */
   background-color: rgb(0, 0, 0, 0.6);
   color: #fff;
 `;
@@ -206,6 +216,7 @@ const SubImage = styled.div<{ imageUrl: string }>`
 
 const InfoWrapper = styled.form`
   display: flex;
+  /* width: 40%; */
   padding: 40px 0;
   flex-grow: 1;
   flex-direction: column;
@@ -382,23 +393,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
 
-  const [singleForm, setSingleForm] = useState<Form>({
+  const [images, setImages] = useState(Array(8).fill(''));
+  const [form, setForm] = useState<Form>({
     name: '',
     category: '',
     status: '',
     description: '',
-    images: Array(8).fill(''),
+    images,
   });
-
-  // const [images, setImages] = useState(Array(8).fill(''));
-  // const [form, setForm] = useState<Form>({
-  //   name: '',
-  //   category: '',
-  //   status: '',
-  //   description: '',
-  //   images,
-  // });
-
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [showCamera, setShowCamera] = useState<boolean>(false);
 
@@ -414,17 +416,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     async function getItem() {
       const item = await getItemById(uid, id);
       const { images, name, category, status, description } = item[0];
-      // setImages(images);
-      // setForm({
-      //   name,
-      //   category,
-      //   status,
-      //   description,
-      //   images,
-      // });
-
-      //!Added
-      setSingleForm({
+      setImages(images);
+      setForm({
         name,
         category,
         status,
@@ -466,7 +459,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     }
   }
 
-  //!Fixme: 不能直接上傳
   function takePhoto() {
     const canvas: any = document.createElement('canvas');
 
@@ -484,13 +476,12 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
     uploadString(imageRef, dataUrl, 'data_url').then((snapshot) => {
       getDownloadURL(snapshot.ref).then((url) => {
-        const emptyIndex = singleForm.images.indexOf('');
-        singleForm.images[emptyIndex] = url;
+        const emptyIndex = images.indexOf('');
+        images[emptyIndex] = url;
 
-        const imageList = [...singleForm.images];
+        const imageList = [...images];
         imageList[emptyIndex] = url;
-        // setImages(imageList);
-        setSingleForm({ ...singleForm, images: imageList });
+        setImages(imageList);
       });
     });
 
@@ -498,7 +489,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     stopCamera();
   }
 
-  //!Fixme: 不能直接上傳
   async function handleFileUpload(
     e: React.ChangeEvent<HTMLInputElement>,
     limit: number
@@ -516,7 +506,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
     const storageRef = ref(storage, `/${uid}/images/`);
     const urlList: any = isBulkMode ? [...bulkForms] : []; //!Fixme
-    const updateList = [...singleForm.images];
+    const updateList = [...images];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -531,68 +521,48 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         updateList.push(url);
       } else {
         urlList.push(url);
-        const imageList = [...singleForm.images];
+        const imageList = [...images];
         const startIndex = imageList.findIndex((image) => image === '');
         imageList.splice(startIndex, urlList.length, ...urlList);
-        // setImages(imageList);
-        // setForm({ ...form, images: imageList });
-        setSingleForm({ ...singleForm, images: imageList });
+        setImages(imageList);
+        setForm({ ...form, images: imageList });
       }
     }
 
     if (isBulkMode) setBulkForms(urlList);
-    // if (isEdit) setImages(updateList);
-    if (isEdit) setSingleForm({ ...singleForm, images: updateList });
+    if (isEdit) setImages(updateList);
   }
 
   function handleDeleted(index: number) {
-    //!Added
-    // const imageList = [...images];
-    // imageList.splice(index, 1);
-    // const list = [...imageList, ''];
-    // setImages(list);
-    // setForm({ ...form, images: list });
-
-    const newImages = [...singleForm.images];
-    newImages.splice(index, 1);
-    setSingleForm({ ...singleForm, images: [...newImages, ''] });
+    const imageList = [...images];
+    imageList.splice(index, 1);
+    const list = [...imageList, ''];
+    setImages(list);
+    setForm({ ...form, images: list });
   }
 
   async function handleUploadItems(form: Form) {
-    //!Modified
-    // const itemId = await uploadItems(uid, form);
-    // if (itemId) alert('成功加入！');
-    await uploadItems(uid, form);
+    const itemId = await uploadItems(uid, form);
+    if (itemId) alert('成功加入！');
 
     if (isBulkMode) {
       setBulkForms([]);
     } else {
-      // setImages(Array(8).fill(''));
-      // setForm({
-      //   name: '',
-      //   category: '',
-      //   status: '',
-      //   description: '',
-      //   images,
-      // });
-
-      setSingleForm({
+      // setImages(Array(10).fill(''));
+      setImages(Array(8).fill(''));
+      setForm({
         name: '',
         category: '',
         status: '',
         description: '',
-        images: Array(8).fill(''),
+        images,
       });
     }
   }
 
   async function handleUpdateItems() {
-    //!Modified
-    // const updatedForm = { ...form, images };
-    // const newForm = {...singleForm, images: singleForm.images};
-
-    // await updateItem(uid, id, updatedForm);
-    await updateItem(uid, id, singleForm);
+    const updatedForm = { ...form, images };
+    await updateItem(uid, id, updatedForm);
     setIsEdit(false);
   }
 
@@ -607,17 +577,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>, index: number) {
-    //!Modified
     e.preventDefault();
     if (draggingIndex !== null && draggingIndex !== index) {
-      // const newImages = [...images];
-      const newImages = [...singleForm.images];
+      const newImages = [...images];
       [newImages[draggingIndex], newImages[index]] = [
         newImages[index],
         newImages[draggingIndex],
       ];
-      // setImages(newImages);
-      setSingleForm({ ...singleForm, images: newImages });
+      setImages(newImages);
     }
     setDraggingIndex(null);
   }
@@ -730,14 +697,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 ref={containerRef}
                 onDragOver={(e) => handleDragOver(e)}
               >
-                {singleForm.images.map((image, index) => (
+                {images.map((image, index) => (
                   <SubImageWrapper
                     key={index}
                     onDragOver={(e) => handleDragOverImg(e, index)}
                     onDrop={(e) => image !== '' && handleDrop(e, index)}
                   >
                     <div
-                      draggable={singleForm.images[index] !== ''}
+                      draggable={images[index] !== ''}
                       onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
                         e.currentTarget.style.opacity = '0.01';
                         setDraggingIndex(index);
@@ -748,13 +715,15 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                       }}
                     >
                       <SubImage imageUrl={image}></SubImage>
-                      {singleForm.images[index] !== '' && (
+                      {images[index] !== '' && (
                         <CancelBtn onClick={() => handleDeleted(index)}>
                           X
                         </CancelBtn>
                       )}
                       {index === 0 && <CoverText>封面</CoverText>}
                     </div>
+                    {/* {images[index] === 0 && <CoverText>封面</CoverText>}
+                    {images[index] === 0 && <CoverText>封面</CoverText>} */}
                   </SubImageWrapper>
                 ))}
               </SubImageContainer>
@@ -782,9 +751,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                         onChange={(e) =>
                           handleFileUpload(
                             e,
-                            8 -
-                              singleForm.images.filter((item) => item !== '')
-                                .length
+                            8 - images.filter((item) => item !== '').length
                           )
                         }
                         multiple
@@ -817,10 +784,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               <FiledLabel>名稱</FiledLabel>
               <TextInput
                 type="text"
-                value={singleForm.name}
-                onChange={(e) =>
-                  setSingleForm({ ...singleForm, name: e.target.value })
-                }
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </FieldWrapper>
             <SelectWrapper>
@@ -828,14 +793,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 <FiledLabel>分類</FiledLabel>
                 <SelectInput
                   onChange={(e) =>
-                    setSingleForm({ ...singleForm, category: e.target.value })
+                    setForm({ ...form, category: e.target.value })
                   }
                 >
                   {CATEGORY_OPTIONS.map((option) => (
                     <option
                       key={option}
                       value={option}
-                      selected={option === singleForm.category}
+                      selected={option === form.category}
                     >
                       {option}
                     </option>
@@ -845,15 +810,13 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               <HalfFieldWrapper>
                 <FiledLabel>狀態</FiledLabel>
                 <SelectInput
-                  onChange={(e) =>
-                    setSingleForm({ ...singleForm, status: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
                 >
                   {STATUS_OPTIONS.map((option) => (
                     <option
                       key={option}
                       value={option}
-                      selected={option === singleForm.status}
+                      selected={option === form.status}
                     >
                       {option}
                     </option>
@@ -864,9 +827,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
             <FieldWrapper>
               <FiledLabel>描述</FiledLabel>
               <Description
-                value={singleForm.description}
+                value={form.description}
                 onChange={(e) =>
-                  setSingleForm({ ...singleForm, description: e.target.value })
+                  setForm({ ...form, description: e.target.value })
                 }
                 rows={5}
                 cols={33}
@@ -876,11 +839,11 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               buttonType="dark"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
-                isEdit ? handleUpdateItems() : handleUploadItems(singleForm);
+                isEdit ? handleUpdateItems() : handleUploadItems(form);
               }}
               disabled={
-                Object.values(singleForm).includes('') ||
-                !singleForm.images.some((image) => image !== '')
+                Object.values(form).includes('') ||
+                !images.some((image) => image !== '')
               }
             >
               {isEdit ? '確認更新' : '確認上傳'}
@@ -918,17 +881,20 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                   <BulkFieldWrapper>
                     <FiledLabel>分類</FiledLabel>
                     <BulkSelectInput
+                      // onChange={(e) =>
+                      //   setForm({ ...form, category: e.target.value })
+                      // }
                       onChange={(e) => {
                         const newForm = [...bulkForms];
                         newForm[index].category = e.target.value;
                         setBulkForms(newForm);
                       }}
                     >
-                      {CATEGORY_OPTIONS.map((option, index) => (
+                      {CATEGORY_OPTIONS.map((option) => (
                         <option
                           key={option}
                           value={option}
-                          selected={option === bulkForms[index].category}
+                          selected={option === form.category}
                         >
                           {option}
                         </option>
@@ -938,17 +904,20 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                   <BulkFieldWrapper>
                     <FiledLabel>狀態</FiledLabel>
                     <BulkSelectInput
+                      // onChange={(e) =>
+                      //   setForm({ ...form, status: e.target.value })
+                      // }
                       onChange={(e) => {
                         const newForm = [...bulkForms];
                         newForm[index].status = e.target.value;
                         setBulkForms(newForm);
                       }}
                     >
-                      {STATUS_OPTIONS.map((option, index) => (
+                      {STATUS_OPTIONS.map((option) => (
                         <option
                           key={option}
                           value={option}
-                          selected={option === bulkForms[index].status}
+                          selected={option === form.status}
                         >
                           {option}
                         </option>
@@ -959,6 +928,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     <FiledLabel>描述</FiledLabel>
                     <Description
                       value={form.description}
+                      // onChange={(e) =>
+                      //   setForm({ ...form, description: e.target.value })
+                      // }
                       onChange={(e) => {
                         const newForm = [...bulkForms];
                         newForm[index].description = e.target.value;
