@@ -251,6 +251,7 @@ const FiledLabel = styled.label`
 
 const TextInput = styled.input`
   height: 30px;
+  font-size: 1rem;
   letter-spacing: 0.1rem;
   border-bottom: 1px solid #fff;
   color: #fff;
@@ -268,6 +269,7 @@ const SelectWrapper = styled.div`
 
 const SelectInput = styled.select`
   height: 30px;
+  font-size: 1rem;
   letter-spacing: 0.1rem;
   border-bottom: 1px solid #fff;
   color: #fff;
@@ -282,6 +284,8 @@ const BulkSelectInput = styled(SelectInput)`
 
 const Description = styled.textarea`
   padding: 10px;
+  font-family: 'TT Norms Pro', sans-serif;
+  font-size: 1rem;
   resize: none;
   border: 1px solid #fff;
   outline: none;
@@ -388,16 +392,6 @@ type Form = {
 export default function Upload({ isEdit, setIsEdit }: EditProp) {
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
-
-  // const [singleForm, setSingleForm] = useState<Form>({
-  //   name: '',
-  //   category: '',
-  //   status: '',
-  //   description: '',
-  //   images: [],
-  // });
-
-  // const [images, setImages] = useState(Array(10).fill(''));
 
   const [images, setImages] = useState(Array(8).fill(''));
   const [form, setForm] = useState<Form>({
