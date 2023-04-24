@@ -146,7 +146,7 @@ export default function Home() {
           </MainTitle>
           <SubTitle>理想的簡單生活從JOGANDAN開始</SubTitle>
           <DownIcon>
-            <Chevron size={100} rotateDeg={180} color="#c6c6c6" />
+            <Chevron rotateDeg={180} color="#c6c6c6" />
           </DownIcon>
         </TopWrapper>
 
