@@ -2,12 +2,13 @@ import React from 'react';
 import { useEffect, useRef, useState, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import { getItems, getItemById } from '../../utils/firebase';
 import { AuthContext } from '../../context/authContext';
 import Popout from './Popout';
 import Search from '../../components/Icon/Search';
+import Cross from '../../components/Icon/Cross';
 
 const Container = styled.div`
   /* width: 1000px; */
@@ -100,6 +101,8 @@ const FilterTitle = styled.p`
 
   &:first-of-type {
     margin-bottom: 40px;
+    color: #fff;
+    cursor: pointer;
   }
 `;
 
@@ -112,6 +115,7 @@ const SubFilterWrapper = styled.div`
 const TitleWrapper = styled.div`
   display: flex;
   width: 50%;
+  height: 15px;
   justify-content: space-between;
   align-items: center;
 `;
@@ -119,16 +123,22 @@ const TitleWrapper = styled.div`
 const SubTitle = styled.p<{ isSelected: boolean }>`
   font-size: 14px;
   letter-spacing: 0.2rem;
-  color: ${({ isSelected }) => (isSelected ? '#8D9CA4' : '#cdcdcd')};
+  color: ${({ isSelected }) => (isSelected ? '#8D9CA4' : '#b5b4b4')};
+  font-weight: ${({ isSelected }) => isSelected && 500};
 
   &:hover {
     cursor: pointer;
   }
 `;
 
-const FilterButton = styled.button`
-  font-size: 14px;
-  color: #8d9ca4;
+const FilterButton = styled.div`
+  /* padding: 0; */
+  /* font-size: 14px;
+  color: #8d9ca4; */
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   &:hover {
     cursor: pointer;
@@ -356,7 +366,12 @@ export default function Inventory() {
 
       <ItemContainer>
         <FilterWrapper>
-          <FilterTitle onClick={() => setItems(itemsRef.current)}>
+          <FilterTitle
+            onClick={() => {
+              setItems(itemsRef.current);
+              setSearch('');
+            }}
+          >
             All
           </FilterTitle>
           {/* <Split /> */}
@@ -366,13 +381,18 @@ export default function Inventory() {
               <TitleWrapper>
                 <SubTitle
                   key={category}
-                  onClick={() => setFilter({ ...filter, category })}
+                  onClick={() => {
+                    setFilter({ ...filter, category });
+                    setSearch('');
+                  }}
                   isSelected={filter.category === category}
                 >
                   {category}
                 </SubTitle>
                 {filter.category === category && (
-                  <FilterButton onClick={handleClearCategory}>X</FilterButton>
+                  <FilterButton onClick={handleClearCategory}>
+                    <Cross size={25} color="#8D9CA4" lineWidth={6} />
+                  </FilterButton>
                 )}
               </TitleWrapper>
             ))}
@@ -385,13 +405,19 @@ export default function Inventory() {
               <TitleWrapper>
                 <SubTitle
                   key={status}
-                  onClick={() => setFilter({ ...filter, status })}
+                  onClick={() => {
+                    setFilter({ ...filter, status });
+                    setSearch('');
+                  }}
                   isSelected={filter.status === status}
                 >
                   {status}
                 </SubTitle>
                 {filter.status === status && (
-                  <FilterButton onClick={handleClearStatus}>X</FilterButton>
+                  // <FilterButton onClick={handleClearStatus}>X</FilterButton>
+                  <FilterButton onClick={handleClearStatus}>
+                    <Cross size={25} color="#8D9CA4" lineWidth={6} />
+                  </FilterButton>
                 )}
               </TitleWrapper>
             ))}

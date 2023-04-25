@@ -822,7 +822,11 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 style={{ display: 'none' }}
               />
               <label htmlFor="uploadImage">
-                <Button buttonType="light" onClick={handleSelectImage}>
+                <Button
+                  buttonType="light"
+                  onClick={handleSelectImage}
+                  disabled={bulkForms.length === BULK_LIMIT}
+                >
                   選擇照片
                 </Button>
               </label>
@@ -834,7 +838,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                   ).then(() => navigate('/inventory'))
                 }
                 disabled={
-                  bulkForms.length > 0 &&
                   !bulkForms
                     .map((form) => {
                       const { name, category, status } = form;
