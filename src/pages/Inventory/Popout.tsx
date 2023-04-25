@@ -36,7 +36,7 @@ const Container = styled.div<{ isEdit: boolean }>`
   /* height: 650px; */
   /* padding: 40px 60px; */
 
-  padding: ${({ isEdit }) => (isEdit ? '40px 60px' : '80px 60px')};
+  padding: ${({ isEdit }) => (isEdit ? '0px 40px ' : '80px 60px')};
   gap: 60px;
   justify-content: center;
   align-items: center;

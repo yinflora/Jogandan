@@ -24,9 +24,9 @@ import Button from '../../components/Button/Button';
 import Cross from '../../components/Icon/Cross';
 import { v4 as uuidv4 } from 'uuid';
 
-const Container = styled.div`
+const Container = styled.div<{ isEdit: boolean }>`
   margin: 0 auto;
-  padding: 0 250px;
+  padding: ${({ isEdit }) => (isEdit ? 0 : '0 250px')};
   color: #fff;
 `;
 
@@ -253,6 +253,7 @@ const BulkRemindWrapper = styled.div`
 
 const Remind = styled.p`
   /* margin-bottom: 30px; */
+  text-align: center;
   color: #fff;
 `;
 
@@ -354,7 +355,7 @@ const BulkFiledLabel = styled(FiledLabel)`
 `;
 
 const TextInput = styled.input`
-  width: calc(100% - 45px);
+  width: 100%;
   height: 30px;
   font-size: 1rem;
   letter-spacing: 0.1rem;
@@ -363,6 +364,7 @@ const TextInput = styled.input`
 `;
 
 const BulkTextInput = styled(TextInput)`
+  width: calc(100% - 45px);
   border: none;
 `;
 
@@ -807,7 +809,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   }
 
   return (
-    <Container>
+    <Container isEdit={isEdit}>
       {!isEdit && (
         <TitleWrapper>
           <PageTitle>UPLOAD</PageTitle>
