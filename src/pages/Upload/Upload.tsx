@@ -25,13 +25,14 @@ import Cross from '../../components/Icon/Cross';
 import { v4 as uuidv4 } from 'uuid';
 
 const Container = styled.div<{ isEdit: boolean }>`
-  margin: 0 auto;
+  margin: ${({ isEdit }) => (isEdit ? 0 : '0 auto')};
   padding: ${({ isEdit }) => (isEdit ? 0 : '0 250px')};
   color: #fff;
 `;
 
 const TitleWrapper = styled.div`
   display: flex;
+  margin-bottom: 80px;
   align-items: end;
 `;
 
@@ -133,7 +134,7 @@ const UploadContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  padding: 80px 0;
+  /* padding: 80px 0; */
   gap: 60px;
 `;
 
