@@ -36,20 +36,90 @@ const TitleWrapper = styled.div`
 `;
 
 const PageTitle = styled.h1`
+  margin-right: 20px;
   font-size: 3rem;
   font-weight: 500;
   letter-spacing: 0.4rem;
   text-transform: uppercase;
 `;
 
-const ModeToggler = styled.button<{ isBulkMode: boolean }>`
-  margin-left: ${({ isBulkMode }) => (isBulkMode ? '10px' : 'auto')};
-  font-size: 1.25rem;
-  border-bottom: 1px solid #fff;
-  color: #fff;
+// const ModeToggler = styled.button<{ isBulkMode: boolean }>`
+//   margin-left: ${({ isBulkMode }) => (isBulkMode ? '10px' : 'auto')};
+//   font-size: 1.25rem;
+//   border-bottom: 1px solid #fff;
+//   color: #fff;
 
-  &:hover {
-    cursor: pointer;
+//   &:hover {
+//     cursor: pointer;
+//   }
+// `;
+
+const ModeToggler = styled.div`
+  display: flex;
+  gap: 5px;
+  align-items: center;
+`;
+
+const ModeText = styled.span`
+  letter-spacing: 0.1rem;
+`;
+
+const SingleMode = styled(ModeText)<{ isBulkMode: boolean }>`
+  color: ${({ isBulkMode }) =>
+    isBulkMode ? 'rgba(255, 255, 255, 0.4)' : '#fff'};
+  font-weight: ${({ isBulkMode }) => (isBulkMode ? 400 : 500)};
+`;
+
+const BulkMode = styled(ModeText)<{ isBulkMode: boolean }>`
+  color: ${({ isBulkMode }) =>
+    isBulkMode ? '#fff' : 'rgba(255, 255, 255, 0.4)'};
+  font-weight: ${({ isBulkMode }) => (isBulkMode ? 500 : 400)};
+`;
+
+const SwitchContainer = styled.div`
+  display: inline-block;
+  position: relative;
+  width: 48px;
+  height: 24px;
+`;
+
+const Slider = styled.div<{ checked: boolean }>`
+  background-color: #ccc;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 24px;
+  transition: all 0.3s;
+  background-color: ${({ checked }) =>
+    checked ? 'rgb(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.4)'};
+
+  &:before {
+    position: absolute;
+    content: '';
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: all 0.3s;
+
+    transform: translateX(${({ checked }) => (checked ? '24px' : '0px')});
+  }
+`;
+
+const Input = styled.input`
+  opacity: 0;
+  width: 0;
+  height: 0;
+
+  &:checked + ${Slider} {
+    background-color: #2196f3;
+  }
+  &:checked + ${Slider}:before {
+    transform: translateX(24px);
   }
 `;
 
@@ -741,7 +811,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       {!isEdit && (
         <TitleWrapper>
           <PageTitle>UPLOAD</PageTitle>
-          <ModeToggler
+          {/* <ModeToggler
             isBulkMode={isBulkMode && bulkForms.length > 0}
             onClick={() => {
               setIsBulkMode(!isBulkMode);
@@ -749,8 +819,35 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
             }}
           >
             {isBulkMode ? '單品上傳' : '批量上傳'}
+          </ModeToggler> */}
+
+          <ModeToggler>
+            <SingleMode isBulkMode={isBulkMode}>單品</SingleMode>
+            <SwitchContainer>
+              <Input
+                id="switchUpload"
+                type="checkbox"
+                checked={isBulkMode}
+                onChange={() => {
+                  setIsBulkMode(!isBulkMode);
+                  setSingleForm({
+                    name: '',
+                    category: '',
+                    status: '',
+                    description: '',
+                    images: Array(SINGLE_LIMIT).fill(''),
+                  });
+                  setBulkForms([]);
+                }}
+              />
+              <label htmlFor="switchUpload">
+                <Slider checked={isBulkMode} />
+              </label>
+            </SwitchContainer>
+            <BulkMode isBulkMode={isBulkMode}>批量</BulkMode>
           </ModeToggler>
-          {bulkForms.length > 0 && (
+
+          {isBulkMode && bulkForms.length > 0 && (
             <BulkUploadWrapper>
               <input
                 id="uploadImage"
