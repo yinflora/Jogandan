@@ -22,6 +22,7 @@ import infoBlack from './info-black.png';
 // import Chevron from '../../components/Icon/Chevron';
 import Button from '../../components/Button/Button';
 import Cross from '../../components/Icon/Cross';
+import { v4 as uuidv4 } from 'uuid';
 
 const Container = styled.div`
   margin: 0 auto;
@@ -472,8 +473,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       //   images,
       // });
 
-      console.log('before fill', images);
-
       if (images.length < SINGLE_LIMIT) {
         const filledImages = new Array(SINGLE_LIMIT)
           .fill('')
@@ -590,21 +589,11 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
     if (!files) return;
 
-    // const storageRef = ref(storage, `/${uid}/images/`);
-    // const urlList: any = isBulkMode ? [...bulkForms] : []; //!Fixme
-    // const updateList = [...singleForm.images];
-
     const newBulkForms = [...bulkForms];
     const newSingleForm = { ...singleForm };
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-
-      // const imageRef = ref(storageRef, `${file.name}`);
-
-      // const snapshot = await uploadBytes(imageRef, file);
-      // const url = await getDownloadURL(snapshot.ref);
-
       const url = URL.createObjectURL(file);
 
       if (isBulkMode) {
@@ -630,86 +619,26 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     }
   }
 
-  console.log(bulkForms);
-
-  function handleDeleted(index: number) {
-    //!Added
-    // const imageList = [...images];
-    // imageList.splice(index, 1);
-    // const list = [...imageList, ''];
-    // setImages(list);
-    // setForm({ ...form, images: list });
-
-    const newImages = [...singleForm.images];
-    newImages.splice(index, 1);
-    setSingleForm({ ...singleForm, images: [...newImages, ''] });
-  }
-
   async function handleUploadItems(form: Form) {
-    //!Modified
-    // const itemId = await uploadItems(uid, form);
-    // if (itemId) alert('成功加入！');
-
-    const storageRef = ref(storage, `/${uid}/images/`);
-    const imageRef = ref(storageRef, `${new Date()}`);
-
-    // uploadString(imageRef, dataUrl, 'data_url').then((snapshot) => {
-    //   getDownloadURL(snapshot.ref).then((url) => {
-    //     const emptyIndex = singleForm.images.indexOf('');
-    //     singleForm.images[emptyIndex] = url;
-
-    //     const imageList = [...singleForm.images];
-    //     imageList[emptyIndex] = url;
-    //     // setImages(imageList);
-    //     setSingleForm({ ...singleForm, images: imageList });
-    //   });
-    // });
-
-    // await uploadItems(uid, form);
-
-    // if (isBulkMode) {
-    //   const newForms = [...form];
-
-    //   form.forEach(async (item: any, index: number) => {
-    //     const snapshot = await uploadBytes(imageRef, item.images[0]);
-    //     const url = await getDownloadURL(snapshot.ref);
-
-    //     // const snapShot = await uploadString(
-    //     //   imageRef,
-    //     //   item.images[0],
-    //     //   'data_url'
-    //     // );
-    //     // const url = await getDownloadURL(snapShot.ref);
-
-    //     newForms[index].images = [url];
-    //   });
-
-    //   await uploadItems(uid, newForms);
-
-    //   setBulkForms([]);
-    // } else {
-    // setImages(Array(8).fill(''));
-    // setForm({
-    //   name: '',
-    //   category: '',
-    //   status: '',
-    //   description: '',
-    //   images,
-    // });
-
-    // const newImages = [];
     const newForm = { ...form };
 
-    newForm.images.forEach(async (image: any, index: number) => {
-      if (image === '') {
-        newForm.images[index] = '';
-      } else {
-        const snapshot = await uploadBytes(imageRef, image);
-        const url = await getDownloadURL(snapshot.ref);
+    await Promise.all(
+      newForm.images.map(async (image: any, index: number) => {
+        if (image === '') {
+          newForm.images[index] = '';
+        } else {
+          const res = await fetch(image);
+          const blobImage = await res.blob();
 
-        newForm.images[index] = url;
-      }
-    });
+          const storageRef = ref(storage, `/${uid}/images/${uuidv4()}`);
+          // const snapshot = await uploadBytes(storageRef, image);
+          const snapshot = await uploadBytes(storageRef, blobImage);
+          const url = await getDownloadURL(snapshot.ref);
+
+          newForm.images[index] = url;
+        }
+      })
+    );
 
     const itemId = await uploadItems(uid, newForm);
 
@@ -722,13 +651,25 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         description: '',
         images: Array(8).fill(''),
       });
-    // }
   }
 
   async function handleUpdateItems() {
     //!Modified
     await updateItem(uid, id, singleForm);
     setIsEdit(false);
+  }
+
+  function handleDeleted(index: number) {
+    //!Added
+    // const imageList = [...images];
+    // imageList.splice(index, 1);
+    // const list = [...imageList, ''];
+    // setImages(list);
+    // setForm({ ...form, images: list });
+
+    const newImages = [...singleForm.images];
+    newImages.splice(index, 1);
+    setSingleForm({ ...singleForm, images: [...newImages, ''] });
   }
 
   function handleDragOverImg(
