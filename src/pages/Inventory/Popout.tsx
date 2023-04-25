@@ -90,10 +90,22 @@ const MainImage = styled.img`
 `;
 
 const SubImageWrapper = styled.div`
+  position: relative;
   display: flex;
   height: 100%;
   flex-direction: column;
   overflow-y: scroll;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 10px);
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: -1;
+  }
 `;
 
 const SubImage = styled.img`
@@ -114,6 +126,7 @@ const InfoWrapper = styled.div`
   padding: 40px 0;
   flex-direction: column;
   color: #000;
+  letter-spacing: 0.1rem;
 `;
 
 const FirstRow = styled.div`
@@ -158,6 +171,7 @@ const CreatedTime = styled.p`
   margin-top: auto;
   font-size: 14px;
   text-align: end;
+  color: #959595;
 `;
 
 type Item = {
@@ -259,7 +273,12 @@ export default function Popout({ selectedItem }: PopoutProp) {
                   </ChangeSlideBtn>
 
                   <SlideCount>
-                    <NowIndex>1</NowIndex>
+                    <NowIndex>
+                      {
+                        selectedItem.images.filter((image) => image !== '')
+                          .length
+                      }
+                    </NowIndex>
                     <TotalIndex>/8</TotalIndex>
                   </SlideCount>
                 </BtnWrapper>
@@ -276,7 +295,6 @@ export default function Popout({ selectedItem }: PopoutProp) {
                 <Status>{selectedItem.status}</Status>
                 <Description>{selectedItem.description}</Description>
                 <CreatedTime>
-                  Created：
                   {formatTime(selectedItem.created.seconds)}
                 </CreatedTime>
               </InfoWrapper>
