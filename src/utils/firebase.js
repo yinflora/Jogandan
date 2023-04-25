@@ -81,8 +81,8 @@ async function createUser(userAuth) {
         email,
         image: photoURL,
         createdAt,
-        period: { start: null, end: null },
-        processedItems: null,
+        // period: { start: null, end: null },
+        // processedItems: null,
       });
       console.log(`建立使用者-${displayName}成功`);
     } catch (error) {
