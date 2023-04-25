@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { Link } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 
@@ -7,6 +7,7 @@ import { useEffect, useState, useRef } from 'react';
 
 import Chevron from '../../components/Icon/Chevron';
 import edit from './edit.png';
+import Cross from '../../components/Icon/Cross';
 
 const Overlay = styled.div`
   position: fixed;
@@ -22,12 +23,12 @@ const Overlay = styled.div`
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
-  gap: 10px;
+  /* gap: 10px; */
 `;
 
 const Cancel = styled(Link)`
   margin-left: auto;
-  color: #f1f2ed;
+  /* color: #f1f2ed; */
 `;
 
 const Container = styled.div<{ isEdit: boolean }>`
@@ -36,7 +37,7 @@ const Container = styled.div<{ isEdit: boolean }>`
   /* height: 650px; */
   /* padding: 40px 60px; */
 
-  padding: ${({ isEdit }) => (isEdit ? '0px 40px ' : '80px 60px')};
+  padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')};
   gap: 60px;
   justify-content: center;
   align-items: center;
@@ -210,7 +211,9 @@ export default function Popout({ selectedItem }: PopoutProp) {
   if (selectedItem) {
     return (
       <Overlay>
-        <Cancel to="/inventory">X</Cancel>
+        <Cancel to="/inventory">
+          <Cross size={50} lineWidth={3} />
+        </Cancel>
 
         <Container isEdit={isEdit}>
           {isEdit ? (
