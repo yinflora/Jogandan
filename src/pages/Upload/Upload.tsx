@@ -59,6 +59,10 @@ const ModeToggler = styled.div`
   display: flex;
   gap: 5px;
   align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const ModeText = styled.span`
