@@ -17,8 +17,10 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
+import info from './info.png';
 import Chevron from '../../components/Icon/Chevron';
 import Button from '../../components/Button/Button';
+import Cross from '../../components/Icon/Cross';
 
 const Container = styled.div`
   margin: 0 auto;
@@ -65,18 +67,38 @@ const UploadContainer = styled.div`
 
 const ImageWrapper = styled.div``;
 
-const ChangeSlideBtn = styled.button`
+// const ChangeSlideBtn = styled.button`
+//   display: flex;
+//   width: 88px;
+//   height: 40px;
+//   justify-content: center;
+//   align-items: center;
+// `;
+
+const ImageInfoWrapper = styled.div`
   display: flex;
-  width: 88px;
   height: 40px;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PromptWrapper = styled.div`
+  display: flex;
+  height: 30px;
+  gap: 5px;
   justify-content: center;
   align-items: center;
 `;
 
-const BtnWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+const InfoIcon = styled.img`
+  width: 15px;
+  height: 15px;
+`;
+
+const PromptRemind = styled.span`
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: #fff;
 `;
 
 const BulkCountWrapper = styled.div`
@@ -131,6 +153,12 @@ const PhotoIcon = styled.img`
   right: 20px;
   width: 50px;
   height: 50px;
+`;
+
+const CancelIcon = styled.button`
+  position: absolute;
+  top: 0;
+  right: 15px;
 `;
 
 const RemindWrapper = styled.div`
@@ -206,7 +234,8 @@ const SubImage = styled.div<{ imageUrl: string }>`
 
 const InfoWrapper = styled.form`
   display: flex;
-  padding: 40px 0;
+  /* padding: 40px 0; */
+  padding: 5px 0 45px;
   flex-grow: 1;
   flex-direction: column;
   justify-content: space-between;
@@ -475,12 +504,14 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
     const stream = videoRef.current.srcObject as MediaStream; //!Fixme
     const tracks = stream && stream.getTracks();
+
     if (tracks && tracks.length > 0) {
       tracks.forEach((track: MediaStreamTrack) => {
         track.stop();
       });
       videoRef.current.srcObject = null;
     }
+    setShowCamera(false);
   }
 
   //!Fixme: 不能直接上傳
@@ -494,24 +525,30 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     canvas
       .getContext('2d')
       .drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL('image/png');
 
-    const storageRef = ref(storage, `/${uid}/images/`);
-    const imageRef = ref(storageRef, 'test');
+    const url = canvas.toDataURL('image/png', 1);
 
-    uploadString(imageRef, dataUrl, 'data_url').then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        const emptyIndex = singleForm.images.indexOf('');
-        singleForm.images[emptyIndex] = url;
+    // const storageRef = ref(storage, `/${uid}/images/`);
+    // const imageRef = ref(storageRef, 'test');
 
-        const imageList = [...singleForm.images];
-        imageList[emptyIndex] = url;
-        // setImages(imageList);
-        setSingleForm({ ...singleForm, images: imageList });
-      });
-    });
+    // uploadString(imageRef, dataUrl, 'data_url').then((snapshot) => {
+    //   getDownloadURL(snapshot.ref).then((url) => {
+    //     const emptyIndex = singleForm.images.indexOf('');
+    //     singleForm.images[emptyIndex] = url;
 
-    setShowCamera(false);
+    //     const imageList = [...singleForm.images];
+    //     imageList[emptyIndex] = url;
+    //     // setImages(imageList);
+    //     setSingleForm({ ...singleForm, images: imageList });
+    //   });
+    // });
+
+    const newSingleForm = { ...singleForm };
+
+    const startIndex = newSingleForm.images.findIndex((image) => image === '');
+    newSingleForm.images.splice(startIndex, 1, url);
+
+    setSingleForm(newSingleForm);
     stopCamera();
   }
 
@@ -549,8 +586,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       const url = URL.createObjectURL(file);
 
       if (isBulkMode) {
-        // urlList.push({ images: [url] });
-        // newBulkForms.push({ images: [url] });
         newBulkForms.push({
           name: '',
           category: '',
@@ -558,29 +593,13 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
           description: '',
           images: [url],
         });
-      }
-      // else if (isEdit) {
-      //   updateList.push(url);
-      // }
-      else {
-        // urlList.push(url);
-        // const imageList = [...singleForm.images];
-        // const startIndex = imageList.findIndex((image) => image === '');
-        // imageList.splice(startIndex, urlList.length, ...urlList);
-        // setImages(imageList);
-        // setForm({ ...form, images: imageList });
-        // setSingleForm({ ...singleForm, images: imageList });
-
+      } else {
         const startIndex = newSingleForm.images.findIndex(
           (image) => image === ''
         );
         newSingleForm.images.splice(startIndex, 1, url);
       }
     }
-
-    // if (isBulkMode) setBulkForms(urlList);
-    // if (isEdit) setImages(updateList);
-    // if (isEdit) setSingleForm({ ...singleForm, images: updateList });
 
     if (isBulkMode) {
       setBulkForms(newBulkForms);
@@ -751,7 +770,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
           <BulkImageWrapper>
             <ImageIcon src={image} />
             <Remind>選擇照片進行批量上傳</Remind>
-            <RemindBlack> 最多只能選擇 16 張</RemindBlack>
+            <RemindBlack> 最多只能選擇 {BULK_LIMIT} 張</RemindBlack>
             <input
               id="uploadImage"
               type="file"
@@ -772,9 +791,9 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       ) : (
         <UploadContainer>
           <ImageWrapper>
-            <ChangeSlideBtn>
+            {/* <ChangeSlideBtn>
               <Chevron rotateDeg={0} />
-            </ChangeSlideBtn>
+            </ChangeSlideBtn> */}
             <ImageArea>
               <SubImageContainer
                 ref={containerRef}
@@ -812,13 +831,16 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 <VideoWrapper>
                   <Video ref={videoRef} autoPlay />
                   <PhotoIcon src={photo} onClick={takePhoto} />
+                  <CancelIcon onClick={stopCamera}>
+                    <Cross size={50} lineWidth={3} />
+                  </CancelIcon>
                 </VideoWrapper>
               ) : (
                 <MainImageWrapper>
                   <MainImage>
                     <RemindWrapper>
                       <ImageIcon src={image} />
-                      <Remind>最多上傳 8 張</Remind>
+                      <Remind>最多上傳 {SINGLE_LIMIT} 張</Remind>
                       <Button
                         buttonType="normal"
                         onClick={() => setShowCamera(true)}
@@ -832,7 +854,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                         onChange={(e) =>
                           handleFileUpload(
                             e,
-                            8 -
+                            SINGLE_LIMIT -
                               singleForm.images.filter((item) => item !== '')
                                 .length
                           )
@@ -851,16 +873,22 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 </MainImageWrapper>
               )}
             </ImageArea>
-            <BtnWrapper>
-              <ChangeSlideBtn>
+            <ImageInfoWrapper>
+              {/* <ChangeSlideBtn>
                 <Chevron rotateDeg={180} />
-              </ChangeSlideBtn>
+              </ChangeSlideBtn> */}
+              <PromptWrapper>
+                <InfoIcon src={info} />
+                <PromptRemind>拖拉照片調整位置</PromptRemind>
+              </PromptWrapper>
 
               <SlideCount>
-                <NowIndex>1</NowIndex>
-                <TotalIndex>/8</TotalIndex>
+                <NowIndex>
+                  {singleForm.images.filter((image) => image !== '').length}
+                </NowIndex>
+                <TotalIndex>/{singleForm.images.length}</TotalIndex>
               </SlideCount>
-            </BtnWrapper>
+            </ImageInfoWrapper>
           </ImageWrapper>
           <InfoWrapper>
             <FieldWrapper>
