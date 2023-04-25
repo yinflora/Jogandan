@@ -379,6 +379,9 @@ type Form = {
 };
 
 export default function Upload({ isEdit, setIsEdit }: EditProp) {
+  const SINGLE_LIMIT = 8;
+  const BULK_LIMIT = 16;
+
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
 
@@ -387,7 +390,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     category: '',
     status: '',
     description: '',
-    images: Array(8).fill(''),
+    images: Array(SINGLE_LIMIT).fill(''),
   });
 
   // const [images, setImages] = useState(Array(8).fill(''));
@@ -408,8 +411,6 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const BULK_LIMIT = 16;
-
   useEffect(() => {
     async function getItem() {
       const item = await getItemById(uid, id);
@@ -423,14 +424,30 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       //   images,
       // });
 
-      //!Added
-      setSingleForm({
-        name,
-        category,
-        status,
-        description,
-        images,
-      });
+      console.log('before fill', images);
+
+      if (images.length < SINGLE_LIMIT) {
+        const filledImages = new Array(SINGLE_LIMIT)
+          .fill('')
+          .map((_, i) => images[i] || '');
+
+        setSingleForm({
+          name,
+          category,
+          status,
+          description,
+          images: filledImages,
+        });
+      } else {
+        //!Added
+        setSingleForm({
+          name,
+          category,
+          status,
+          description,
+          images,
+        });
+      }
     }
     if (isEdit && id) getItem();
   }, []);
@@ -514,35 +531,62 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
     if (!files) return;
 
-    const storageRef = ref(storage, `/${uid}/images/`);
-    const urlList: any = isBulkMode ? [...bulkForms] : []; //!Fixme
-    const updateList = [...singleForm.images];
+    // const storageRef = ref(storage, `/${uid}/images/`);
+    // const urlList: any = isBulkMode ? [...bulkForms] : []; //!Fixme
+    // const updateList = [...singleForm.images];
+
+    const newBulkForms = [...bulkForms];
+    const newSingleForm = { ...singleForm };
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const imageRef = ref(storageRef, `${file.name}`);
 
-      const snapshot = await uploadBytes(imageRef, file);
-      const url = await getDownloadURL(snapshot.ref);
+      // const imageRef = ref(storageRef, `${file.name}`);
+
+      // const snapshot = await uploadBytes(imageRef, file);
+      // const url = await getDownloadURL(snapshot.ref);
+
+      const url = URL.createObjectURL(file);
 
       if (isBulkMode) {
-        urlList.push({ images: [url] });
-      } else if (isEdit) {
-        updateList.push(url);
-      } else {
-        urlList.push(url);
-        const imageList = [...singleForm.images];
-        const startIndex = imageList.findIndex((image) => image === '');
-        imageList.splice(startIndex, urlList.length, ...urlList);
+        // urlList.push({ images: [url] });
+        // newBulkForms.push({ images: [url] });
+        newBulkForms.push({
+          name: '',
+          category: '',
+          status: '',
+          description: '',
+          images: [url],
+        });
+      }
+      // else if (isEdit) {
+      //   updateList.push(url);
+      // }
+      else {
+        // urlList.push(url);
+        // const imageList = [...singleForm.images];
+        // const startIndex = imageList.findIndex((image) => image === '');
+        // imageList.splice(startIndex, urlList.length, ...urlList);
         // setImages(imageList);
         // setForm({ ...form, images: imageList });
-        setSingleForm({ ...singleForm, images: imageList });
+        // setSingleForm({ ...singleForm, images: imageList });
+
+        const startIndex = newSingleForm.images.findIndex(
+          (image) => image === ''
+        );
+        newSingleForm.images.splice(startIndex, 1, url);
       }
     }
 
-    if (isBulkMode) setBulkForms(urlList);
+    // if (isBulkMode) setBulkForms(urlList);
     // if (isEdit) setImages(updateList);
-    if (isEdit) setSingleForm({ ...singleForm, images: updateList });
+    // if (isEdit) setSingleForm({ ...singleForm, images: updateList });
+
+    if (isBulkMode) {
+      setBulkForms(newBulkForms);
+    } else {
+      setSingleForm(newSingleForm);
+    }
   }
 
   function handleDeleted(index: number) {
@@ -753,7 +797,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                         setDraggingIndex(null);
                       }}
                     >
-                      <SubImage imageUrl={image}></SubImage>
+                      <SubImage imageUrl={image} />
                       {singleForm.images[index] !== '' && (
                         <CancelBtn onClick={() => handleDeleted(index)}>
                           X
