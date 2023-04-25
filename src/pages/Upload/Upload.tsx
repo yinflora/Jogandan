@@ -10,7 +10,7 @@ import {
   ref,
   getDownloadURL,
   uploadBytes,
-  uploadString,
+  // uploadString,
 } from 'firebase/storage';
 import { AuthContext } from '../../context/authContext';
 import { useParams } from 'react-router-dom';
@@ -18,6 +18,7 @@ import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
 import info from './info.png';
+import infoBlack from './info-black.png';
 // import Chevron from '../../components/Icon/Chevron';
 import Button from '../../components/Button/Button';
 import Cross from '../../components/Icon/Cross';
@@ -91,14 +92,14 @@ const PromptWrapper = styled.div`
 `;
 
 const InfoIcon = styled.img`
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
 `;
 
-const PromptRemind = styled.span`
-  font-size: 0.75rem;
+const PromptRemind = styled.span<{ color: string }>`
+  /* font-size: 0.75rem; */
   letter-spacing: 0.1em;
-  color: #fff;
+  color: ${({ color }) => color};
 `;
 
 const BulkCountWrapper = styled.div`
@@ -172,8 +173,15 @@ const RemindWrapper = styled.div`
   gap: 10px;
 `;
 
-const Remind = styled.p`
+const BulkRemindWrapper = styled.div`
+  display: flex;
   margin-bottom: 30px;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const Remind = styled.p`
+  /* margin-bottom: 30px; */
   color: #fff;
 `;
 
@@ -258,6 +266,7 @@ const BulkFieldWrapper = styled(FieldWrapper)`
   flex-direction: row;
   align-items: center;
   border-bottom: 1px solid #fff;
+  gap: 0;
 `;
 
 const HalfFieldWrapper = styled(FieldWrapper)`
@@ -268,7 +277,13 @@ const FiledLabel = styled.label`
   letter-spacing: 0.1rem;
 `;
 
+const BulkFiledLabel = styled(FiledLabel)`
+  width: 45px;
+  line-height: 30px;
+`;
+
 const TextInput = styled.input`
+  width: calc(100% - 45px);
   height: 30px;
   font-size: 1rem;
   letter-spacing: 0.1rem;
@@ -295,6 +310,7 @@ const SelectInput = styled.select`
 `;
 
 const BulkSelectInput = styled(SelectInput)`
+  width: calc(100% - 45px);
   height: 30px;
   letter-spacing: 0.1rem;
   border: none;
@@ -302,6 +318,7 @@ const BulkSelectInput = styled(SelectInput)`
 `;
 
 const Description = styled.textarea`
+  width: 100%;
   padding: 10px;
   font-family: 'TT Norms Pro', sans-serif;
   font-size: 1rem;
@@ -332,9 +349,9 @@ const BulkImageWrapper = styled.div`
   gap: 10px;
 `;
 
-const RemindBlack = styled(Remind)`
-  color: rgba(0, 0, 0, 0.6);
-`;
+// const RemindBlack = styled(Remind)`
+//   color: rgba(0, 0, 0, 0.6);
+// `;
 
 const BulkContainer = styled.div`
   display: flex;
@@ -527,30 +544,33 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       .getContext('2d')
       .drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-    const url = canvas.toDataURL('image/png', 1);
+    // const url = canvas.toDataURL('image/png', 1);
+    // const url = canvas.toBlob(null, 'image/png', 1);
 
-    // const storageRef = ref(storage, `/${uid}/images/`);
-    // const imageRef = ref(storageRef, 'test');
+    // const newSingleForm = { ...singleForm };
 
-    // uploadString(imageRef, dataUrl, 'data_url').then((snapshot) => {
-    //   getDownloadURL(snapshot.ref).then((url) => {
-    //     const emptyIndex = singleForm.images.indexOf('');
-    //     singleForm.images[emptyIndex] = url;
+    // const startIndex = newSingleForm.images.findIndex((image) => image === '');
+    // newSingleForm.images.splice(startIndex, 1, url);
 
-    //     const imageList = [...singleForm.images];
-    //     imageList[emptyIndex] = url;
-    //     // setImages(imageList);
-    //     setSingleForm({ ...singleForm, images: imageList });
-    //   });
-    // });
+    // setSingleForm(newSingleForm);
+    // stopCamera();
 
-    const newSingleForm = { ...singleForm };
+    canvas.toBlob(
+      (blob: any) => {
+        const url = URL.createObjectURL(blob);
 
-    const startIndex = newSingleForm.images.findIndex((image) => image === '');
-    newSingleForm.images.splice(startIndex, 1, url);
+        const newSingleForm = { ...singleForm };
+        const startIndex = newSingleForm.images.findIndex(
+          (image) => image === ''
+        );
+        newSingleForm.images.splice(startIndex, 1, url);
 
-    setSingleForm(newSingleForm);
-    stopCamera();
+        setSingleForm(newSingleForm);
+        stopCamera();
+      },
+      'image/png',
+      1
+    );
   }
 
   //!Fixme: 不能直接上傳
@@ -622,13 +642,47 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     setSingleForm({ ...singleForm, images: [...newImages, ''] });
   }
 
-  async function handleUploadItems(form: Form) {
+  async function handleUploadItems(form: Form[] | Form) {
     //!Modified
     // const itemId = await uploadItems(uid, form);
     // if (itemId) alert('成功加入！');
-    await uploadItems(uid, form);
+
+    const storageRef = ref(storage, `/${uid}/images/`);
+    const imageRef = ref(storageRef, `${new Date()}`);
+
+    // uploadString(imageRef, dataUrl, 'data_url').then((snapshot) => {
+    //   getDownloadURL(snapshot.ref).then((url) => {
+    //     const emptyIndex = singleForm.images.indexOf('');
+    //     singleForm.images[emptyIndex] = url;
+
+    //     const imageList = [...singleForm.images];
+    //     imageList[emptyIndex] = url;
+    //     // setImages(imageList);
+    //     setSingleForm({ ...singleForm, images: imageList });
+    //   });
+    // });
+
+    // await uploadItems(uid, form);
 
     if (isBulkMode) {
+      const newForms: any = [...form];
+
+      form.forEach(async (item: any, index: number) => {
+        const snapshot = await uploadBytes(imageRef, item.images[0]);
+        const url = await getDownloadURL(snapshot.ref);
+
+        // const snapShot = await uploadString(
+        //   imageRef,
+        //   item.images[0],
+        //   'data_url'
+        // );
+        // const url = await getDownloadURL(snapShot.ref);
+
+        newForms[index].images = [url];
+      });
+
+      await uploadItems(uid, newForms);
+
       setBulkForms([]);
     } else {
       // setImages(Array(8).fill(''));
@@ -640,22 +694,35 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
       //   images,
       // });
 
-      setSingleForm({
-        name: '',
-        category: '',
-        status: '',
-        description: '',
-        images: Array(8).fill(''),
+      // const newImages = [];
+      const newForm: any = { ...form }; //!fixme
+
+      newForm.images.forEach(async (image: any, index: number) => {
+        if (image === '') {
+          newForm.images[index] = '';
+        } else {
+          const snapshot = await uploadBytes(imageRef, image);
+          const url = await getDownloadURL(snapshot.ref);
+
+          newForm.images[index] = url;
+        }
       });
+
+      const itemId = await uploadItems(uid, newForm);
+
+      itemId &&
+        setSingleForm({
+          name: '',
+          category: '',
+          status: '',
+          description: '',
+          images: Array(8).fill(''),
+        });
     }
   }
 
   async function handleUpdateItems() {
     //!Modified
-    // const updatedForm = { ...form, images };
-    // const newForm = {...singleForm, images: singleForm.images};
-
-    // await updateItem(uid, id, updatedForm);
     await updateItem(uid, id, singleForm);
     setIsEdit(false);
   }
@@ -770,8 +837,17 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
         bulkForms.length === 0 && (
           <BulkImageWrapper>
             <ImageIcon src={image} />
-            <Remind>選擇照片進行批量上傳</Remind>
-            <RemindBlack> 最多只能選擇 {BULK_LIMIT} 張</RemindBlack>
+            <BulkRemindWrapper>
+              <Remind>選擇照片進行批量上傳</Remind>
+              {/* <RemindBlack> 最多只能選擇 {BULK_LIMIT} 張</RemindBlack> */}
+              <PromptWrapper>
+                <InfoIcon src={infoBlack} />
+                <PromptRemind color="#000">
+                  最多只能選擇 {BULK_LIMIT} 張
+                </PromptRemind>
+              </PromptWrapper>
+            </BulkRemindWrapper>
+
             <input
               id="uploadImage"
               type="file"
@@ -881,7 +957,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               {singleForm.images.findIndex((image) => image === '') > 1 && (
                 <PromptWrapper>
                   <InfoIcon src={info} />
-                  <PromptRemind>拖拉照片調整位置</PromptRemind>
+                  <PromptRemind color="#fff">拖拉照片調整位置</PromptRemind>
                 </PromptWrapper>
               )}
 
@@ -988,7 +1064,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                 <BulkImage imageUrl={form.images[0]} />
                 <BulkInfoWrapper>
                   <BulkFieldWrapper>
-                    <FiledLabel>名稱</FiledLabel>
+                    <BulkFiledLabel>名稱</BulkFiledLabel>
                     <BulkTextInput
                       type="text"
                       value={form.name}
@@ -1000,7 +1076,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     />
                   </BulkFieldWrapper>
                   <BulkFieldWrapper>
-                    <FiledLabel>分類</FiledLabel>
+                    <BulkFiledLabel>分類</BulkFiledLabel>
                     <BulkSelectInput
                       onChange={(e) => {
                         const newForm = [...bulkForms];
@@ -1008,11 +1084,11 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                         setBulkForms(newForm);
                       }}
                     >
-                      {CATEGORY_OPTIONS.map((option, index) => (
+                      {CATEGORY_OPTIONS.map((option) => (
                         <option
                           key={option}
                           value={option}
-                          selected={option === bulkForms[index].category}
+                          // selected={option === bulkForms[index].category}
                         >
                           {option}
                         </option>
@@ -1020,7 +1096,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                     </BulkSelectInput>
                   </BulkFieldWrapper>
                   <BulkFieldWrapper>
-                    <FiledLabel>狀態</FiledLabel>
+                    <BulkFiledLabel>狀態</BulkFiledLabel>
                     <BulkSelectInput
                       onChange={(e) => {
                         const newForm = [...bulkForms];
@@ -1028,19 +1104,19 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                         setBulkForms(newForm);
                       }}
                     >
-                      {STATUS_OPTIONS.map((option, index) => (
+                      {STATUS_OPTIONS.map((option) => (
                         <option
                           key={option}
                           value={option}
-                          selected={option === bulkForms[index].status}
+                          // selected={option === bulkForms[index].status}
                         >
                           {option}
                         </option>
                       ))}
                     </BulkSelectInput>
                   </BulkFieldWrapper>
-                  <FieldWrapper>
-                    <FiledLabel>描述</FiledLabel>
+                  <div>
+                    <BulkFiledLabel>描述</BulkFiledLabel>
                     <Description
                       value={form.description}
                       onChange={(e) => {
@@ -1049,7 +1125,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
                         setBulkForms(newForm);
                       }}
                     />
-                  </FieldWrapper>
+                  </div>
                 </BulkInfoWrapper>
               </BulkItemWrapper>
             ))}
