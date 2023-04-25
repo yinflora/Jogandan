@@ -18,7 +18,7 @@ import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
 import info from './info.png';
-import Chevron from '../../components/Icon/Chevron';
+// import Chevron from '../../components/Icon/Chevron';
 import Button from '../../components/Button/Button';
 import Cross from '../../components/Icon/Cross';
 
@@ -61,7 +61,7 @@ const UploadContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  padding: 40px 0;
+  padding: 80px 0;
   gap: 60px;
 `;
 
@@ -110,6 +110,7 @@ const BulkCountWrapper = styled.div`
 `;
 
 const SlideCount = styled.div`
+  margin-left: auto;
   color: #fff;
 `;
 
@@ -877,10 +878,12 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               {/* <ChangeSlideBtn>
                 <Chevron rotateDeg={180} />
               </ChangeSlideBtn> */}
-              <PromptWrapper>
-                <InfoIcon src={info} />
-                <PromptRemind>拖拉照片調整位置</PromptRemind>
-              </PromptWrapper>
+              {singleForm.images.findIndex((image) => image === '') > 1 && (
+                <PromptWrapper>
+                  <InfoIcon src={info} />
+                  <PromptRemind>拖拉照片調整位置</PromptRemind>
+                </PromptWrapper>
+              )}
 
               <SlideCount>
                 <NowIndex>
