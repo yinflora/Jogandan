@@ -13,7 +13,7 @@ import {
   // uploadString,
 } from 'firebase/storage';
 import { AuthContext } from '../../context/authContext';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
@@ -431,6 +431,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [singleForm, setSingleForm] = useState<Form>({
     name: '',
@@ -629,6 +630,8 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     }
   }
 
+  console.log(bulkForms);
+
   function handleDeleted(index: number) {
     //!Added
     // const imageList = [...images];
@@ -642,7 +645,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     setSingleForm({ ...singleForm, images: [...newImages, ''] });
   }
 
-  async function handleUploadItems(form: Form[] | Form) {
+  async function handleUploadItems(form: Form) {
     //!Modified
     // const itemId = await uploadItems(uid, form);
     // if (itemId) alert('成功加入！');
@@ -664,61 +667,62 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
 
     // await uploadItems(uid, form);
 
-    if (isBulkMode) {
-      const newForms: any = [...form];
+    // if (isBulkMode) {
+    //   const newForms = [...form];
 
-      form.forEach(async (item: any, index: number) => {
-        const snapshot = await uploadBytes(imageRef, item.images[0]);
+    //   form.forEach(async (item: any, index: number) => {
+    //     const snapshot = await uploadBytes(imageRef, item.images[0]);
+    //     const url = await getDownloadURL(snapshot.ref);
+
+    //     // const snapShot = await uploadString(
+    //     //   imageRef,
+    //     //   item.images[0],
+    //     //   'data_url'
+    //     // );
+    //     // const url = await getDownloadURL(snapShot.ref);
+
+    //     newForms[index].images = [url];
+    //   });
+
+    //   await uploadItems(uid, newForms);
+
+    //   setBulkForms([]);
+    // } else {
+    // setImages(Array(8).fill(''));
+    // setForm({
+    //   name: '',
+    //   category: '',
+    //   status: '',
+    //   description: '',
+    //   images,
+    // });
+
+    // const newImages = [];
+    const newForm = { ...form };
+
+    newForm.images.forEach(async (image: any, index: number) => {
+      if (image === '') {
+        newForm.images[index] = '';
+      } else {
+        const snapshot = await uploadBytes(imageRef, image);
         const url = await getDownloadURL(snapshot.ref);
 
-        // const snapShot = await uploadString(
-        //   imageRef,
-        //   item.images[0],
-        //   'data_url'
-        // );
-        // const url = await getDownloadURL(snapShot.ref);
+        newForm.images[index] = url;
+      }
+    });
 
-        newForms[index].images = [url];
-      });
+    const itemId = await uploadItems(uid, newForm);
 
-      await uploadItems(uid, newForms);
-
-      setBulkForms([]);
-    } else {
-      // setImages(Array(8).fill(''));
-      // setForm({
-      //   name: '',
-      //   category: '',
-      //   status: '',
-      //   description: '',
-      //   images,
-      // });
-
-      // const newImages = [];
-      const newForm: any = { ...form }; //!fixme
-
-      newForm.images.forEach(async (image: any, index: number) => {
-        if (image === '') {
-          newForm.images[index] = '';
-        } else {
-          const snapshot = await uploadBytes(imageRef, image);
-          const url = await getDownloadURL(snapshot.ref);
-
-          newForm.images[index] = url;
-        }
-      });
-
-      const itemId = await uploadItems(uid, newForm);
-
+    !isBulkMode &&
       itemId &&
-        setSingleForm({
-          name: '',
-          category: '',
-          status: '',
-          description: '',
-          images: Array(8).fill(''),
-        });
-    }
+      setSingleForm({
+        name: '',
+        category: '',
+        status: '',
+        description: '',
+        images: Array(8).fill(''),
+      });
+    // }
   }
 
   async function handleUpdateItems() {
@@ -824,7 +828,20 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
               </label>
               <Button
                 buttonType="dark"
-                onClick={() => bulkForms.map((item) => handleUploadItems(item))}
+                onClick={() =>
+                  Promise.all(
+                    bulkForms.map((item) => handleUploadItems(item))
+                  ).then(() => navigate('/inventory'))
+                }
+                disabled={
+                  bulkForms.length > 0 &&
+                  !bulkForms
+                    .map((form) => {
+                      const { name, category, status } = form;
+                      return name !== '' && category !== '' && status !== '';
+                    })
+                    .every(Boolean)
+                }
               >
                 確認上傳
               </Button>
