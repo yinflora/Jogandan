@@ -1,3 +1,4 @@
+import React from 'react';
 import styled from 'styled-components/macro';
 import { Link } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
@@ -175,21 +176,22 @@ const CreatedTime = styled.p`
 `;
 
 type Item = {
-  id: string;
+  id?: string;
   name: string;
   status: string;
   category: string;
-  created: Timestamp;
-  processedDate: string;
+  created?: Timestamp;
+  processedDate?: string;
   description: string;
   images: string[];
 };
 
 type PopoutProp = {
   selectedItem: Item | null;
+  setSelectedItem: React.Dispatch<React.SetStateAction<Item | null>>;
 };
 
-export default function Popout({ selectedItem }: PopoutProp) {
+export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
 
@@ -231,7 +233,12 @@ export default function Popout({ selectedItem }: PopoutProp) {
 
         <Container isEdit={isEdit}>
           {isEdit ? (
-            <EditItem isEdit={isEdit} setIsEdit={setIsEdit} />
+            <EditItem
+              isEdit={isEdit}
+              setIsEdit={setIsEdit}
+              setSelectedItem={setSelectedItem}
+              selectedItem={null}
+            />
           ) : (
             <>
               <ImageWrapper>
@@ -295,7 +302,7 @@ export default function Popout({ selectedItem }: PopoutProp) {
                 <Status>{selectedItem.status}</Status>
                 <Description>{selectedItem.description}</Description>
                 <CreatedTime>
-                  {formatTime(selectedItem.created.seconds)}
+                  {formatTime(selectedItem.created!.seconds)}
                 </CreatedTime>
               </InfoWrapper>
             </>

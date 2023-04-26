@@ -204,12 +204,12 @@ const SUBCATEGORY: string[] = [
 const SUBSTATUS: string[] = ['保留', '待處理', '已處理'];
 
 type Item = {
-  id: string;
+  id?: string;
   name: string;
   status: string;
   category: string;
-  created: Timestamp;
-  processedDate: string;
+  created?: Timestamp;
+  processedDate?: string;
   description: string;
   images: string[];
 };
@@ -432,7 +432,12 @@ export default function Inventory() {
               </Product>
             ))}
         </ProductWrapper>
-        {isPopout && <Popout selectedItem={selectedItem} />}
+        {isPopout && (
+          <Popout
+            selectedItem={selectedItem}
+            setSelectedItem={setSelectedItem}
+          />
+        )}
       </ItemContainer>
       <Background />
     </Container>
