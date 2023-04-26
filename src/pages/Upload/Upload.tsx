@@ -12,6 +12,7 @@ import {
   uploadBytes,
   // uploadString,
 } from 'firebase/storage';
+import { Timestamp } from 'firebase/firestore';
 import { AuthContext } from '../../context/authContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -489,9 +490,22 @@ const CATEGORY_OPTIONS = [
 
 const STATUS_OPTIONS = ['請選擇狀態', '保留', '待處理', '已處理'];
 
+type Item = {
+  id?: string;
+  name: string;
+  status: string;
+  category: string;
+  created?: Timestamp;
+  processedDate?: string;
+  description: string;
+  images: string[];
+};
+
 type EditProp = {
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
   isEdit: boolean;
+  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedItem: Item | null;
+  setSelectedItem: React.Dispatch<React.SetStateAction<Item | null>>;
 };
 
 type Form = {
@@ -501,9 +515,16 @@ type Form = {
   description: string;
   images: string[];
   [key: string]: any;
+  created?: Timestamp;
+  id?: string;
+  processedDate?: string;
 };
 
-export default function Upload({ isEdit, setIsEdit }: EditProp) {
+export default function Upload({
+  isEdit,
+  setIsEdit,
+  setSelectedItem,
+}: EditProp) {
   const SINGLE_LIMIT = 8;
   const BULK_LIMIT = 16;
 
@@ -540,7 +561,15 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
   useEffect(() => {
     async function getItem() {
       const item = await getItemById(uid, id);
-      const { images, name, category, status, description } = item[0];
+      const {
+        images,
+        name,
+        category,
+        status,
+        description,
+        created,
+        processedDate,
+      } = item[0];
       // setImages(images);
       // setForm({
       //   name,
@@ -561,15 +590,20 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
           status,
           description,
           images: filledImages,
+          created,
+          id: item[0].id,
+          processedDate,
         });
       } else {
-        //!Added
         setSingleForm({
           name,
           category,
           status,
           description,
           images,
+          created,
+          id: item[0].id,
+          processedDate,
         });
       }
     }
@@ -734,6 +768,7 @@ export default function Upload({ isEdit, setIsEdit }: EditProp) {
     //!Modified
     await updateItem(uid, id, singleForm);
     setIsEdit(false);
+    setSelectedItem(singleForm);
   }
 
   function handleDeleted(index: number) {

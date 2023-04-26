@@ -11,6 +11,7 @@ import Profile from './pages/Profile/Profile';
 import Upload from './pages/Upload/Upload';
 import Inventory from './pages/Inventory/Inventory';
 import SparkJoy from './pages/SparkJoy/SparkJoy';
+import { Timestamp } from 'firebase/firestore';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -30,6 +31,22 @@ root.render(
                 throw new Error('Function not implemented.');
               }}
               isEdit={false}
+              selectedItem={null}
+              setSelectedItem={function (
+                // eslint-disable-next-line no-unused-vars
+                value: React.SetStateAction<{
+                  id?: string;
+                  name: string;
+                  status: string;
+                  category: string;
+                  created?: Timestamp;
+                  processedDate?: string;
+                  description: string;
+                  images: string[];
+                } | null>
+              ): void {
+                throw new Error('Function not implemented.');
+              }}
             />
           }
         />
