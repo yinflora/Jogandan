@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getProcessedItems } from '../../utils/firebase';
 import styled, { css } from 'styled-components';
 import AuthContext from '../../context/authContext';
@@ -211,6 +212,7 @@ const Image = styled.img<{ index: number }>`
 function Achievement() {
   const { uid } = useContext(AuthContext);
   const [items, setItems] = useState<Array<any> | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!uid) return;
@@ -242,9 +244,14 @@ function Achievement() {
         <ScrollSection>
           {items &&
             items.map((item, index) => (
-              <Link key={index} to={`/inventory/${item.id}`}>
-                <Image src={item.images[0]} index={index} />
-              </Link>
+              // <Link key={index} to={`/inventory/${item.id}`}>
+              <Image
+                key={index}
+                src={item.images[0]}
+                index={index}
+                onClick={() => navigate(`/inventory/${item.id}`)}
+              />
+              // </Link>
             ))}
         </ScrollSection>
         {/* <ScrollSection>
