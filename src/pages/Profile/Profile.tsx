@@ -304,9 +304,8 @@ export default function Profile() {
 
   const [items, dispatch] = useReducer(reducer, []);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
-  // const [items, setItems] = useState<[] | null>(null);
   const [processedItems, setProcessedItems] = useState<[]>([]);
-  // const [existingItems, setExistingItems] = useState<[]>([]);
+  const [existingItems, setExistingItems] = useState<[]>([]);
   const [canPlay, setCanPlay] = useState<boolean>(false);
   const [boardUrl, setBoardUrl] = useState<string>('');
 
@@ -327,7 +326,6 @@ export default function Profile() {
       dispatch({ type: 'FETCH_DATA', payload: { data } });
 
       const filteredItems = data.filter((item) => item.status !== '已處理');
-
       const qtyList = filteredItems.reduce((acc, item) => {
         const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
         if (index !== -1) {
@@ -336,8 +334,8 @@ export default function Profile() {
         }
         return acc;
       }, Array(CATEGORIES.length).fill(0)); // 初始化為 0 的陣列
-
-      setProcessedItems(qtyList);
+      // setProcessedItems(qtyList);
+      setExistingItems(qtyList);
     }
 
     function compareTime() {
@@ -386,22 +384,22 @@ export default function Profile() {
     countItems();
   }, [period]);
 
-  useEffect(() => {
-    const filteredItems = items.filter(
-      (item: Item) => item.status !== '已處理'
-    );
+  // useEffect(() => {
+  //   const filteredItems = items.filter(
+  //     (item: Item) => item.status !== '已處理'
+  //   );
 
-    const qtyList = filteredItems.reduce((acc: any, item: Item) => {
-      const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
-      if (index !== -1) {
-        // 如果分類存在
-        acc[index]++; // 將對應的數量加 1
-      }
-      return acc;
-    }, Array(CATEGORIES.length).fill(0)); // 初始化為 0 的陣列
+  //   const qtyList = filteredItems.reduce((acc: any, item: Item) => {
+  //     const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
+  //     if (index !== -1) {
+  //       // 如果分類存在
+  //       acc[index]++; // 將對應的數量加 1
+  //     }
+  //     return acc;
+  //   }, Array(CATEGORIES.length).fill(0)); // 初始化為 0 的陣列
 
-    setProcessedItems(qtyList);
-  }, [items]);
+  //   setProcessedItems(qtyList);
+  // }, [items]);
 
   function handleLevel() {
     const disposedItems: number | undefined = itemRef.current?.filter(
@@ -597,7 +595,8 @@ export default function Profile() {
 
         <AnalyzeWrapper>
           <ReportWrapper>
-            <Report processedItems={processedItems} />
+            {/* <Report processedItems={processedItems} /> */}
+            <Report existingItems={existingItems} />
           </ReportWrapper>
 
           <QtyContainer>
