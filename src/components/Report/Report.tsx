@@ -56,7 +56,9 @@ const CATEGORY: Row = [
   '其他',
 ];
 
-const QUANTITY: Column = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const TEN_QUANTITY_LINE: Column = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const FIVE_QUANTITY_LINE: Column = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+const ONE_QUANTITY_LINE: Column = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const X_START_AXIS: number = 50;
 const X_END_AXIS: number = 1000;
@@ -68,15 +70,31 @@ const XTAG_Y_AXIS: number = 570;
 const YTAG_START_AXIS: number = 550;
 const YTAG_SPACE: number = 50;
 const YTAG_X_AXIS: number = 30;
-const HEIGHT_PER_QTY: number = 5;
+// const HEIGHT_PER_QTY: number = 5;
 const TEXT_SPACING: number = 12.5;
 const TEXT_TO_RECT: number = 10;
 
 type ReportProps = {
-  processedItems: [];
+  existingItems: number[];
 };
 
-export default function Report({ processedItems }: ReportProps) {
+export default function Report({ existingItems }: ReportProps) {
+  const sumTotal = existingItems.reduce((acc, curr) => acc + curr, 0);
+
+  let quantityLine;
+  let qtyHeight: number;
+
+  if (sumTotal > 50) {
+    quantityLine = TEN_QUANTITY_LINE;
+    qtyHeight = 5;
+  } else if (sumTotal >= 10 && sumTotal <= 50) {
+    quantityLine = FIVE_QUANTITY_LINE;
+    qtyHeight = 10;
+  } else {
+    quantityLine = ONE_QUANTITY_LINE;
+    qtyHeight = 50;
+  }
+
   return (
     <Svg preserveAspectRatio="xMinYMin meet">
       <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
@@ -89,14 +107,15 @@ export default function Report({ processedItems }: ReportProps) {
           {item}
         </XTag>
       ))}
+      <Line x1={X_END_AXIS} y1={Y_START_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
 
       <Line
-        x1={X_START_AXIS}
+        x1={Y_START_AXIS}
         y1={Y_START_AXIS}
-        x2={X_START_AXIS}
-        y2={Y_END_AXIS}
+        x2={X_END_AXIS}
+        y2={Y_START_AXIS}
       />
-      {QUANTITY.map((item: quantity, index: number) => (
+      {quantityLine.map((item: quantity, index: number) => (
         <YTag
           key={item}
           x={YTAG_X_AXIS}
@@ -105,24 +124,34 @@ export default function Report({ processedItems }: ReportProps) {
           {item}
         </YTag>
       ))}
+      <Line
+        x1={X_START_AXIS}
+        y1={Y_START_AXIS}
+        x2={X_START_AXIS}
+        y2={Y_END_AXIS}
+      />
 
-      {processedItems.map((item: quantity, index: number) => (
-        <>
-          <Rect
-            x={XTAG_START_AXIS + index * XTAG_SPACE}
-            y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
-            height={item * HEIGHT_PER_QTY}
-          />
-          {item !== 0 && (
-            <Qty
-              x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}
-              y={YTAG_START_AXIS - item * HEIGHT_PER_QTY - TEXT_TO_RECT}
-            >
-              {item}
-            </Qty>
-          )}
-        </>
-      ))}
+      {[5, 7, 6, 0, 0, 0, 0, 0, 0, 1, 2, 3].map(
+        (item: quantity, index: number) => (
+          <>
+            <Rect
+              x={XTAG_START_AXIS + index * XTAG_SPACE}
+              // y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
+              // height={item * HEIGHT_PER_QTY}
+              y={YTAG_START_AXIS - item * qtyHeight}
+              height={item * qtyHeight}
+            />
+            {item !== 0 && (
+              <Qty
+                x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}
+                y={YTAG_START_AXIS - item * qtyHeight - TEXT_TO_RECT}
+              >
+                {item}
+              </Qty>
+            )}
+          </>
+        )
+      )}
     </Svg>
   );
 }
