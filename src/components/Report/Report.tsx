@@ -1,13 +1,17 @@
 import styled from 'styled-components';
+import { Timestamp } from 'firebase/firestore';
 
 const Svg = styled.svg`
-  position: absolute;
+  /* position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  transform: scale(0.85) translate(-10%, -15%);
+  left: 0; */
+  /* width: 100%;
+  height: 100%; */
+  /* display: block; */
+  width: 1000px;
+  height: 600px;
+  /* transform: scale(0.85) translate(-10%, -15%); */
+  transform: translate(-25px);
 `;
 
 const Line = styled.line`
@@ -24,7 +28,7 @@ const XTag = styled(Text)`
 `;
 
 const YTag = styled(Text)`
-  text-anchor: end;
+  text-anchor: middle;
 `;
 
 const Rect = styled.rect`
@@ -41,7 +45,7 @@ type quantity = number;
 type Row = string[];
 type Column = number[];
 
-const CATEGORY: Row = [
+const CATEGORIES: Row = [
   '居家生活',
   '服飾配件',
   '美妝保養',
@@ -74,12 +78,33 @@ const YTAG_X_AXIS: number = 30;
 const TEXT_SPACING: number = 12.5;
 const TEXT_TO_RECT: number = 10;
 
-type ReportProps = {
-  existingItems: number[];
+type Item = {
+  id: string;
+  name: string;
+  status: string;
+  category: string;
+  created: Timestamp;
+  processedDate: string;
+  description: string;
+  images: string[];
 };
 
-export default function Report({ existingItems }: ReportProps) {
-  const sumTotal = existingItems.reduce((acc, curr) => acc + curr, 0);
+type Items = Item[];
+
+type ReportProps = {
+  // items: number[];
+  items: Items;
+};
+
+export default function Report({ items }: ReportProps) {
+  const qtyList = items.reduce((acc, item) => {
+    const index = CATEGORIES.indexOf(item.category);
+    if (index !== -1) {
+      acc[index]++;
+    }
+    return acc;
+  }, Array(CATEGORIES.length).fill(0));
+  const sumTotal = qtyList.reduce((acc, curr) => acc + curr, 0);
 
   let quantityLine;
   let qtyHeight: number;
@@ -98,7 +123,7 @@ export default function Report({ existingItems }: ReportProps) {
   return (
     <Svg preserveAspectRatio="xMinYMin meet">
       <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
-      {CATEGORY.map((item: month, index: number) => (
+      {CATEGORIES.map((item: month, index: number) => (
         <XTag
           key={item}
           x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}
@@ -131,27 +156,25 @@ export default function Report({ existingItems }: ReportProps) {
         y2={Y_END_AXIS}
       />
 
-      {[5, 7, 6, 0, 0, 0, 0, 0, 0, 1, 2, 3].map(
-        (item: quantity, index: number) => (
-          <>
-            <Rect
-              x={XTAG_START_AXIS + index * XTAG_SPACE}
-              // y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
-              // height={item * HEIGHT_PER_QTY}
-              y={YTAG_START_AXIS - item * qtyHeight}
-              height={item * qtyHeight}
-            />
-            {item !== 0 && (
-              <Qty
-                x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}
-                y={YTAG_START_AXIS - item * qtyHeight - TEXT_TO_RECT}
-              >
-                {item}
-              </Qty>
-            )}
-          </>
-        )
-      )}
+      {qtyList.map((item: quantity, index: number) => (
+        <>
+          <Rect
+            x={XTAG_START_AXIS + index * XTAG_SPACE}
+            // y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
+            // height={item * HEIGHT_PER_QTY}
+            y={YTAG_START_AXIS - item * qtyHeight}
+            height={item * qtyHeight}
+          />
+          {item !== 0 && (
+            <Qty
+              x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}
+              y={YTAG_START_AXIS - item * qtyHeight - TEXT_TO_RECT}
+            >
+              {item}
+            </Qty>
+          )}
+        </>
+      ))}
     </Svg>
   );
 }

@@ -4,13 +4,14 @@ import { getItems, getBoard } from '../../utils/firebase';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
-// import { Link } from 'react-router-dom';
 
-import styled from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
+import Cross from '../../components/Icon/Cross';
 
 const Container = styled.div`
   margin: 0 auto;
-  padding: 0 280px 60px 150px;
+  /* padding: 0 280px 60px 150px; */
+  padding: 0 0 100px 150px;
 `;
 
 const Background = styled.div`
@@ -23,6 +24,7 @@ const Background = styled.div`
 `;
 
 const WelcomeMessage = styled.p`
+  width: 1000px;
   letter-spacing: 0.2rem;
   line-height: 1.5rem;
   text-transform: uppercase;
@@ -61,27 +63,81 @@ const UserGrade = styled.p`
 `;
 
 const VisionBoard = styled.img`
-  width: 100%;
+  /* width: 100%; */
+  width: 980px;
   margin-top: 100px;
   aspect-ratio: 625/475;
   background-color: gray;
 `;
 
-const PeriodFilter = styled.div`
+const ModeFilter = styled.div`
   display: flex;
-  justify-content: space-between;
-  margin-top: 150px;
+  margin-top: 100px;
+  align-items: center;
+`;
+
+const ModeToggler = styled.div`
+  display: flex;
+  width: 100px;
+  height: 35px;
+  margin-right: 20px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #fff;
   color: #fff;
+  font-size: 0.85rem;
+`;
+
+const CurrentMode = styled(ModeToggler)<{ isDeclutteredMode: boolean }>`
+  ${({ isDeclutteredMode }) =>
+    !isDeclutteredMode &&
+    css`
+      background-color: #fff;
+      color: #8d9ca4;
+    `}
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const DeclutterMode = styled(ModeToggler)<{ isDeclutteredMode: boolean }>`
+  ${({ isDeclutteredMode }) =>
+    isDeclutteredMode &&
+    css`
+      background-color: #fff;
+      color: #8d9ca4;
+    `}
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const PeriodFilter = styled.div<{ disabled: boolean }>`
+  display: flex;
+  width: 1000px;
+  justify-content: space-between;
+  margin-top: 30px;
+  color: #fff;
+
+  ${({ disabled }) =>
+    disabled &&
+    css`
+      opacity: 0.3;
+      pointer-events: none;
+    `}
 `;
 
 const PeriodWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
 `;
 
 const Label = styled.label`
-  width: 70px;
+  width: 100px;
+  color: #fff;
+  text-transform: uppercase;
 `;
 
 const InputWrapper = styled.div`
@@ -95,14 +151,17 @@ const InputWrapper = styled.div`
 const DateInput = styled.input`
   width: 150px;
   font-family: 'TT Norms Pro', sans-serif;
-  font-size: 1rem;
+  font-size: 0.85rem;
   letter-spacing: 0.2rem;
   color: #fff;
 
   &[type='date']::-webkit-calendar-picker-indicator {
-    /* 修改日曆icon顏色 */
     color: #fff;
     filter: invert(1);
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 `;
 
@@ -112,7 +171,8 @@ const Dash = styled.div`
   background-color: #fff;
 `;
 
-const Cancel = styled.button`
+const Cancel = styled.div`
+  margin-left: 10px;
   color: #fff;
 
   &:hover {
@@ -120,11 +180,15 @@ const Cancel = styled.button`
   }
 `;
 
-const FilterWrapper = styled.div``;
+const FilterWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
 const FilterBtn = styled.button`
   padding: 0 20px;
   border-left: 1px solid #fff;
+  font-size: 0.85rem;
   letter-spacing: 0.1rem;
   color: #fff;
 
@@ -137,37 +201,31 @@ const FilterBtn = styled.button`
   }
 `;
 
-const AnalyzeWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  height: 500px;
-  margin-top: 50px;
-`;
+// const AnalyzeWrapper = styled.div`
+//   display: flex;
+//   width: 100%;
+//   height: 500px;
+//   margin-top: 50px;
+// `;
 
 const ReportWrapper = styled.div`
-  position: relative;
+  /* position: relative;
   width: 100%;
   height: 0;
   padding-top: 60%;
-  overflow: hidden;
-`;
-
-const QtyContainer = styled.div`
+  overflow: hidden; */
   display: flex;
-  height: 100%;
-  flex-direction: column;
+  margin-right: auto;
 `;
 
 const QtyWrapper = styled.div`
   display: flex;
-  /* height: calc(100% / 3 - 20px); */
   width: 120px;
   height: 120px;
-  margin-top: 30px;
+  margin-top: 50px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* aspect-ratio: 1/1; */
   background-color: rgba(255, 255, 255, 0.1);
   color: #fff;
   text-align: center;
@@ -227,29 +285,29 @@ const QtyTitle = styled.p`
 //   color: #fff;
 // `;
 
-type Row = string[];
+// type Row = string[];
 
-const CATEGORIES: Row = [
-  '居家生活',
-  '服飾配件',
-  '美妝保養',
-  '3C產品',
-  '影音產品',
-  '書報雜誌',
-  '體育器材',
-  '寵物用品',
-  '食物及飲料',
-  '興趣及遊戲',
-  '紀念意義',
-  '其他',
-];
+// const CATEGORIES: Row = [
+//   '居家生活',
+//   '服飾配件',
+//   '美妝保養',
+//   '3C產品',
+//   '影音產品',
+//   '書報雜誌',
+//   '體育器材',
+//   '寵物用品',
+//   '食物及飲料',
+//   '興趣及遊戲',
+//   '紀念意義',
+//   '其他',
+// ];
 
 type Action =
   | { type: 'FETCH_DATA'; payload: { data: Items } }
   | {
       type: 'FILTER_PERIOD';
       payload: {
-        items: Items | null;
+        data: Items;
         periodStart: number;
         periodEnd: number;
       };
@@ -262,8 +320,11 @@ function reducer(items: Items, action: Action): Items {
       return payload.data;
     }
     case 'FILTER_PERIOD':
+      if (isNaN(payload.periodStart) || isNaN(payload.periodEnd)) {
+        return payload.data ?? [];
+      }
       return (
-        payload.items?.filter((item: Item) => {
+        payload.data.filter((item: Item) => {
           const createdTime = new Date(
             item.created.seconds * 1000 + item.created.nanoseconds / 1000000
           ).getTime();
@@ -278,6 +339,81 @@ function reducer(items: Items, action: Action): Items {
     }
   }
 }
+// function reducer(items: Items, action: Action): Items {
+//   const { type, payload } = action;
+//   switch (type) {
+//     case 'FETCH_DATA': {
+//       return payload.data;
+//     }
+//     case 'FILTER_PERIOD':
+//       return (
+//         payload.data.filter((item: Item) => {
+//           const createdTime = new Date(
+//             item.created.seconds * 1000 + item.created.nanoseconds / 1000000
+//           ).getTime();
+//           return (
+//             createdTime >= payload.periodStart &&
+//             createdTime <= payload.periodEnd
+//           );
+//         }) ?? []
+//       );
+//     default: {
+//       throw Error('err');
+//     }
+//   }
+// }
+
+// function reducer(items: Items, action: Action): Items {
+//   const { type, payload } = action;
+//   switch (type) {
+//     case 'FETCH_DATA': {
+//       return payload.data;
+//     }
+//     case 'FILTER_PERIOD':
+// if (payload.periodStart.isNaN() || payload.periodEnd.isNaN()) {
+//   return payload.data ?? [];
+// }
+// return (
+//   payload.data.filter((item: Item) => {
+//     const createdTime = new Date(
+//       item.created.seconds * 1000 + item.created.nanoseconds / 1000000
+//     ).getTime();
+//     return (
+//       createdTime >= payload.periodStart &&
+//       createdTime <= payload.periodEnd
+//     );
+//   }) ?? []
+// );
+//     default: {
+//       throw Error('err');
+//     }
+//   }
+// }
+
+// async function reducer(items: Items, action: Action): Items {
+//   const { type, payload } = action;
+//   switch (type) {
+//     case 'FETCH_DATA': {
+//       const data = await getItems(payload.uid);
+//       return data;
+//     }
+//     case 'FILTER_PERIOD':
+//       return (
+//         payload.items?.filter((item: Item) => {
+//           const createdTime = new Date(
+//             item.created.seconds * 1000 + item.created.nanoseconds / 1000000
+//           ).getTime();
+//           return (
+//             createdTime >= payload.periodStart &&
+//             createdTime <= payload.periodEnd
+//           );
+//         }) ?? []
+//       );
+//     default: {
+//       throw Error('err');
+//     }
+//   }
+// }
 
 type Item = {
   id: string;
@@ -297,45 +433,45 @@ type Period = {
   end: string;
 };
 
-// type ReportItems = number[] | [];
-
 export default function Profile() {
   const { user, uid, lastLoginInTime } = useContext(AuthContext);
 
   const [items, dispatch] = useReducer(reducer, []);
+  // const [existingItems, setExistingItems] = useState<[]>([]);
+  // const [declutteredItems, setDeclutteredItems] = useState<Items>(null);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
-  const [processedItems, setProcessedItems] = useState<[]>([]);
-  const [existingItems, setExistingItems] = useState<[]>([]);
   const [canPlay, setCanPlay] = useState<boolean>(false);
   const [boardUrl, setBoardUrl] = useState<string>('');
+  const [isDeclutteredMode, setIsDeclutteredMode] = useState<boolean>(false);
 
   const itemRef = useRef<Items | null>(null);
+  const existingItemsRef = useRef<Items | []>([]);
 
-  // console.log('items', items);
   console.log(canPlay);
+  // console.log(items);
 
   useEffect(() => {
     async function fetchData() {
       const data = await getItems(uid);
+      dispatch({ type: 'FETCH_DATA', payload: { data } });
+      itemRef.current = data;
 
       const boardId = localStorage.getItem('boardId');
       const board = await getBoard(uid, boardId);
       if (board) setBoardUrl(board.url);
 
-      itemRef.current = data;
-      dispatch({ type: 'FETCH_DATA', payload: { data } });
+      // const filteredItems = data.filter((item) => item.status !== '已處理');
+      // const qtyList = filteredItems.reduce((acc, item) => {
+      //   const index = CATEGORIES.indexOf(item.category);
+      //   if (index !== -1) {
+      //     acc[index]++;
+      //   }
+      //   return acc;
+      // }, Array(CATEGORIES.length).fill(0));
 
-      const filteredItems = data.filter((item) => item.status !== '已處理');
-      const qtyList = filteredItems.reduce((acc, item) => {
-        const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
-        if (index !== -1) {
-          // 如果分類存在
-          acc[index]++; // 將對應的數量加 1
-        }
-        return acc;
-      }, Array(CATEGORIES.length).fill(0)); // 初始化為 0 的陣列
-      // setProcessedItems(qtyList);
-      setExistingItems(qtyList);
+      existingItemsRef.current = data.filter(
+        (item) => item.status !== '已處理'
+      );
     }
 
     function compareTime() {
@@ -367,45 +503,79 @@ export default function Profile() {
   }, [uid, lastLoginInTime]);
 
   useEffect(() => {
-    function countItems() {
-      const hasPeriod: boolean = Object.values(period).every(
-        (time) => time !== ''
-      );
-      if (hasPeriod) {
-        const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
-        const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
+    // function countItems() {
+    //   const hasPeriod: boolean = Object.values(period).every(
+    //     (time) => time !== ''
+    //   );
+    //   if (hasPeriod) {
+    //     const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
+    //     const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
+    //     const declutteredItems = itemRef.current?.filter(
+    //       (item) => item.status === '已處理'
+    //     );
 
-        dispatch({
-          type: 'FILTER_PERIOD',
-          payload: { items: itemRef.current, periodStart, periodEnd },
-        });
-      }
-    }
-    countItems();
-  }, [period]);
+    //     dispatch({
+    //       type: 'FILTER_PERIOD',
+    //       payload: { data: declutteredItems, periodStart, periodEnd },
+    //     });
+    //   }
+    // }
+    // countItems();
 
-  // useEffect(() => {
-  //   const filteredItems = items.filter(
-  //     (item: Item) => item.status !== '已處理'
-  //   );
+    // const hasPeriod: boolean = Object.values(period).every(
+    //   (time) => time !== ''
+    // );
+    // if (hasPeriod)
+    if (isDeclutteredMode) countItems();
+  }, [period, isDeclutteredMode]);
 
-  //   const qtyList = filteredItems.reduce((acc: any, item: Item) => {
-  //     const index = CATEGORIES.indexOf(item.category); // 取得分類在 categories 中的索引
-  //     if (index !== -1) {
-  //       // 如果分類存在
-  //       acc[index]++; // 將對應的數量加 1
-  //     }
-  //     return acc;
-  //   }, Array(CATEGORIES.length).fill(0)); // 初始化為 0 的陣列
+  function countItems() {
+    if (!itemRef.current) return;
 
-  //   setProcessedItems(qtyList);
-  // }, [items]);
+    const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
+    const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
+
+    const declutteredItems = itemRef.current.filter(
+      (item) => item.status === '已處理'
+    );
+
+    // console.log(periodStart, periodEnd);
+    // console.log(declutteredItems);
+
+    dispatch({
+      type: 'FILTER_PERIOD',
+      payload: { data: declutteredItems, periodStart, periodEnd },
+    });
+  }
+
+  // function caculateReportItems() {
+  //   const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
+  //   const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
+
+  //   if (isDeclutteredMode) {
+  //     const declutteredItems = items.filter((item) => item.status === '已處理');
+
+  //     dispatch({
+  //       type: 'FILTER_PERIOD',
+  //       payload: { data: declutteredItems, periodStart, periodEnd },
+  //     });
+  //   } else {
+  //     if (!itemRef.current) return;
+  //     const existingItems = itemRef.current.filter(
+  //       (item) => item.status !== '已處理'
+  //     );
+
+  //     dispatch({
+  //       type: 'FETCH_DATA',
+  //       payload: { data: existingItems },
+  //     });
+  //   }
+  // }
 
   function handleLevel() {
     const disposedItems: number | undefined = itemRef.current?.filter(
       (item) => item.status === '已處理'
     ).length;
-    // const processedItems = 55;
 
     if (disposedItems) {
       if (disposedItems >= 100) {
@@ -555,7 +725,22 @@ export default function Profile() {
 
         <VisionBoard src={boardUrl} />
 
-        <PeriodFilter>
+        <ModeFilter>
+          <Label>FILTER</Label>
+          <CurrentMode
+            isDeclutteredMode={isDeclutteredMode}
+            onClick={() => setIsDeclutteredMode(false)}
+          >
+            目前持有
+          </CurrentMode>
+          <DeclutterMode
+            isDeclutteredMode={isDeclutteredMode}
+            onClick={() => setIsDeclutteredMode(true)}
+          >
+            已處理
+          </DeclutterMode>
+        </ModeFilter>
+        <PeriodFilter disabled={!isDeclutteredMode}>
           <PeriodWrapper>
             <Label htmlFor="date">PERIOD</Label>
             <InputWrapper>
@@ -575,7 +760,9 @@ export default function Profile() {
                 onChange={(e) => setPeriod({ ...period, end: e.target.value })}
               />
             </InputWrapper>
-            <Cancel onClick={() => setPeriod({ start: '', end: '' })}>X</Cancel>
+            <Cancel onClick={() => setPeriod({ start: '', end: '' })}>
+              <Cross size={30} color="#fff" lineWidth={4} />
+            </Cancel>
           </PeriodWrapper>
 
           <FilterWrapper>
@@ -593,31 +780,34 @@ export default function Profile() {
           </FilterWrapper>
         </PeriodFilter>
 
-        <AnalyzeWrapper>
-          <ReportWrapper>
-            {/* <Report processedItems={processedItems} /> */}
-            <Report existingItems={existingItems} />
-          </ReportWrapper>
+        {/* <AnalyzeWrapper> */}
+        <ReportWrapper>
+          {/* <Report existingItems={existingItems} /> */}
+          <Report
+            items={isDeclutteredMode ? items : existingItemsRef.current}
+          />
+          {/* <Report items={items} /> */}
 
-          <QtyContainer>
-            <QtyWrapper>
-              <Qty>{itemRef.current?.length}</Qty>
-              <QtyTitle>TOTAL</QtyTitle>
-            </QtyWrapper>
-            <QtyWrapper>
-              <Qty>
-                {items?.filter((item: any) => item.status === '已處理').length}
-              </Qty>
-              <QtyTitle>REDUCE</QtyTitle>
-            </QtyWrapper>
-            <QtyWrapper>
-              <Qty>
-                {items?.filter((item: any) => item.status !== '已處理').length}
-              </Qty>
-              <QtyTitle>INCREASE</QtyTitle>
-            </QtyWrapper>
-          </QtyContainer>
-        </AnalyzeWrapper>
+          {/* </AnalyzeWrapper> */}
+          <QtyWrapper>
+            <Qty>
+              {isDeclutteredMode
+                ? items.length
+                : existingItemsRef.current.length}
+              {/* {isDeclutteredMode
+                ? items.filter((item: any) => item.status === '已處理').length
+                : existingItemsRef.current.reduce(
+                    (acc: number, curr: number) => acc + curr,
+                    0
+                  )} */}
+            </Qty>
+            <QtyTitle>
+              {items.length <= 1 || existingItemsRef.current.length <= 1
+                ? 'ITEM'
+                : 'ITEMS'}
+            </QtyTitle>
+          </QtyWrapper>
+        </ReportWrapper>
       </Container>
       <Background />
       {/* //Todo: 昨天以前才可以popout */}

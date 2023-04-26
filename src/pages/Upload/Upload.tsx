@@ -60,10 +60,6 @@ const ModeToggler = styled.div`
   display: flex;
   gap: 5px;
   align-items: center;
-
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 const ModeText = styled.span`
@@ -114,6 +110,10 @@ const Slider = styled.div<{ checked: boolean }>`
 
     transform: translateX(${({ checked }) => (checked ? '24px' : '0px')});
   }
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Input = styled.input`
@@ -121,12 +121,12 @@ const Input = styled.input`
   width: 0;
   height: 0;
 
-  &:checked + ${Slider} {
+  /* &:checked + ${Slider} {
     background-color: #2196f3;
   }
   &:checked + ${Slider}:before {
     transform: translateX(24px);
-  }
+  } */
 `;
 
 const BulkUploadWrapper = styled.div`
