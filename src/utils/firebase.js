@@ -384,9 +384,9 @@ export async function uploadTemplate(template) {
   }
 }
 
-export async function getTemplate() {
+export async function getTemplate(templateId) {
   //Todo: 記得換成活的id
-  const templatesRef = doc(db, 'templates', 'F5EdFgzy9ahKMkNhVyhk');
+  const templatesRef = doc(db, 'templates', templateId);
   const docSnap = await getDoc(templatesRef);
 
   return docSnap.data();
@@ -415,16 +415,16 @@ export async function setNewBoard(userId, boardData) {
   return null;
 }
 
-export async function saveBoard(userId, boardId, boardData, boardURL) {
+export async function saveBoard(userId, boardId, boardData, isEdited) {
   try {
     const boardDocRef = doc(db, 'users', userId, 'visionBoards', boardId);
     await updateDoc(boardDocRef, {
       data: boardData,
       lastUpdated: serverTimestamp(),
-      url: boardURL,
+      isEdited,
     });
 
-    alert('已成功儲存！');
+    // alert('已成功儲存！');
   } catch (e) {
     console.error('Error uploading items: ', e);
   }
