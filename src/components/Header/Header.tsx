@@ -10,6 +10,7 @@ import Home from '../../components/Icon/Home';
 
 const Container = styled.section`
   position: fixed;
+  z-index: 999;
   top: 0;
   left: 0;
   display: flex;
