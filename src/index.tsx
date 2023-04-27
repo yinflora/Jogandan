@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
+// import Advanced from './pages/SparkJoy/Test';
 import App from './App';
 import Home from './pages/Home/Home';
 import Achievement from './pages/Achievement/Achievement';
@@ -56,6 +57,7 @@ root.render(
         <Route path="achievement" element={<Achievement />} />
         <Route path="compose" element={<Compose />} />
         <Route path="sparkJoy" element={<SparkJoy />} />
+        {/* <Route path="sparkJoy" element={<Advanced />} /> */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
