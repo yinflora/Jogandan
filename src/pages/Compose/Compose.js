@@ -14,6 +14,7 @@ import {
 
 import Button from '../../components/Button/Button';
 
+import trash from './trash.png';
 import info from './info.png';
 import text from './text.png';
 import save from './save.png';
@@ -129,10 +130,11 @@ const ToolBar = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
 `;
 
 const ToolName = styled.label`
+  font-size: 0.75rem;
   letter-spacing: 0.1rem;
   color: #fff;
 `;
@@ -218,13 +220,13 @@ export default function Compose() {
     color: '#000',
     fontSize: 16,
   });
+  const [activeItem, setActiveItem] = useState(null);
 
   const canvasRef = useRef(null);
   const boardIdRef = useRef(null);
-
   const storageRef = ref(storage, `/${uid}/images/`);
 
-  console.log(images);
+  console.log(activeItem);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -236,6 +238,7 @@ export default function Compose() {
 
       setLayout(canvas);
       setVisionBoard(canvas);
+      setActiveItem(canvas.getActiveObject());
       // setSavedRecord(JSON.stringify(canvas));
     }
   }, [canvasRef]);
@@ -287,12 +290,14 @@ export default function Compose() {
 
     function findActiveObject() {
       const activeObject = visionBoard.getActiveObject();
+      setActiveItem(activeObject);
 
-      if (activeObject && activeObject.type === 'i-text')
+      if (activeObject && activeObject.type === 'i-text') {
         setTextConfig({
           color: activeObject.fill,
           fontSize: activeObject.fontSize,
         });
+      }
     }
     visionBoard.on('mouse:down', findActiveObject);
 
@@ -379,6 +384,14 @@ export default function Compose() {
     }
   }
 
+  function deleteActiveItem() {
+    if (!activeItem || !visionBoard) return;
+
+    //!刪除template文字需要按兩次
+    visionBoard.remove(activeItem);
+    visionBoard.renderAll();
+  }
+
   function addText() {
     const newText = new fabric.IText('Enter Here...', {
       top: 10,
@@ -392,6 +405,7 @@ export default function Compose() {
       hasControls: false,
     });
     visionBoard.add(newText).setActiveObject(newText);
+    setActiveItem(newText);
   }
 
   function clear() {
@@ -502,19 +516,20 @@ export default function Compose() {
       lockScalingY: true,
     });
 
-    const boardText = new fabric.IText('VISION\nBOARD', {
+    const boardText = new fabric.Text('VISION\nBOARD', {
       left: 18,
       top: 423,
       fill: '#8D9CA4',
       charSpacing: 20,
       lineHeight: 1.25,
+      textAlign: 'left',
       fontFamily: 'TT Norms Pro',
-      fontSize: textConfig.fontSize,
-      selectable: true,
-      hasControls: false,
-      lockMovementY: true,
-      lockScalingX: true,
-      lockScalingY: true,
+      fontSize: 16,
+      selectable: false,
+      // hasControls: false,
+      // lockMovementY: true,
+      // lockScalingX: true,
+      // lockScalingY: true,
     });
 
     const visionText = new fabric.Text('Vision\nPictures', {
@@ -525,6 +540,11 @@ export default function Compose() {
       textAlign: 'right',
       charSpacing: 20,
       fontSize: 14,
+      selectable: false,
+      // hasControls: false,
+      // lockMovementY: true,
+      // lockScalingX: true,
+      // lockScalingY: true,
     });
 
     canvas.add(
@@ -587,7 +607,7 @@ export default function Compose() {
           <SettingWrapper>
             <ToolWrapper>
               <ToolBar>
-                <ToolName>Background</ToolName>
+                <ToolName>背景</ToolName>
                 <ColorSelector
                   type="color"
                   value={bgColor}
@@ -595,39 +615,46 @@ export default function Compose() {
                 />
               </ToolBar>
             </ToolWrapper>
-            <ToolWrapper>
-              <ToolBar>
-                <ToolName>Text</ToolName>
-                <ColorSelector
-                  type="color"
-                  value={textConfig.color}
-                  onChange={(e) =>
-                    setTextConfig({ ...textConfig, color: e.target.value })
-                  }
-                />
-              </ToolBar>
-            </ToolWrapper>
-            <ToolWrapper>
-              <ToolBar>
-                <ToolName>Font-Size</ToolName>
-                <FontSizeRange
-                  type="range"
-                  min="10"
-                  max="40"
-                  defaultValue="16"
-                  value={textConfig.fontSize}
-                  onChange={(e) =>
-                    setTextConfig({
-                      ...textConfig,
-                      fontSize: Number(e.target.value),
-                    })
-                  }
-                />
-                <FontSize>{textConfig.fontSize}</FontSize>
-              </ToolBar>
-            </ToolWrapper>
+            {activeItem && activeItem.type === 'i-text' && (
+              <>
+                <ToolWrapper>
+                  <ToolBar>
+                    <ToolName>文字</ToolName>
+                    <ColorSelector
+                      type="color"
+                      value={textConfig.color}
+                      onChange={(e) =>
+                        setTextConfig({ ...textConfig, color: e.target.value })
+                      }
+                    />
+                  </ToolBar>
+                </ToolWrapper>
+                <ToolWrapper>
+                  <ToolBar>
+                    <ToolName>字體大小</ToolName>
+                    <FontSizeRange
+                      type="range"
+                      min="10"
+                      max="40"
+                      defaultValue="16"
+                      value={textConfig.fontSize}
+                      onChange={(e) =>
+                        setTextConfig({
+                          ...textConfig,
+                          fontSize: Number(e.target.value),
+                        })
+                      }
+                    />
+                    <FontSize>{textConfig.fontSize}</FontSize>
+                  </ToolBar>
+                </ToolWrapper>
+              </>
+            )}
 
             <ActionWrapper>
+              {activeItem && (
+                <ActionIconM src={trash} onClick={deleteActiveItem} />
+              )}
               <ActionIconL src={text} onClick={addText} />
               <ActionIconM src={undo} onClick={clear} />
               <ActionIconM src={save} onClick={saveProject} />
