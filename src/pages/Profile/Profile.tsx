@@ -5,9 +5,13 @@ import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
 import { fabric } from 'fabric';
+import { useNavigate } from 'react-router-dom';
 
 import styled, { css } from 'styled-components/macro';
 import Cross from '../../components/Icon/Cross';
+
+// import { HiArrowRight } from 'react-icons/hi';
+import { TfiArrowRight } from 'react-icons/tfi';
 
 const Container = styled.div`
   margin: 0 auto;
@@ -71,6 +75,12 @@ const UserGrade = styled.p`
 //   background-color: gray;
 // `;
 
+const VisionBoardWrapper = styled.div`
+  display: flex;
+  width: 980px;
+  flex-direction: column;
+`;
+
 const VisionBoard = styled.div`
   width: 980px;
   margin-top: 100px;
@@ -78,9 +88,24 @@ const VisionBoard = styled.div`
   background-color: #f4f3ef;
 `;
 
+const EditButton = styled.button`
+  display: flex;
+  margin: 10px 0 100px auto;
+  padding: 5px 0;
+  color: #fff;
+  align-items: center;
+  gap: 10px;
+
+  &:hover {
+    margin-bottom: 99px;
+    border-bottom: 1px solid #fff;
+    cursor: pointer;
+  }
+`;
+
 const ModeFilter = styled.div`
   display: flex;
-  margin-top: 100px;
+  /* margin-top: 100px; */
   align-items: center;
 `;
 
@@ -443,6 +468,7 @@ type Period = {
 
 export default function Profile() {
   const { user, uid, lastLoginInTime } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [items, dispatch] = useReducer(reducer, []);
   // const [existingItems, setExistingItems] = useState<[]>([]);
@@ -754,9 +780,15 @@ export default function Profile() {
         />
 
         {/* <VisionBoard src={boardUrl} /> */}
-        <VisionBoard>
-          <canvas id="canvas" />
-        </VisionBoard>
+        <VisionBoardWrapper>
+          <VisionBoard>
+            <canvas id="canvas" />
+          </VisionBoard>
+          <EditButton onClick={() => navigate(`/compose`)}>
+            <span>編輯夢想版</span>
+            <TfiArrowRight />
+          </EditButton>
+        </VisionBoardWrapper>
 
         <ModeFilter>
           <Label>FILTER</Label>
