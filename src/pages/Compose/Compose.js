@@ -78,17 +78,30 @@ const Remind = styled.span`
 `;
 
 const ImageWrapper = styled.div`
-  display: flex;
+  /* display: flex;
   width: 100%;
   height: calc(100% - 80px);
   flex-wrap: wrap;
   overflow-y: scroll;
   gap: 10px;
-  align-items: start;
+  align-items: start; */
+
+  display: grid;
+  width: 100%;
+  height: calc(100% - 80px);
+  padding-top: 10px;
+  grid-template-rows: repeat(auto-fit, minmax(100px, auto));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-auto-rows: 100px;
+  align-content: start;
+  grid-gap: 10px;
+  overflow-y: scroll;
 `;
 
 const Image = styled.img`
-  height: 100px;
+  max-width: 100%;
+  aspect-ratio: attr(width) / attr(height);
+  object-fit: cover;
 `;
 
 const VisionBoardContainer = styled.div`
@@ -97,8 +110,9 @@ const VisionBoardContainer = styled.div`
   height: 100%;
   padding: 20px;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   background-color: #8d9ca4;
+  gap: 20px;
 `;
 
 const SettingWrapper = styled.div`
