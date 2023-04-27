@@ -13,6 +13,8 @@ import Cross from '../../components/Icon/Cross';
 // import { HiArrowRight } from 'react-icons/hi';
 import { TfiArrowRight } from 'react-icons/tfi';
 
+import Button from '../../components/Button/Button';
+
 const Container = styled.div`
   margin: 0 auto;
   /* padding: 0 280px 60px 150px; */
@@ -82,11 +84,46 @@ const VisionBoardWrapper = styled.div`
 `;
 
 const VisionBoard = styled.div`
+  position: relative;
   width: 980px;
   margin-top: 100px;
   aspect-ratio: 625/475;
   background-color: #f4f3ef;
 `;
+
+const VisionBoardOverlay = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
+
+// const FirstBoardText = styled.div`
+//   font-size: 1.25rem;
+//   letter-spacing: 0.1rem;
+//   color: #fff;
+// `;
+
+// const FirstEditButton = styled.button`
+//   display: flex;
+//   padding: 5px 0;
+//   align-items: center;
+//   gap: 10px;
+//   font-size: 1.5rem;
+//   letter-spacing: 0.1rem;
+//   color: #fff;
+
+//   &:hover {
+//     border-bottom: 1px solid #fff;
+//     cursor: pointer;
+//   }
+// `;
 
 const EditButton = styled.button<{ canShow: boolean }>`
   display: flex;
@@ -479,9 +516,11 @@ export default function Profile() {
   // const [boardUrl, setBoardUrl] = useState<string>('');
   const [isDeclutteredMode, setIsDeclutteredMode] = useState<boolean>(false);
 
+  const [isFirst, setIsFirst] = useState<boolean>(false);
+
   const itemRef = useRef<Items | null>(null);
   const existingItemsRef = useRef<Items | []>([]);
-  const isEditedRef = useRef<boolean | null>(null);
+  // const isEditedRef = useRef<boolean | null>(null);
 
   console.log(canPlay);
   // console.log(items);
@@ -496,7 +535,9 @@ export default function Profile() {
       const board = await getBoard(uid, boardId);
       // if (board) setBoardUrl(board.url);
       if (board) {
-        isEditedRef.current = board.isEdited;
+        // isEditedRef.current = board.isEdited;
+
+        if (!board.isEdited) setIsFirst(true);
 
         const canvas = new fabric.Canvas('canvas', {
           width: 980,
@@ -787,12 +828,23 @@ export default function Profile() {
         <VisionBoardWrapper>
           <VisionBoard>
             <canvas id="canvas" />
+            {isFirst && (
+              <VisionBoardOverlay>
+                <Button
+                  buttonType="normal"
+                  onClick={() => navigate(`/compose`)}
+                >
+                  立即開始編輯夢想板
+                </Button>
+              </VisionBoardOverlay>
+            )}
           </VisionBoard>
           <EditButton
-            canShow={isEditedRef.current ? isEditedRef.current === true : false}
+            // canShow={isEditedRef.current ? isEditedRef.current === true : false}
+            canShow={isFirst}
             onClick={() => navigate(`/compose`)}
           >
-            <span>編輯夢想版</span>
+            <span>編輯夢想板</span>
             <TfiArrowRight />
           </EditButton>
         </VisionBoardWrapper>
