@@ -2,14 +2,19 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import { fabric } from 'fabric';
 import styled from 'styled-components/macro';
 import AuthContext from '../../context/authContext';
-import { storage, setNewBoard, saveBoard } from '../../utils/firebase';
+import {
+  storage,
+  setNewBoard,
+  saveBoard,
+  // getBoard,
+} from '../../utils/firebase';
 import {
   ref,
   listAll,
   uploadBytes,
   getDownloadURL,
   getMetadata,
-  uploadString,
+  // uploadString,
 } from 'firebase/storage';
 
 import { TfiText } from 'react-icons/tfi';
@@ -76,14 +81,6 @@ const Remind = styled.span`
 `;
 
 const ImageWrapper = styled.div`
-  /* display: flex;
-  width: 100%;
-  height: calc(100% - 80px);
-  flex-wrap: wrap;
-  overflow-y: scroll;
-  gap: 10px;
-  align-items: start; */
-
   display: grid;
   width: 100%;
   height: calc(100% - 80px);
@@ -230,6 +227,12 @@ export default function Compose() {
   const boardIdRef = useRef(null);
   const storageRef = ref(storage, `/${uid}/images/`);
 
+  // async function loadPrevBoard() {
+  //   const prevData = await getBoard(uid, boardIdRef.current);
+  //   console.log(prevData);
+  //   visionBoard.loadFromJSON(prevData.data);
+  // }
+
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = new fabric.Canvas('canvas', {
@@ -281,6 +284,9 @@ export default function Compose() {
       const id = localStorage.getItem('boardId');
       if (id) {
         boardIdRef.current = id;
+
+        // const prevData = await getBoard(uid, id);
+        // visionBoard.loadFromJSON(prevData.data);
       } else {
         const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
         localStorage.setItem('boardId', boardId);
@@ -418,17 +424,19 @@ export default function Compose() {
   }
 
   async function saveProject() {
-    const dataURL = visionBoard.toDataURL('image/png', 1);
-    const imageRef = ref(storageRef, `${boardIdRef.current}`);
+    // const dataURL = visionBoard.toDataURL('image/png', 1);
+    // const imageRef = ref(storageRef, `${boardIdRef.current}`);
 
-    const snapshot = await uploadString(imageRef, dataURL, 'data_url');
-    const newURL = await getDownloadURL(snapshot.ref);
+    // const snapshot = await uploadString(imageRef, dataURL, 'data_url');
+    // const newURL = await getDownloadURL(snapshot.ref);
 
     await saveBoard(
       uid,
       boardIdRef.current,
-      JSON.stringify(visionBoard),
-      newURL
+      // JSON.stringify(visionBoard),
+      visionBoard.toJSON(['isClipFrame']),
+      // newURL
+      visionBoard.toSVG()
     );
   }
 
