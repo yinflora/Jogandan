@@ -25,6 +25,7 @@ import Button from '../../components/Button/Button';
 import Cross from '../../components/Icon/Cross';
 import { v4 as uuidv4 } from 'uuid';
 import { CiCircleInfo } from 'react-icons/ci';
+import { RxCross1 } from 'react-icons/rx';
 
 const Container = styled.div<{ isEdit: boolean }>`
   margin: ${({ isEdit }) => (isEdit ? 0 : '0 auto')};
@@ -32,9 +33,9 @@ const Container = styled.div<{ isEdit: boolean }>`
   color: #fff;
 `;
 
-const TitleWrapper = styled.div`
+const TitleWrapper = styled.div<{ isBulkMode: boolean }>`
   display: flex;
-  margin-bottom: 80px;
+  margin-bottom: ${({ isBulkMode }) => (isBulkMode ? 0 : '80px')};
   align-items: end;
 `;
 
@@ -292,10 +293,14 @@ const CancelBtn = styled.button`
   z-index: 2;
   top: 0;
   right: 0;
-  width: 20px;
-  height: 20px;
+  display: flex;
+  width: 25px;
+  height: 25px;
+  padding: 0 auto;
   font-size: 1rem;
   text-align: center;
+  justify-content: center;
+  align-items: center;
   background-color: rgb(0, 0, 0, 0.6);
   color: #fff;
 
@@ -450,6 +455,7 @@ const BulkContainer = styled.div`
 `;
 
 const BulkItemWrapper = styled(ItemWrapper)`
+  position: relative;
   width: calc(50% - 10px);
   max-width: calc(50% - 10px);
   height: 250px;
@@ -463,6 +469,26 @@ const BulkItemWrapper = styled(ItemWrapper)`
 const BulkImage = styled(SubImage)`
   width: 200px;
   height: 200px;
+`;
+
+const BulkCancelBtn = styled.button`
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  width: 25px;
+  height: 25px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.4);
+  /* color: #fff; */
+  color: #000;
+
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+  }
 `;
 
 const VideoWrapper = styled.div`
@@ -792,6 +818,12 @@ export default function Upload({
     setSingleForm({ ...singleForm, images: [...newImages, ''] });
   }
 
+  function handleBulkDelete(index: number) {
+    const newForms = [...bulkForms];
+    newForms.splice(index, 1);
+    setBulkForms(newForms);
+  }
+
   function handleDragOverImg(
     e: React.DragEvent<HTMLDivElement>,
     index: number
@@ -859,7 +891,7 @@ export default function Upload({
   return (
     <Container isEdit={isEdit}>
       {!isEdit && (
-        <TitleWrapper>
+        <TitleWrapper isBulkMode={isBulkMode}>
           <PageTitle>UPLOAD</PageTitle>
           {/* <ModeToggler
             isBulkMode={isBulkMode && bulkForms.length > 0}
@@ -1005,7 +1037,7 @@ export default function Upload({
                       <SubImage imageUrl={image} />
                       {singleForm.images[index] !== '' && (
                         <CancelBtn onClick={() => handleDeleted(index)}>
-                          X
+                          <RxCross1 />
                         </CancelBtn>
                       )}
                       {index === 0 && <CoverText>封面</CoverText>}
@@ -1171,6 +1203,9 @@ export default function Upload({
           <BulkContainer>
             {bulkForms.map((form, index) => (
               <BulkItemWrapper key={index}>
+                <BulkCancelBtn onClick={() => handleBulkDelete(index)}>
+                  <RxCross1 />
+                </BulkCancelBtn>
                 <BulkImage imageUrl={form.images[0]} />
                 <BulkInfoWrapper>
                   <BulkFieldWrapper>
