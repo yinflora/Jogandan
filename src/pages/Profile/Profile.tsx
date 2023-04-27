@@ -88,13 +88,14 @@ const VisionBoard = styled.div`
   background-color: #f4f3ef;
 `;
 
-const EditButton = styled.button`
+const EditButton = styled.button<{ canShow: boolean }>`
   display: flex;
   margin: 10px 0 100px auto;
   padding: 5px 0;
   color: #fff;
   align-items: center;
   gap: 10px;
+  opacity: ${({ canShow }) => (canShow ? 1 : 0)};
 
   &:hover {
     margin-bottom: 99px;
@@ -480,6 +481,7 @@ export default function Profile() {
 
   const itemRef = useRef<Items | null>(null);
   const existingItemsRef = useRef<Items | []>([]);
+  const isEditedRef = useRef<boolean | null>(null);
 
   console.log(canPlay);
   // console.log(items);
@@ -494,6 +496,8 @@ export default function Profile() {
       const board = await getBoard(uid, boardId);
       // if (board) setBoardUrl(board.url);
       if (board) {
+        isEditedRef.current = board.isEdited;
+
         const canvas = new fabric.Canvas('canvas', {
           width: 980,
           height: 748,
@@ -784,7 +788,10 @@ export default function Profile() {
           <VisionBoard>
             <canvas id="canvas" />
           </VisionBoard>
-          <EditButton onClick={() => navigate(`/compose`)}>
+          <EditButton
+            canShow={isEditedRef.current ? isEditedRef.current === true : false}
+            onClick={() => navigate(`/compose`)}
+          >
             <span>編輯夢想版</span>
             <TfiArrowRight />
           </EditButton>

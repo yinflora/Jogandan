@@ -7,6 +7,8 @@ import {
   setNewBoard,
   saveBoard,
   // getBoard,
+  // uploadTemplate,
+  getTemplate,
 } from '../../utils/firebase';
 import {
   ref,
@@ -227,6 +229,8 @@ export default function Compose() {
   const boardIdRef = useRef(null);
   const storageRef = ref(storage, `/${uid}/images/`);
 
+  const LAYOUT_1_ID = 'eDuLEGPS3NCJsyeIYzXl';
+
   // async function loadPrevBoard() {
   //   const prevData = await getBoard(uid, boardIdRef.current);
   //   console.log(prevData);
@@ -234,18 +238,26 @@ export default function Compose() {
   // }
 
   useEffect(() => {
-    if (canvasRef.current) {
-      const canvas = new fabric.Canvas('canvas', {
-        width: 625,
-        height: 475,
-        backgroundColor: bgColor,
-      });
+    async function renderBoard() {
+      if (canvasRef.current) {
+        const { template } = await getTemplate(LAYOUT_1_ID);
 
-      setLayout(canvas);
-      setVisionBoard(canvas);
-      setActiveItem(canvas.getActiveObject());
-      // setSavedRecord(JSON.stringify(canvas));
+        // console.log(templateData);
+
+        const canvas = new fabric.Canvas('canvas', {
+          width: 625,
+          height: 475,
+          backgroundColor: bgColor,
+        });
+
+        // setLayout(canvas);
+        canvas.loadFromJSON(template);
+        setVisionBoard(canvas);
+        setActiveItem(canvas.getActiveObject());
+      }
     }
+
+    renderBoard();
   }, [canvasRef]);
 
   useEffect(() => {
@@ -285,12 +297,21 @@ export default function Compose() {
       if (id) {
         boardIdRef.current = id;
 
+        await saveBoard(uid, id, visionBoard.toJSON(['isClipFrame']), true);
+
         // const prevData = await getBoard(uid, id);
         // visionBoard.loadFromJSON(prevData.data);
       } else {
         const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
         localStorage.setItem('boardId', boardId);
         boardIdRef.current = boardId;
+
+        await saveBoard(
+          uid,
+          boardId,
+          visionBoard.toJSON(['isClipFrame']),
+          false
+        );
       }
     }
     createBoard();
@@ -430,13 +451,14 @@ export default function Compose() {
     // const snapshot = await uploadString(imageRef, dataURL, 'data_url');
     // const newURL = await getDownloadURL(snapshot.ref);
 
+    // await uploadTemplate(visionBoard.toJSON(['isClipFrame']));
+
     await saveBoard(
       uid,
       boardIdRef.current,
       // JSON.stringify(visionBoard),
       visionBoard.toJSON(['isClipFrame']),
-      // newURL
-      visionBoard.toSVG()
+      true
     );
   }
 
