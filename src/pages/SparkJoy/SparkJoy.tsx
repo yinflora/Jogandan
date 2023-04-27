@@ -7,9 +7,11 @@ import { updateItem } from '../../utils/firebase';
 import circle from './circle-blue.png';
 import cross from './cross-blue.png';
 import undo from './undo.png';
+import { useNavigate } from 'react-router-dom';
 
 import Check from '../../components/Icon/Check';
 import Cancel from '../../components/Icon/Cancel';
+import Button from '../../components/Button/Button';
 
 // import { RxCircle, RxCross1 } from 'react-icons/rx';
 // import { GiCircle } from 'react-icons/gi';
@@ -93,6 +95,7 @@ const EndingCard = styled.div`
   & > .smile {
     width: 100px;
     height: 100px;
+    margin-bottom: 30px;
     color: #8d9ca4;
   }
 `;
@@ -102,7 +105,7 @@ const EndingText = styled.p`
   text-align: center;
   font-size: 2rem;
   font-weight: 500;
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.2rem;
   color: #8d9ca4;
 `;
 
@@ -198,6 +201,7 @@ type API = any; //!Fixme
 
 export default function SparkJoy() {
   const { uid, items } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [randomItems, setRandomItems] = useState<Items | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(9);
@@ -317,8 +321,11 @@ export default function SparkJoy() {
 
       <CardContainer>
         <EndingCard>
-          <EndingText>你真棒！</EndingText>
+          <EndingText>你真棒</EndingText>
           <CiFaceSmile className="smile" />
+          <Button buttonType="normal" onClick={() => navigate('/inventory')}>
+            確認結果
+          </Button>
         </EndingCard>
         {randomItems &&
           currentIndex !== null &&

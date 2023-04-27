@@ -628,6 +628,7 @@ export default function Profile() {
 
       const today = new Date();
       const date = new Date(lastLoginInTime);
+
       const isToday =
         date.getDate() === today.getDate() &&
         date.getMonth() === today.getMonth() &&
@@ -640,6 +641,7 @@ export default function Profile() {
       //Todo: popout小遊戲
       if (isToday) {
         console.log('是今天');
+        setCanPlay(false);
       } else if (isYesterday || date < today) {
         console.log('是昨天以前');
         setCanPlay(true);
@@ -989,29 +991,33 @@ export default function Profile() {
         <Link to="/sparkJoy">馬上開始</Link>
       </div> */}
 
-      <Overlay>
-        <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
-          <CloseButton onClick={() => setCanPlay(false)}>
-            <Cross size={60} color="#000" lineWidth={2} />
-          </CloseButton>
+      {canPlay && (
+        <Overlay>
+          <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
+            <CloseButton onClick={() => setCanPlay(false)}>
+              <Cross size={60} color="#000" lineWidth={2} />
+            </CloseButton>
 
-          <SloganWrapper>
-            <MainSlogan>
-              您是否有太多物品，
-              <br />
-              卻難以抉擇去留？
-            </MainSlogan>
-            <SubSlogan>現在馬上通過簡單的二選一小遊戲提升整理動力！</SubSlogan>
-            {/* <LinkButton>
+            <SloganWrapper>
+              <MainSlogan>
+                您是否有太多物品，
+                <br />
+                卻難以抉擇去留？
+              </MainSlogan>
+              <SubSlogan>
+                現在馬上通過簡單的二選一小遊戲提升整理動力！
+              </SubSlogan>
+              {/* <LinkButton>
               <StyledLink to="/sparkJoy">立刻去玩</StyledLink>
             </LinkButton> */}
-            <StartButton onClick={() => navigate('/sparkJoy')}>
-              START
-              <TfiArrowRight className="startArrow" />
-            </StartButton>
-          </SloganWrapper>
-        </Toast>
-      </Overlay>
+              <StartButton onClick={() => navigate('/sparkJoy')}>
+                START
+                <TfiArrowRight className="startArrow" />
+              </StartButton>
+            </SloganWrapper>
+          </Toast>
+        </Overlay>
+      )}
     </>
   );
 }
