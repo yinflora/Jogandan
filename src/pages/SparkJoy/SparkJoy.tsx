@@ -11,10 +11,13 @@ import undo from './undo.png';
 import Check from '../../components/Icon/Check';
 import Cancel from '../../components/Icon/Cancel';
 
+// import { RxCircle, RxCross1 } from 'react-icons/rx';
+// import { GiCircle } from 'react-icons/gi';
+import { CiFaceSmile } from 'react-icons/ci';
+
 const Container = styled.div`
   display: flex;
   width: 100vw;
-  /* height: 100vh; */
   justify-content: center;
   flex-direction: column;
   align-items: center;
@@ -41,7 +44,6 @@ const Choice = styled.p`
 const Yes = styled(Choice)`
   position: absolute;
   z-index: -1;
-  /* right: 140px; */
   right: 10%;
   bottom: 250px;
 `;
@@ -49,7 +51,6 @@ const Yes = styled(Choice)`
 const No = styled(Choice)`
   position: absolute;
   z-index: -1;
-  /* left: 140px; */
   left: 10%;
   bottom: 250px;
 `;
@@ -76,40 +77,46 @@ const CardContainer = styled.div`
   margin: 20px auto 40px;
 `;
 
-const TinderCardWrapper = styled(TinderCard)`
+const EndingCard = styled.div`
   position: absolute;
-  /* top: 170px; */
+  display: flex;
   width: 100%;
   height: 100%;
-  /* margin: 20px auto 40px; */
+  border-radius: 10px;
+  flex-direction: column;
+  background-color: #fff;
+  justify-content: center;
+  align-items: center;
+  /* border: 1px solid black; */
+  box-shadow: 0px 4px 90px rgba(0, 0, 0, 0.15);
+
+  & > .smile {
+    width: 100px;
+    height: 100px;
+    color: #8d9ca4;
+  }
+`;
+
+const EndingText = styled.p`
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: 0.1rem;
+  color: #8d9ca4;
+`;
+
+const TinderCardWrapper = styled(TinderCard)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
   padding: 30px;
   border-radius: 10px;
   background-color: #fff;
-  border: 1px solid black;
-
-  /* & :last-of-type {
-    box-shadow: 0px 4px 60px rgba(0, 0, 0, 0.1);
-  } */
+  /* border: 1px solid rgba(0, 0, 0, 0.15); */
 `;
 
-// const CardContainer = styled.div`
-//   /* width: 90vw; */
-//   /* max-width: 260px; */
-//   /* height: 300px; */
-//   position: absolute;
-//   width: 100%;
-//   height: 100%;
-//   /* margin: 20px auto 40px; */
-//   padding: 30px;
-//   /* background-color: #fff; */
-//   /* box-shadow: 0px 4px 60px rgba(0, 0, 0, 0.1); */
-// `;
-
 const Card = styled.div`
-  /* position: absolute; */
-  /* width: 80vw;
-  max-width: 300px;
-  height: 500px; */
   width: 100%;
   aspect-ratio: 1/1;
   background-size: cover;
@@ -124,7 +131,6 @@ const InfoWrapper = styled.div`
 `;
 
 const Category = styled.p`
-  /* margin-bottom: 10px; */
   font-size: 0.75rem;
   letter-spacing: 0.1rem;
 `;
@@ -136,25 +142,29 @@ const Name = styled.p`
 
 const StatusWrapper = styled.div`
   display: flex;
-  /* width: 50px; */
   margin: auto 0 0 auto;
-  /* height: 50px; */
   flex-direction: column;
-  gap: 5px;
+  /* gap: 5px; */
   align-self: flex-end;
   justify-content: center;
   align-items: center;
+
+  /* & > .yes,
+  .no {
+    width: 50px;
+    height: 50px;
+    color: #8d9ca4;
+  } */
 `;
 
 const StatusIcon = styled.img`
   width: 50px;
   height: 50px;
+  /* background: center / contain no-repeat; */
 `;
 
 const Undo = styled.img`
   position: absolute;
-  /* top: 190px;
-  right: 530px; */
   top: 0;
   right: -40px;
   width: 30px;
@@ -166,7 +176,7 @@ const Undo = styled.img`
 `;
 
 const Status = styled.p`
-  font-size: 1.25rem;
+  /* font-size: 1.25rem; */
   text-align: center;
   letter-spacing: 0.1rem;
   color: #8d9ca4;
@@ -191,17 +201,9 @@ export default function SparkJoy() {
 
   const [randomItems, setRandomItems] = useState<Items | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(9);
-  const [lastDirection, setLastDirection] = useState<string | null>(null);
+  // const [lastDirection, setLastDirection] = useState<string | null>(null);
 
-  // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
-  // const childRefs = useMemo<Array<React.RefObject<number>>>(
-  //   () =>
-  //     Array(10)
-  //       .fill(0)
-  //       .map(() => React.createRef()),
-  //   []
-  // );
   const childRefs = useMemo<Array<React.RefObject<API>>>(
     () =>
       Array(10)
@@ -209,10 +211,10 @@ export default function SparkJoy() {
         .map(() => React.createRef<API>()),
     []
   );
+  // console.log(lastDirection);
 
-  // console.log(items);
-  // console.log(randomItems);
-  console.log(lastDirection);
+  console.log(currentIndex);
+  console.log(randomItems);
 
   useEffect(() => {
     if (!items) return;
@@ -229,44 +231,18 @@ export default function SparkJoy() {
     }
 
     function getRandomElements() {
-      // const randomIndexes = [];
-
-      // while (randomIndexes.length < 10) {
-      //   const randomIndex = Math.floor(Math.random() * filteredItems.length);
-      //   if (!randomIndexes.includes(randomIndex)) {
-      //     randomIndexes.push(randomIndex);
-      //   }
-      // }
       const randomIndexes = getRandomIndexes(10);
-      // console.log(randomIndexes);
 
       const selectedElements = randomIndexes.map(
         (index) => filteredItems[index]
       );
       setRandomItems(selectedElements);
-
-      // if (!items) return;
-
-      // const filteredItems = items.filter((item) => item.status !== '已處理');
-      // // const randomIndexes = [];
-      // const { length } = filteredItems;
-
-      // // Fisher-Yates shuffle algorithm
-      // for (let i = length - 1; i >= length - 10 && i >= 0; i--) {
-      //   const j = Math.floor(Math.random() * (i + 1));
-      //   [filteredItems[i], filteredItems[j]] = [
-      //     filteredItems[j],
-      //     filteredItems[i],
-      //   ];
-      // }
-
-      // const selectedElements = filteredItems.slice(length - 10, length);
-      // setRandomItems(selectedElements);
+      setCurrentIndex(selectedElements.length - 1);
     }
 
     if (items) {
       getRandomElements();
-      setCurrentIndex(items.length - 1);
+      // setCurrentIndex(items.length - 1);
     }
   }, [items]);
 
@@ -275,35 +251,36 @@ export default function SparkJoy() {
     currentIndexRef.current = val;
   };
 
-  // const canGoBack = currentIndex < randomItems.length - 1;
-  const canGoBack = currentIndex && currentIndex < 10;
-  const canSwipe = currentIndex && currentIndex >= 0;
+  // const canGoBack = currentIndex && currentIndex < 10;
+  // const canSwipe = currentIndex && currentIndex >= 0;
 
-  // set last direction and decrease current index
   const swiped = (direction: string, idToDelete: string, index: number) => {
-    setLastDirection(direction);
+    // setLastDirection(direction);
     updateCurrentIndex(index - 1);
   };
 
   const outOfFrame = (id: string, index: number) => {
-    console.log(`${id} (${index}) left the screen!`, currentIndexRef.current);
-    // handle the case in which go back is pressed before card goes outOfFrame
-
     currentIndexRef.current! >= index && childRefs[index].current.restoreCard();
-
-    // TODO: when quickly swipe and restore multiple times the same card,
-    // it happens multiple outOfFrame events are queued and the card disappear
-    // during latest swipes. Only the last outOfFrame event should be considered valid
   };
 
   const swipe = async (direction: string) => {
-    if (canSwipe && currentIndex < randomItems!.length) {
-      await childRefs[currentIndex].current.swipe(direction); // Swipe the card!
-    }
+    // if (canSwipe && currentIndex < randomItems!.length) {
+    //   await childRefs[currentIndex].current.swipe(direction);
+    // }
+
+    const canSwipe =
+      currentIndex !== null &&
+      currentIndex >= 0 &&
+      currentIndex < randomItems!.length;
+    if (!canSwipe) return;
+
+    await childRefs[currentIndex].current.swipe(direction);
   };
 
-  // increase current index and show card
   const goBack = async () => {
+    const canGoBack =
+      currentIndex !== null && currentIndex < randomItems!.length;
+
     if (!canGoBack) return;
     const newIndex = currentIndex + 1;
     updateCurrentIndex(newIndex);
@@ -311,7 +288,6 @@ export default function SparkJoy() {
   };
 
   async function handleLike(index: number) {
-    console.log('hihihihih');
     if (!randomItems) return;
 
     const updatedItem = randomItems[index];
@@ -337,88 +313,64 @@ export default function SparkJoy() {
 
   return (
     <Container>
-      {/* <h1>以下品項是否還讓你怦然心動呢？</h1> */}
       <QuestionText>Does it spark joy?</QuestionText>
 
-      {/* <TinderCardWrapper> */}
       <CardContainer>
-        <Undo
-          // style={{ backgroundColor: !canGoBack && '#c3c4d3' }}
-          src={undo}
-          onClick={() => goBack()}
-        />
+        <EndingCard>
+          <EndingText>你真棒！</EndingText>
+          <CiFaceSmile className="smile" />
+        </EndingCard>
+        {randomItems &&
+          currentIndex !== null &&
+          currentIndex < randomItems.length - 1 && (
+            <Undo src={undo} onClick={() => goBack()} />
+          )}
         {randomItems &&
           randomItems.map((item, index) => (
             <TinderCardWrapper
-              // className="swipe"
-              // style={{ position: 'absolute' }}
               ref={childRefs[index]}
               preventSwipe={['up', 'down']}
               flickOnSwipe={true}
-              // swipeRequirementType="position"
-              // onSwipeRequirementFulfilled={() => alert('更新成功！')}
               onSwipe={(direction) => {
-                // console.log(direction);
-                console.log('酷東西');
                 swiped(direction, item.id, index);
                 if (direction === 'right') {
-                  console.log('like!');
                   handleLike(index);
                 } else if (direction === 'left') {
-                  console.log('unlike!');
                   handleUnlike(index);
                 }
               }}
               onCardLeftScreen={() => outOfFrame(item.id, index)}
             >
-              {/* <CardContainer> */}
               <Card style={{ backgroundImage: `url(${item.images[0]})` }} />
               <InfoWrapper>
                 <Category>{item.category}</Category>
                 <Name>{item.name}</Name>
                 <StatusWrapper>
                   <StatusIcon src={item.status === '保留' ? circle : cross} />
+                  {/* <StatusIcon
+                    style={{
+                      background:
+                        item.status === '保留'
+                          ? `url(${circle})`
+                          : `center 80% / contain no-repeat url(${cross})`,
+                    }}
+                  /> */}
+                  {/* <RxCircle className="yes" /> */}
+                  {/* <RxCross1 className="no" /> */}
                   <Status>{item.status}</Status>
                 </StatusWrapper>
               </InfoWrapper>
-              {/* </CardContainer> */}
             </TinderCardWrapper>
           ))}
       </CardContainer>
-      {/* </TinderCardWrapper> */}
       <div className="buttons">
-        <button
-          // style={{ backgroundColor: !canSwipe && '#c3c4d3' }}
-          onClick={() => swipe('left')}
-        >
+        <button onClick={() => swipe('left')}>
           <Cancel />
         </button>
-
-        {/* <button
-          // style={{ backgroundColor: !canSwipe && '#c3c4d3' }}
-          onClick={() => swipe('right')}
-        >
-          Swipe right!
-        </button> */}
-        <button
-          onClick={(e) => {
-            console.log('hihihih222');
-            e.preventDefault();
-            swipe('right');
-          }}
-        >
+        <button onClick={() => swipe('right')}>
           <Check />
         </button>
       </div>
-      {/* {lastDirection ? (
-        <h2 key={lastDirection} className="infoText">
-          You swiped {lastDirection}
-        </h2>
-      ) : (
-        <h2 className="infoText">
-          Swipe a card or press a button to get Restore Card button visible!
-        </h2>
-      )} */}
       <Background />
       <Yes>YES</Yes>
       <No>NO</No>
