@@ -15,8 +15,8 @@ const Container = styled.section`
   left: 0;
   display: flex;
   width: 100vw;
-  height: 100px;
-  padding: 0 60px;
+  /* height: 100px; */
+  padding: 30px 60px 0;
   align-items: center;
   color: ${({ color }) => color};
 `;
@@ -36,9 +36,15 @@ const Nav = styled.nav`
 `;
 
 const NavButton = styled(Link)`
+  height: 35px;
   font-size: 1rem;
+  line-height: 35px;
   color: inherit;
   text-decoration: none;
+
+  &:hover {
+    border-bottom: 1px solid #fff;
+  }
 `;
 
 export default function Header() {

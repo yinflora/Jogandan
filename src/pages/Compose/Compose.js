@@ -6,7 +6,7 @@ import {
   storage,
   setNewBoard,
   saveBoard,
-  // getBoard,
+  getBoard,
   // uploadTemplate,
   getTemplate,
 } from '../../utils/firebase';
@@ -18,6 +18,7 @@ import {
   getMetadata,
   // uploadString,
 } from 'firebase/storage';
+import { useNavigate } from 'react-router-dom';
 
 import { TfiText } from 'react-icons/tfi';
 import { CiCircleInfo, CiTrash, CiUndo, CiSaveDown2 } from 'react-icons/ci';
@@ -213,6 +214,7 @@ const VisionBoard = styled.div`
 
 export default function Compose() {
   const { uid } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [images, setImages] = useState(null);
   const [isUploaded, setIsUploaded] = useState(false);
@@ -297,10 +299,10 @@ export default function Compose() {
       if (id) {
         boardIdRef.current = id;
 
-        await saveBoard(uid, id, visionBoard.toJSON(['isClipFrame']), true);
+        // await saveBoard(uid, id, visionBoard.toJSON(['isClipFrame']), false);
 
-        // const prevData = await getBoard(uid, id);
-        // visionBoard.loadFromJSON(prevData.data);
+        const prevData = await getBoard(uid, id);
+        visionBoard.loadFromJSON(prevData.data);
       } else {
         const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
         localStorage.setItem('boardId', boardId);
@@ -436,12 +438,15 @@ export default function Compose() {
     setActiveItem(newText);
   }
 
-  function clear() {
+  async function clear() {
     visionBoard.clear();
-    setLayout(visionBoard);
-    visionBoard.setBackgroundColor('#F4F3EF', () => {
-      visionBoard.renderAll();
-    });
+    // setLayout(visionBoard);
+
+    const { template } = await getTemplate(LAYOUT_1_ID);
+    visionBoard.loadFromJSON(template);
+    // visionBoard.setBackgroundColor('#F4F3EF', () => {
+    //   visionBoard.renderAll();
+    // });
   }
 
   async function saveProject() {
@@ -460,130 +465,132 @@ export default function Compose() {
       visionBoard.toJSON(['isClipFrame']),
       true
     );
+
+    navigate(`/profile`);
   }
 
-  function setLayout(canvas) {
-    const clipPathTopL = new fabric.Rect({
-      width: 130,
-      height: 90,
-      left: 120,
-      top: 53,
-      fill: 'rgba(141, 156, 164, 0.5)',
-      selectable: false,
-      isClipFrame: true,
-    });
+  // function setLayout(canvas) {
+  //   const clipPathTopL = new fabric.Rect({
+  //     width: 130,
+  //     height: 90,
+  //     left: 120,
+  //     top: 53,
+  //     fill: 'rgba(141, 156, 164, 0.5)',
+  //     selectable: false,
+  //     isClipFrame: true,
+  //   });
 
-    const clipPathTopR = new fabric.Rect({
-      width: 195,
-      height: 90,
-      left: 256,
-      top: 53,
-      fill: 'rgba(141, 156, 164, 0.5)',
-      selectable: false,
-      isClipFrame: true,
-    });
+  //   const clipPathTopR = new fabric.Rect({
+  //     width: 195,
+  //     height: 90,
+  //     left: 256,
+  //     top: 53,
+  //     fill: 'rgba(141, 156, 164, 0.5)',
+  //     selectable: false,
+  //     isClipFrame: true,
+  //   });
 
-    const clipPathMiddleL = new fabric.Rect({
-      width: 130,
-      height: 190,
-      left: 120,
-      top: 149,
-      fill: 'rgba(141, 156, 164, 0.5)',
-      selectable: false,
-      isClipFrame: true,
-    });
+  //   const clipPathMiddleL = new fabric.Rect({
+  //     width: 130,
+  //     height: 190,
+  //     left: 120,
+  //     top: 149,
+  //     fill: 'rgba(141, 156, 164, 0.5)',
+  //     selectable: false,
+  //     isClipFrame: true,
+  //   });
 
-    const clipPathMiddleR = new fabric.Rect({
-      width: 250,
-      height: 150,
-      left: 256,
-      top: 149,
-      fill: 'rgba(141, 156, 164, 0.5)',
-      selectable: false,
-      isClipFrame: true,
-    });
+  //   const clipPathMiddleR = new fabric.Rect({
+  //     width: 250,
+  //     height: 150,
+  //     left: 256,
+  //     top: 149,
+  //     fill: 'rgba(141, 156, 164, 0.5)',
+  //     selectable: false,
+  //     isClipFrame: true,
+  //   });
 
-    const clipPathBottom = new fabric.Rect({
-      width: 77,
-      height: 77,
-      left: 173,
-      top: 345,
-      fill: 'rgba(141, 156, 164, 0.5)',
-      selectable: false,
-      isClipFrame: true,
-    });
+  //   const clipPathBottom = new fabric.Rect({
+  //     width: 77,
+  //     height: 77,
+  //     left: 173,
+  //     top: 345,
+  //     fill: 'rgba(141, 156, 164, 0.5)',
+  //     selectable: false,
+  //     isClipFrame: true,
+  //   });
 
-    const textArea = new fabric.IText('Enter Your Goal...', {
-      width: 250,
-      height: 117,
-      left: 266,
-      top: 315,
-      padding: 10,
-      fill: '#8D9CA4',
-      charSpacing: 20,
-      lineHeight: 1.25,
-      fontFamily: 'TT Norms Pro',
-      fontSize: textConfig.fontSize,
-      selectable: true,
-      hasControls: false,
-      lockMovementX: true,
-      lockMovementY: true,
-      lockScalingX: true,
-      lockScalingY: true,
-    });
+  //   const textArea = new fabric.IText('Enter Your Goal...', {
+  //     width: 250,
+  //     height: 117,
+  //     left: 266,
+  //     top: 315,
+  //     padding: 10,
+  //     fill: '#8D9CA4',
+  //     charSpacing: 20,
+  //     lineHeight: 1.25,
+  //     fontFamily: 'TT Norms Pro',
+  //     fontSize: textConfig.fontSize,
+  //     selectable: true,
+  //     hasControls: false,
+  //     lockMovementX: true,
+  //     lockMovementY: true,
+  //     lockScalingX: true,
+  //     lockScalingY: true,
+  //   });
 
-    const period = new fabric.IText('/2023', {
-      left: 556,
-      top: 18,
-      fill: '#8D9CA4',
-      charSpacing: 20,
-      lineHeight: 1.25,
-      fontFamily: 'TT Norms Pro',
-      fontSize: textConfig.fontSize,
-      selectable: true,
-      hasControls: false,
-      lockMovementY: true,
-      lockScalingX: true,
-      lockScalingY: true,
-    });
+  //   const period = new fabric.IText('/2023', {
+  //     left: 556,
+  //     top: 18,
+  //     fill: '#8D9CA4',
+  //     charSpacing: 20,
+  //     lineHeight: 1.25,
+  //     fontFamily: 'TT Norms Pro',
+  //     fontSize: textConfig.fontSize,
+  //     selectable: true,
+  //     hasControls: false,
+  //     lockMovementY: true,
+  //     lockScalingX: true,
+  //     lockScalingY: true,
+  //   });
 
-    const boardText = new fabric.Text('VISION\nBOARD', {
-      left: 18,
-      top: 423,
-      fill: '#8D9CA4',
-      charSpacing: 20,
-      lineHeight: 1.25,
-      textAlign: 'left',
-      fontFamily: 'TT Norms Pro',
-      fontSize: 16,
-      selectable: false,
-    });
+  //   const boardText = new fabric.Text('VISION\nBOARD', {
+  //     left: 18,
+  //     top: 423,
+  //     fill: '#8D9CA4',
+  //     charSpacing: 20,
+  //     lineHeight: 1.25,
+  //     textAlign: 'left',
+  //     fontFamily: 'TT Norms Pro',
+  //     fontSize: 16,
+  //     selectable: false,
+  //   });
 
-    const visionText = new fabric.Text('Vision\nPictures', {
-      left: 60,
-      top: 53,
-      fill: '#D9CCC1',
-      fontFamily: 'TT Norms Pro',
-      textAlign: 'right',
-      charSpacing: 20,
-      fontSize: 14,
-      selectable: false,
-    });
+  //   const visionText = new fabric.Text('Vision\nPictures', {
+  //     left: 60,
+  //     top: 53,
+  //     fill: '#D9CCC1',
+  //     fontFamily: 'TT Norms Pro',
+  //     textAlign: 'right',
+  //     charSpacing: 20,
+  //     fontSize: 14,
+  //     selectable: false,
+  //   });
 
-    canvas.add(
-      clipPathTopL,
-      clipPathTopR,
-      clipPathMiddleL,
-      clipPathMiddleR,
-      clipPathBottom,
-      textArea,
-      visionText,
-      period,
-      boardText
-    );
+  //   canvas.add(
+  //     clipPathTopL,
+  //     clipPathTopR,
+  //     clipPathMiddleL,
+  //     clipPathMiddleR,
+  //     clipPathBottom,
+  //     textArea,
+  //     visionText,
+  //     period,
+  //     boardText
+  //   );
 
-    canvas.add(textArea).setActiveObject(textArea);
-  }
+  //   canvas.add(textArea).setActiveObject(textArea);
+  // }
 
   return (
     <Container>
