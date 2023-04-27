@@ -18,12 +18,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
-import info from './info.png';
-import infoBlack from './info-black.png';
+// import info from './info.png';
+// import infoBlack from './info-black.png';
 // import Chevron from '../../components/Icon/Chevron';
 import Button from '../../components/Button/Button';
 import Cross from '../../components/Icon/Cross';
 import { v4 as uuidv4 } from 'uuid';
+import { CiCircleInfo } from 'react-icons/ci';
 
 const Container = styled.div<{ isEdit: boolean }>`
   margin: ${({ isEdit }) => (isEdit ? 0 : '0 auto')};
@@ -160,18 +161,25 @@ const ImageInfoWrapper = styled.div`
   align-items: center;
 `;
 
-const PromptWrapper = styled.div`
+const PromptWrapper = styled.div<{ isBulkMode: boolean }>`
   display: flex;
   height: 30px;
   gap: 5px;
   justify-content: center;
   align-items: center;
+
+  & > .info {
+    width: 20px;
+    height: 20px;
+    color: ${({ isBulkMode }) => (isBulkMode ? '#000' : '#fff')};
+    stroke-width: 0.5px;
+  }
 `;
 
-const InfoIcon = styled.img`
-  width: 20px;
-  height: 20px;
-`;
+// const InfoIcon = styled.img`
+//   width: 20px;
+//   height: 20px;
+// `;
 
 const PromptRemind = styled.span<{ color: string }>`
   /* font-size: 0.75rem; */
@@ -940,8 +948,9 @@ export default function Upload({
             <BulkRemindWrapper>
               <Remind>選擇照片進行批量上傳</Remind>
               {/* <RemindBlack> 最多只能選擇 {BULK_LIMIT} 張</RemindBlack> */}
-              <PromptWrapper>
-                <InfoIcon src={infoBlack} />
+              <PromptWrapper isBulkMode={isBulkMode}>
+                {/* <InfoIcon src={infoBlack} /> */}
+                <CiCircleInfo className="info" />
                 <PromptRemind color="#000">
                   最多只能選擇 {BULK_LIMIT} 張
                 </PromptRemind>
@@ -1055,8 +1064,9 @@ export default function Upload({
                 <Chevron rotateDeg={180} />
               </ChangeSlideBtn> */}
               {singleForm.images.findIndex((image) => image === '') > 1 && (
-                <PromptWrapper>
-                  <InfoIcon src={info} />
+                <PromptWrapper isBulkMode={isBulkMode}>
+                  {/* <InfoIcon src={info} /> */}
+                  <CiCircleInfo className="info" />
                   <PromptRemind color="#fff">拖拉照片調整位置</PromptRemind>
                 </PromptWrapper>
               )}

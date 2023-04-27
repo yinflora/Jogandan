@@ -15,6 +15,8 @@ import { TfiArrowRight } from 'react-icons/tfi';
 
 import Button from '../../components/Button/Button';
 
+import sparkJoy from './sparkJoy.png';
+
 const Container = styled.div`
   margin: 0 auto;
   /* padding: 0 280px 60px 150px; */
@@ -313,36 +315,82 @@ const QtyTitle = styled.p`
   letter-spacing: 0.2rem;
 `;
 
-// const Overlay = styled.div`
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   z-index: 1;
-//   display: flex;
-//   width: 100vw;
-//   height: 100vh;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: center;
-//   background-color: rgba(0, 0, 0, 0.5);
-// `;
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
 
-// const Toast = styled.div`
-//   position: relative;
-//   display: flex;
-//   width: 600px;
-//   height: 600px;
-//   background-color: #fff;
-//   justify-content: center;
-//   align-items: end;
-// `;
+const Toast = styled.div`
+  position: relative;
+  display: flex;
+  width: 600px;
+  height: 600px;
+  /* background-color: #fff; */
+  justify-content: center;
+  align-items: end;
+  /* background-image: url(sparkJoy); */
+`;
 
-// const CloseButton = styled.button`
-//   position: absolute;
-//   top: 10px;
-//   right: 10px;
-//   font-size: 1.25rem;
-// `;
+const CloseButton = styled.button`
+  position: absolute;
+  top: 0;
+  right: 10px;
+  /* font-size: 1.25rem; */
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const SloganWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  /* padding-bottom: 50px; */
+  padding: 0 10px 0 30px;
+  flex-direction: column;
+`;
+
+const MainSlogan = styled.p`
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 3.25rem;
+  letter-spacing: 0.1rem;
+`;
+
+const SubSlogan = styled.p`
+  margin-top: 15px;
+  letter-spacing: 0.1rem;
+  color: #b5b4b4;
+`;
+
+const StartButton = styled.button`
+  display: flex;
+  margin: 30px 10px 30px 0;
+  align-self: flex-end;
+  gap: 10px;
+  font-size: 2rem;
+  letter-spacing: 0.1rem;
+  font-weight: 600;
+
+  & > .startArrow {
+    stroke-width: 1px;
+  }
+
+  &:hover {
+    cursor: pointer;
+    border-bottom: 1px solid #000;
+    margin-bottom: 29px;
+  }
+`;
 
 // const LinkButton = styled.button`
 //   width: 300px;
@@ -841,7 +889,7 @@ export default function Profile() {
           </VisionBoard>
           <EditButton
             // canShow={isEditedRef.current ? isEditedRef.current === true : false}
-            canShow={isFirst}
+            canShow={!isFirst}
             onClick={() => navigate(`/compose`)}
           >
             <span>編輯夢想板</span>
@@ -941,14 +989,29 @@ export default function Profile() {
         <Link to="/sparkJoy">馬上開始</Link>
       </div> */}
 
-      {/* <Overlay>
-        <Toast>
-          <CloseButton onClick={() => setCanPlay(false)}>X</CloseButton>
-          <LinkButton>
-            <StyledLink to="/sparkJoy">立刻去玩</StyledLink>
-          </LinkButton>
+      <Overlay>
+        <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
+          <CloseButton onClick={() => setCanPlay(false)}>
+            <Cross size={60} color="#000" lineWidth={2} />
+          </CloseButton>
+
+          <SloganWrapper>
+            <MainSlogan>
+              您是否有太多物品，
+              <br />
+              卻難以抉擇去留？
+            </MainSlogan>
+            <SubSlogan>現在馬上通過簡單的二選一小遊戲提升整理動力！</SubSlogan>
+            {/* <LinkButton>
+              <StyledLink to="/sparkJoy">立刻去玩</StyledLink>
+            </LinkButton> */}
+            <StartButton onClick={() => navigate('/sparkJoy')}>
+              START
+              <TfiArrowRight className="startArrow" />
+            </StartButton>
+          </SloganWrapper>
         </Toast>
-      </Overlay> */}
+      </Overlay>
     </>
   );
 }
