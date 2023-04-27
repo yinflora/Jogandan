@@ -4,6 +4,7 @@ import { getItems, getBoard } from '../../utils/firebase';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
+import { fabric } from 'fabric';
 
 import styled, { css } from 'styled-components/macro';
 import Cross from '../../components/Icon/Cross';
@@ -24,7 +25,7 @@ const Background = styled.div`
 `;
 
 const WelcomeMessage = styled.p`
-  width: 1000px;
+  width: 980px;
   letter-spacing: 0.2rem;
   line-height: 1.5rem;
   text-transform: uppercase;
@@ -62,12 +63,19 @@ const UserGrade = styled.p`
   color: #8d9ca4;
 `;
 
-const VisionBoard = styled.img`
-  /* width: 100%; */
+// const VisionBoard = styled.img`
+//   /* width: 100%; */
+//   width: 980px;
+//   margin-top: 100px;
+//   aspect-ratio: 625/475;
+//   background-color: gray;
+// `;
+
+const VisionBoard = styled.div`
   width: 980px;
   margin-top: 100px;
   aspect-ratio: 625/475;
-  background-color: gray;
+  background-color: #f4f3ef;
 `;
 
 const ModeFilter = styled.div`
@@ -441,7 +449,7 @@ export default function Profile() {
   // const [declutteredItems, setDeclutteredItems] = useState<Items>(null);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
   const [canPlay, setCanPlay] = useState<boolean>(false);
-  const [boardUrl, setBoardUrl] = useState<string>('');
+  // const [boardUrl, setBoardUrl] = useState<string>('');
   const [isDeclutteredMode, setIsDeclutteredMode] = useState<boolean>(false);
 
   const itemRef = useRef<Items | null>(null);
@@ -458,7 +466,29 @@ export default function Profile() {
 
       const boardId = localStorage.getItem('boardId');
       const board = await getBoard(uid, boardId);
-      if (board) setBoardUrl(board.url);
+      // if (board) setBoardUrl(board.url);
+      if (board) {
+        const canvas = new fabric.Canvas('canvas', {
+          width: 980,
+          height: 748,
+        });
+
+        // fabric.loadSVGFromString(board.url, (objects, options) => {
+        //   const obj = fabric.util.groupSVGElements(objects, options);
+        //   canvas.add(obj).renderAll();
+        // });
+
+        canvas.loadFromJSON(board.data, () => {
+          const scaleX = canvas.getWidth() / 625;
+          const scaleY = canvas.getHeight() / 475;
+          const zoom = Math.max(scaleX, scaleY);
+          canvas.setZoom(zoom);
+          canvas.selection = false;
+          canvas.forEachObject((obj) => {
+            obj.selectable = false;
+          });
+        });
+      }
 
       // const filteredItems = data.filter((item) => item.status !== '已處理');
       // const qtyList = filteredItems.reduce((acc, item) => {
@@ -723,7 +753,10 @@ export default function Profile() {
           }
         />
 
-        <VisionBoard src={boardUrl} />
+        {/* <VisionBoard src={boardUrl} /> */}
+        <VisionBoard>
+          <canvas id="canvas" />
+        </VisionBoard>
 
         <ModeFilter>
           <Label>FILTER</Label>
