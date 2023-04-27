@@ -12,13 +12,10 @@ import {
   uploadString,
 } from 'firebase/storage';
 
-import Button from '../../components/Button/Button';
+import { TfiText } from 'react-icons/tfi';
+import { CiCircleInfo, CiTrash, CiUndo, CiSaveDown2 } from 'react-icons/ci';
 
-import trash from './trash.png';
-import info from './info.png';
-import text from './text.png';
-import save from './save.png';
-import undo from './undo.png';
+import Button from '../../components/Button/Button';
 
 const Container = styled.div`
   margin: 0 auto;
@@ -65,11 +62,11 @@ const RemindWrapper = styled.div`
   gap: 5px;
   justify-content: center;
   align-items: center;
-`;
 
-const InfoIcon = styled.img`
-  width: 15px;
-  height: 15px;
+  & > .info {
+    color: #fff;
+    stroke-width: 0.25px;
+  }
 `;
 
 const Remind = styled.span`
@@ -180,24 +177,31 @@ const FontSize = styled.span`
 const ActionWrapper = styled.div`
   display: flex;
   margin-left: auto;
+  align-items: center;
   gap: 20px;
-`;
 
-const ActionIconL = styled.img`
-  width: 30px;
-  height: 30px;
+  & > .text {
+    width: 20px;
+    height: 20px;
+    color: #fff;
 
-  &:hover {
-    cursor: pointer;
+    &:hover {
+      cursor: pointer;
+      stroke-width: 0.5px;
+    }
   }
-`;
 
-const ActionIconM = styled.img`
-  width: 22px;
-  height: 22px;
+  & > .trash,
+  .undo,
+  .save {
+    width: 25px;
+    height: 25px;
+    color: #fff;
 
-  &:hover {
-    cursor: pointer;
+    &:hover {
+      cursor: pointer;
+      stroke-width: 0.5px;
+    }
   }
 `;
 
@@ -225,8 +229,6 @@ export default function Compose() {
   const canvasRef = useRef(null);
   const boardIdRef = useRef(null);
   const storageRef = ref(storage, `/${uid}/images/`);
-
-  console.log(activeItem);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -275,7 +277,6 @@ export default function Compose() {
   useEffect(() => {
     if (!uid || !visionBoard) return;
 
-    //確認是否有建立過
     async function createBoard() {
       const id = localStorage.getItem('boardId');
       if (id) {
@@ -526,10 +527,6 @@ export default function Compose() {
       fontFamily: 'TT Norms Pro',
       fontSize: 16,
       selectable: false,
-      // hasControls: false,
-      // lockMovementY: true,
-      // lockScalingX: true,
-      // lockScalingY: true,
     });
 
     const visionText = new fabric.Text('Vision\nPictures', {
@@ -541,10 +538,6 @@ export default function Compose() {
       charSpacing: 20,
       fontSize: 14,
       selectable: false,
-      // hasControls: false,
-      // lockMovementY: true,
-      // lockScalingX: true,
-      // lockScalingY: true,
     });
 
     canvas.add(
@@ -586,7 +579,7 @@ export default function Compose() {
             </Button>
           </label>
           <RemindWrapper>
-            <InfoIcon src={info} />
+            <CiCircleInfo className="info" />
             <Remind>請拖拉照片至格子調整</Remind>
           </RemindWrapper>
           <ImageWrapper>
@@ -653,11 +646,11 @@ export default function Compose() {
 
             <ActionWrapper>
               {activeItem && (
-                <ActionIconM src={trash} onClick={deleteActiveItem} />
+                <CiTrash className="trash" onClick={deleteActiveItem} />
               )}
-              <ActionIconL src={text} onClick={addText} />
-              <ActionIconM src={undo} onClick={clear} />
-              <ActionIconM src={save} onClick={saveProject} />
+              <TfiText className="text" onClick={addText} />
+              <CiUndo className="undo" onClick={clear} />
+              <CiSaveDown2 className="save" onClick={saveProject} />
             </ActionWrapper>
           </SettingWrapper>
 
