@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
@@ -15,7 +15,6 @@ const Container = styled.section`
   left: 0;
   display: flex;
   width: 100vw;
-  /* height: 100px; */
   padding: 30px 60px 0;
   align-items: center;
   color: ${({ color }) => color};
@@ -35,15 +34,70 @@ const Nav = styled.nav`
   gap: 50px;
 `;
 
-const NavButton = styled(Link)`
+const NavButton = styled(Link)<{ color: string }>`
+  position: relative;
   height: 35px;
   font-size: 1rem;
   line-height: 35px;
   color: inherit;
   text-decoration: none;
 
+  /* &:hover {
+    border-bottom: 1px solid ${({ color }) => color};
+  } */
+
   &:hover {
-    border-bottom: 1px solid #fff;
+    cursor: pointer;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    left: 0;
+    border-bottom: 1px solid ${({ color }) => color};
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.5s;
+  }
+
+  &:hover::before {
+    left: 0;
+    right: 0;
+    opacity: 1;
+  }
+`;
+
+const HomeWrapper = styled.div<{ color: string }>`
+  position: relative;
+  display: flex;
+  height: 35px;
+  justify-content: center;
+  align-items: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    left: 0;
+    border-bottom: 1px solid ${({ color }) => color};
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.5s;
+  }
+
+  &:hover::before {
+    left: 0;
+    right: 0;
+    opacity: 1;
+  }
+
+  &:hover {
+    cursor: pointer;
   }
 `;
 
@@ -51,6 +105,7 @@ export default function Header() {
   const { isLogin, login, logout } = useContext(AuthContext);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   const fillColor =
     location.pathname.includes('/upload') ||
@@ -63,16 +118,27 @@ export default function Header() {
       <Logo to="/">JOGANDAN</Logo>
       {isLogin ? (
         <Nav>
-          <NavButton to="/inventory">Inventory</NavButton>
-          <NavButton to="/upload">Upload</NavButton>
-          <NavButton to="/achievement">Achievement</NavButton>
-          <NavButton to="/compose">Vision Board</NavButton>
+          <NavButton to="/inventory" color={fillColor}>
+            Inventory
+          </NavButton>
+          <NavButton to="/upload" color={fillColor}>
+            Upload
+          </NavButton>
+          <NavButton to="/achievement" color={fillColor}>
+            Achievement
+          </NavButton>
+          <NavButton to="/compose" color={fillColor}>
+            Vision Board
+          </NavButton>
           <Login onClick={logout} color={fillColor}>
             Logout
           </Login>
-          <Link to="/profile">
+          <HomeWrapper color={fillColor} onClick={() => navigate('/profile')}>
             <Home fill={fillColor} />
-          </Link>
+          </HomeWrapper>
+          {/* <Link to="/profile">
+            <Home fill={fillColor} />
+          </Link> */}
         </Nav>
       ) : (
         <Login onClick={login} color={fillColor}>

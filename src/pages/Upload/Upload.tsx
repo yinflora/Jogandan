@@ -280,20 +280,13 @@ const SubImageContainer = styled.div`
   overflow-y: scroll;
 `;
 
-const SubImageWrapper = styled.div`
-  position: relative;
-  height: calc((100% - 40px) / 4);
-  margin: 5px;
-  aspect-ratio: 1/1;
-  flex-shrink: 0 0 25%;
-`;
-
 const CancelBtn = styled.button`
   position: absolute;
   z-index: 2;
   top: 0;
   right: 0;
-  display: flex;
+  /* display: flex; */
+  display: none;
   width: 25px;
   height: 25px;
   padding: 0 auto;
@@ -306,6 +299,18 @@ const CancelBtn = styled.button`
 
   &:hover {
     cursor: pointer;
+  }
+`;
+
+const SubImageWrapper = styled.div`
+  position: relative;
+  height: calc((100% - 40px) / 4);
+  margin: 5px;
+  aspect-ratio: 1/1;
+  flex-shrink: 0 0 25%;
+
+  &:hover ${CancelBtn} {
+    display: flex;
   }
 `;
 
@@ -480,7 +485,7 @@ const BulkCancelBtn = styled.button`
   height: 25px;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.1);
   /* color: #fff; */
   color: #000;
 
