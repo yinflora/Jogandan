@@ -7,8 +7,10 @@ import EditItem from '../Upload/Upload';
 import { useEffect, useState, useRef } from 'react';
 
 import Chevron from '../../components/Icon/Chevron';
-import edit from './edit.png';
+// import edit from './edit.png';
 import Cross from '../../components/Icon/Cross';
+
+// import { RxCross1 } from 'react-icons/rx';
 
 const Overlay = styled.div`
   position: fixed;
@@ -25,10 +27,20 @@ const Overlay = styled.div`
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
   /* gap: 10px; */
+
+  /* & > .close {
+    width: 40px;
+    height: 40px;
+    margin-left: auto;
+    margin-bottom: 10px;
+    color: #fff;
+  } */
 `;
 
 const Cancel = styled(Link)`
-  margin-left: auto;
+  /* margin-left: auto;
+  margin-bottom: -10px; */
+  margin: 40px 0 0 auto;
   /* color: #f1f2ed; */
 `;
 
@@ -108,7 +120,7 @@ const SubImageWrapper = styled.div`
     left: 0;
     width: 100%;
     height: calc(100% - 10px);
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: -1;
   }
 
@@ -140,22 +152,55 @@ const InfoWrapper = styled.div`
 
 const FirstRow = styled.div`
   display: flex;
-  justify-content: space-between;
-`;
-
-const Category = styled.span`
   margin-bottom: 20px;
+  justify-content: space-between;
+  align-items: center;
 `;
 
-const Edit = styled.img`
-  /* font-size: 14px; */
-  width: 20px;
-  height: 20px;
+const Edit = styled.button`
+  position: relative;
+  padding: 0 0 5px 0;
+  font-size: 1rem;
+  letter-spacing: 0.1rem;
+  color: #000;
 
   &:hover {
     cursor: pointer;
   }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    left: 0;
+    border-bottom: 1px solid #000;
+    opacity: 0;
+    /* z-index: -1; */
+    transition: all 0.5s;
+  }
+
+  &:hover::before {
+    left: 0;
+    right: 0;
+    opacity: 1;
+  }
 `;
+
+const Category = styled.span`
+  /* margin-bottom: 20px; */
+`;
+
+// const Edit = styled.img`
+//   /* font-size: 14px; */
+//   width: 20px;
+//   height: 20px;
+
+//   &:hover {
+//     cursor: pointer;
+//   }
+// `;
 
 const Name = styled.p`
   /* margin-top: 30px; */
@@ -204,7 +249,6 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
 
   const intervalRef = useRef<number | null>(null);
-
   useEffect(() => {
     if (!selectedItem) return;
 
@@ -238,6 +282,8 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
         <Cancel to="/inventory">
           <Cross size={50} lineWidth={3} />
         </Cancel>
+
+        {/* <RxCross1 className="close" onClick={() => navigate('/inventory')} /> */}
 
         <Container isEdit={isEdit}>
           {isEdit ? (
@@ -347,7 +393,8 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
                 <FirstRow>
                   <Category>{selectedItem.category}</Category>
                   {selectedItem.status !== '已處理' && (
-                    <Edit onClick={() => setIsEdit(true)} src={edit} />
+                    // <Edit onClick={() => setIsEdit(true)} src={edit} />
+                    <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
                   )}
                 </FirstRow>
                 <Name>{selectedItem.name}</Name>

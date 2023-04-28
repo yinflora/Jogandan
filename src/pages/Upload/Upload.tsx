@@ -381,6 +381,7 @@ const BulkFiledLabel = styled(FiledLabel)`
 const TextInput = styled.input`
   width: 100%;
   height: 30px;
+  padding-left: 5px;
   font-size: 1rem;
   letter-spacing: 0.1rem;
   border-bottom: 1px solid #fff;
@@ -1086,7 +1087,9 @@ export default function Upload({
                   <MainImage>
                     <RemindWrapper>
                       <ImageIcon src={image} />
-                      <Remind>最多上傳 {SINGLE_LIMIT} 張</Remind>
+                      <Remind style={{ marginBottom: 30 }}>
+                        最多上傳 {SINGLE_LIMIT} 張
+                      </Remind>
                       <Button
                         buttonType="normal"
                         onClick={() => setShowCamera(true)}
