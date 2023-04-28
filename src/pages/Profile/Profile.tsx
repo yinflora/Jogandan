@@ -12,6 +12,7 @@ import Cross from '../../components/Icon/Cross';
 
 // import { HiArrowRight } from 'react-icons/hi';
 import { TfiArrowRight } from 'react-icons/tfi';
+import { RxCross1 } from 'react-icons/rx';
 
 import Button from '../../components/Button/Button';
 
@@ -128,7 +129,9 @@ const VisionBoardOverlay = styled.div`
 // `;
 
 const EditButton = styled.button<{ canShow: boolean }>`
+  position: relative;
   display: flex;
+  height: 35px;
   margin: 10px 0 100px auto;
   padding: 5px 0;
   color: #fff;
@@ -138,8 +141,27 @@ const EditButton = styled.button<{ canShow: boolean }>`
 
   &:hover {
     margin-bottom: 99px;
-    border-bottom: 1px solid #fff;
+    /* border-bottom: 1px solid #fff; */
     cursor: pointer;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    left: 0;
+    border-bottom: 1px solid #fff;
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.5s;
+  }
+
+  &:hover::before {
+    left: 0;
+    right: 0;
+    opacity: 1;
   }
 `;
 
@@ -150,6 +172,7 @@ const ModeFilter = styled.div`
 `;
 
 const ModeToggler = styled.div`
+  position: relative;
   display: flex;
   width: 100px;
   height: 35px;
@@ -159,6 +182,29 @@ const ModeToggler = styled.div`
   border: 1px solid #fff;
   color: #fff;
   font-size: 0.85rem;
+
+  &:hover {
+    color: #8d9ca4;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    left: 0;
+    background-color: #fff;
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.5s;
+  }
+
+  &:hover::before {
+    left: 0;
+    right: 0;
+    opacity: 1;
+  }
 `;
 
 const CurrentMode = styled(ModeToggler)<{ isDeclutteredMode: boolean }>`
@@ -223,6 +269,7 @@ const InputWrapper = styled.div`
 
 const DateInput = styled.input`
   width: 150px;
+  height: 30px;
   font-family: 'TT Norms Pro', sans-serif;
   font-size: 0.85rem;
   letter-spacing: 0.2rem;
@@ -246,10 +293,16 @@ const Dash = styled.div`
 
 const Cancel = styled.div`
   margin-left: 10px;
-  color: #fff;
+  /* color: #fff; */
 
   &:hover {
     cursor: pointer;
+  }
+
+  & > .clear {
+    &:hover {
+      stroke-width: 0.5;
+    }
   }
 `;
 
@@ -271,6 +324,7 @@ const FilterBtn = styled.button`
 
   &:hover {
     cursor: pointer;
+    font-weight: 500;
   }
 `;
 
@@ -570,7 +624,7 @@ export default function Profile() {
   const existingItemsRef = useRef<Items | []>([]);
   // const isEditedRef = useRef<boolean | null>(null);
 
-  console.log(canPlay);
+  // console.log(canPlay);
   // console.log(items);
 
   useEffect(() => {
@@ -935,7 +989,8 @@ export default function Profile() {
               />
             </InputWrapper>
             <Cancel onClick={() => setPeriod({ start: '', end: '' })}>
-              <Cross size={30} color="#fff" lineWidth={4} />
+              {/* <Cross size={30} color="#fff" lineWidth={4} /> */}
+              <RxCross1 className="clear" />
             </Cancel>
           </PeriodWrapper>
 
