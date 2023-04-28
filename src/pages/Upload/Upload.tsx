@@ -805,9 +805,32 @@ export default function Upload({
 
   async function handleUpdateItems() {
     //!Modified
-    await updateItem(uid, id, singleForm);
+    const newForm = { ...singleForm };
+
+    await Promise.all(
+      newForm.images.map(async (image: any, index: number) => {
+        if (image === '') {
+          newForm.images[index] = '';
+        } else {
+          const res = await fetch(image);
+          const blobImage = await res.blob();
+
+          const storageRef = ref(storage, `/${uid}/images/${uuidv4()}`);
+          const snapshot = await uploadBytes(storageRef, blobImage);
+          const url = await getDownloadURL(snapshot.ref);
+
+          newForm.images[index] = url;
+        }
+      })
+    );
+
+    await updateItem(uid, id, newForm);
     setIsEdit(false);
-    setSelectedItem(singleForm);
+    setSelectedItem(newForm);
+
+    // await updateItem(uid, id, singleForm);
+    // setIsEdit(false);
+    // setSelectedItem(singleForm);
   }
 
   function handleDeleted(index: number) {

@@ -89,9 +89,9 @@ const ImageWrapper = styled.div`
   width: 100%;
   height: calc(100% - 80px);
   padding-top: 10px;
-  grid-template-rows: repeat(auto-fit, minmax(100px, auto));
+  /* grid-template-rows: repeat(auto-fit, minmax(100px, auto)); */
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  grid-auto-rows: 100px;
+  /* grid-auto-rows: 100px; */
   align-content: start;
   grid-gap: 10px;
   overflow-y: scroll;
@@ -249,6 +249,8 @@ export default function Compose() {
   //   console.log(prevData);
   //   visionBoard.loadFromJSON(prevData.data);
   // }
+
+  useEffect(() => {});
 
   useEffect(() => {
     async function renderBoard() {

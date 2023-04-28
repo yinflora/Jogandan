@@ -54,6 +54,10 @@ const ChangeSlideBtn = styled.button`
   height: 40px;
   justify-content: center;
   align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const BtnWrapper = styled.div`
@@ -106,6 +110,10 @@ const SubImageWrapper = styled.div`
     height: calc(100% - 10px);
     background-color: rgba(0, 0, 0, 0.8);
     z-index: -1;
+  }
+
+  &:hover {
+    cursor: pointer;
   }
 `;
 
@@ -243,7 +251,28 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
             <>
               <ImageWrapper>
                 <ChangeSlideBtn>
-                  <Chevron rotateDeg={0} color="#000" />
+                  <Chevron
+                    rotateDeg={0}
+                    color="#000"
+                    onClick={() => {
+                      setActiveItemIndex((prevIndex) =>
+                        prevIndex > 0
+                          ? prevIndex - 1
+                          : selectedItem.images.filter((item) => item !== '')
+                              .length - 1
+                      );
+                      intervalRef.current &&
+                        window.clearInterval(intervalRef.current);
+                      intervalRef.current = window.setInterval(() => {
+                        const hasUrlImages = selectedItem.images.filter(
+                          (image: string) => image !== ''
+                        );
+                        setActiveItemIndex((prev) =>
+                          prev === hasUrlImages.length - 1 ? 0 : prev + 1
+                        );
+                      }, 5000);
+                    }}
+                  />
                 </ChangeSlideBtn>
                 <ImageArea>
                   <SubImageWrapper>
@@ -276,7 +305,30 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
                 </ImageArea>
                 <BtnWrapper>
                   <ChangeSlideBtn>
-                    <Chevron rotateDeg={180} color="#000" />
+                    <Chevron
+                      rotateDeg={180}
+                      color="#000"
+                      onClick={() => {
+                        setActiveItemIndex((prevIndex) =>
+                          prevIndex <
+                          selectedItem.images.filter((item) => item !== '')
+                            .length -
+                            1
+                            ? prevIndex + 1
+                            : 0
+                        );
+                        intervalRef.current &&
+                          window.clearInterval(intervalRef.current);
+                        intervalRef.current = window.setInterval(() => {
+                          const hasUrlImages = selectedItem.images.filter(
+                            (image: string) => image !== ''
+                          );
+                          setActiveItemIndex((prev) =>
+                            prev === hasUrlImages.length - 1 ? 0 : prev + 1
+                          );
+                        }, 5000);
+                      }}
+                    />
                   </ChangeSlideBtn>
 
                   <SlideCount>

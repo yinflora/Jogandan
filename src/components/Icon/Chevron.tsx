@@ -8,35 +8,24 @@ type ChevronProps = {
   size?: number;
   rotateDeg: number;
   color?: string;
+  onClick?: () => void;
 };
 
-export default function Chevron({ size, rotateDeg, color }: ChevronProps) {
+export default function Chevron({
+  size,
+  rotateDeg,
+  color,
+  onClick,
+}: ChevronProps) {
   return (
-    // <StyledChevron
-    //   rotateDeg={rotateDeg}
-    //   xmlns="http://www.w3.org/2000/svg"
-    //   width={size ? size : '60'}
-    //   height={size ? size : '60'}
-    //   viewBox="0 0 24 24"
-    //   stroke-width="0.5"
-    //   stroke={color ? color : '#ffffff'}
-    //   fill="none"
-    //   stroke-linecap="round"
-    //   stroke-linejoin="round"
-    // >
-    //   <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-    //   <polyline points="6 15 12 9 18 15" />
-    // </StyledChevron>
-
     <StyledChevron
       rotateDeg={rotateDeg}
       width={size ? size : '40'}
-      // height={size ? size : '40'}
       viewBox="0 0 25 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      // stroke={color ? color : '#ffffff'}
       stroke-width="0.125"
+      onClick={onClick}
     >
       <g stroke-width="0" />
       <g stroke-linecap="round" stroke-linejoin="round" />
