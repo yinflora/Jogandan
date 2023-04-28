@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Login from '../Login/Login';
 import Home from '../../components/Icon/Home';
@@ -35,7 +35,7 @@ const Nav = styled.nav`
   gap: 50px;
 `;
 
-const NavButton = styled(Link)<{ color: string }>`
+const NavButton = styled(Link)<{ color: string; isActive: boolean }>`
   position: relative;
   height: 35px;
   font-size: 1rem;
@@ -43,15 +43,11 @@ const NavButton = styled(Link)<{ color: string }>`
   color: inherit;
   text-decoration: none;
 
-  /* &:hover {
-    border-bottom: 1px solid ${({ color }) => color};
-  } */
-
   &:hover {
     cursor: pointer;
   }
 
-  &::before {
+  /* &::before {
     content: '';
     position: absolute;
     top: 0;
@@ -68,39 +64,79 @@ const NavButton = styled(Link)<{ color: string }>`
     left: 0;
     right: 0;
     opacity: 1;
-  }
+  } */
+
+  ${({ isActive, color }) =>
+    isActive
+      ? css`
+          border-bottom: 1px solid ${color};
+        `
+      : css`
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 100%;
+            left: 0;
+            border-bottom: 1px solid ${color};
+            opacity: 0;
+            z-index: -1;
+            transition: all 0.5s;
+          }
+
+          &:hover::before {
+            left: 0;
+            right: 0;
+            opacity: 1;
+          }
+        `}
 `;
 
-const HomeWrapper = styled.div<{ color: string }>`
+const HomeWrapper = styled.div<{ color: string; isActive: boolean }>`
   position: relative;
   display: flex;
   height: 35px;
   justify-content: center;
   align-items: center;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 100%;
-    left: 0;
-    border-bottom: 1px solid ${({ color }) => color};
-    opacity: 0;
-    z-index: -1;
-    transition: all 0.5s;
-  }
-
-  &:hover::before {
-    left: 0;
-    right: 0;
-    opacity: 1;
-  }
-
   &:hover {
     cursor: pointer;
   }
+
+  ${({ isActive, color }) =>
+    isActive
+      ? css`
+          border-bottom: 1px solid ${color};
+        `
+      : css`
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 100%;
+            left: 0;
+            border-bottom: 1px solid ${color};
+            opacity: 0;
+            z-index: -1;
+            transition: all 0.5s;
+          }
+
+          &:hover::before {
+            left: 0;
+            right: 0;
+            opacity: 1;
+          }
+        `}
 `;
+
+const routes = [
+  { pathName: '/inventory', text: 'Inventory' },
+  { pathName: '/upload', text: 'Upload' },
+  { pathName: '/achievement', text: 'Achievement' },
+  { pathName: '/compose', text: 'Vision Board' },
+];
 
 export default function Header() {
   const { isLogin, login, logout } = useContext(AuthContext);
@@ -119,7 +155,19 @@ export default function Header() {
       <Logo to="/">JOGANDAN</Logo>
       {isLogin ? (
         <Nav>
-          <NavButton to="/inventory" color={fillColor}>
+          {routes.map((route) => (
+            <NavButton
+              to={route.pathName}
+              color={fillColor}
+              isActive={location.pathname.includes(route.pathName)}
+            >
+              {route.text}
+            </NavButton>
+          ))}
+          {/* <NavButton
+            to="/inventory"
+            color={fillColor}
+          >
             Inventory
           </NavButton>
           <NavButton to="/upload" color={fillColor}>
@@ -130,11 +178,15 @@ export default function Header() {
           </NavButton>
           <NavButton to="/compose" color={fillColor}>
             Vision Board
-          </NavButton>
+          </NavButton> */}
           <Login onClick={logout} color={fillColor}>
             Logout
           </Login>
-          <HomeWrapper color={fillColor} onClick={() => navigate('/profile')}>
+          <HomeWrapper
+            color={fillColor}
+            isActive={location.pathname.includes('/profile')}
+            onClick={() => navigate('/profile')}
+          >
             <Home fill={fillColor} />
           </HomeWrapper>
           {/* <Link to="/profile">
