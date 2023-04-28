@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 const HomeBtn = styled.svg<HomeProps>`
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
 
   &:hover {
     cursor: pointer;

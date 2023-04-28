@@ -20,8 +20,9 @@ import {
 } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 
-import { TfiText } from 'react-icons/tfi';
-import { CiCircleInfo, CiTrash, CiUndo, CiSaveDown2 } from 'react-icons/ci';
+import { TfiText, TfiSaveAlt } from 'react-icons/tfi';
+import { CiCircleInfo, CiTrash, CiUndo } from 'react-icons/ci';
+// import { CiCircleInfo, CiTrash, CiUndo, CiSaveDown2 } from 'react-icons/ci';
 
 import Button from '../../components/Button/Button';
 
@@ -192,10 +193,20 @@ const ActionWrapper = styled.div`
   }
 
   & > .trash,
-  .undo,
-  .save {
+  .undo {
     width: 25px;
     height: 25px;
+    color: #fff;
+
+    &:hover {
+      cursor: pointer;
+      stroke-width: 0.5px;
+    }
+  }
+
+  & .save {
+    width: 20px;
+    height: 20px;
     color: #fff;
 
     &:hover {
@@ -687,7 +698,8 @@ export default function Compose() {
               )}
               <TfiText className="text" onClick={addText} />
               <CiUndo className="undo" onClick={clear} />
-              <CiSaveDown2 className="save" onClick={saveProject} />
+              {/* <CiSaveDown2 className="save" onClick={saveProject} /> */}
+              <TfiSaveAlt className="save" onClick={saveProject} />
             </ActionWrapper>
           </SettingWrapper>
 
