@@ -53,15 +53,45 @@ const SearchField = styled.div`
 
 const SearchWrapper = styled.div`
   position: relative;
+  display: flex;
   width: 100%;
   height: 45px;
   margin-bottom: 15px;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 1px solid #fff;
+  /* transition: all 0.5s; */
+
+  /* &:focus-within {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-bottom: 2px solid #fff;
+  } */
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-bottom: 2px solid #fff;
+    opacity: 0;
+    /* z-index: -1; */
+    transition: all 0.5s;
+  }
+
+  &:focus-within::before {
+    left: 0;
+    right: 0;
+    opacity: 1;
+  }
 `;
 
 const SearchBar = styled.input`
   width: 80%;
   height: 100%;
+  padding-left: 6px;
   overflow-x: scroll;
   font-size: 1.25rem;
   line-height: 100%;
@@ -69,9 +99,9 @@ const SearchBar = styled.input`
 `;
 
 const SearchBtn = styled.button`
-  position: absolute;
+  /* position: absolute;
   top: 0;
-  right: 0;
+  right: 0; */
   border: none;
   cursor: pointer;
 `;
@@ -349,8 +379,8 @@ export default function Inventory() {
     setFilter({ ...filter, status: '' });
   }
 
-  function handleSearch(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (itemsRef.current && e.key === 'Enter') {
+  function handleSearch() {
+    if (itemsRef.current) {
       const filteredItems = itemsRef.current.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
       );
@@ -372,9 +402,9 @@ export default function Inventory() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => handleSearch(e)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <SearchBtn>
+            <SearchBtn onClick={handleSearch}>
               <Search />
             </SearchBtn>
           </SearchWrapper>
