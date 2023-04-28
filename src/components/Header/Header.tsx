@@ -26,6 +26,7 @@ const Logo = styled(Link)`
   letter-spacing: 0.2rem;
   color: inherit;
   text-decoration: none;
+  /* text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); */
 `;
 
 const Nav = styled.nav`

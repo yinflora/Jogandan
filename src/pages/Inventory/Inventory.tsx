@@ -8,7 +8,8 @@ import { getItems, getItemById } from '../../utils/firebase';
 import { AuthContext } from '../../context/authContext';
 import Popout from './Popout';
 import Search from '../../components/Icon/Search';
-import Cross from '../../components/Icon/Cross';
+// import Cross from '../../components/Icon/Cross';
+import { RxCross1 } from 'react-icons/rx';
 
 const Container = styled.div`
   /* width: 1000px; */
@@ -100,9 +101,30 @@ const FilterTitle = styled.p`
   color: #000;
 
   &:first-of-type {
+    position: relative;
+    width: 35px;
+    height: 25px;
     margin-bottom: 40px;
     color: #fff;
     cursor: pointer;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 100%;
+      left: 0;
+      border-bottom: 1px solid #fff;
+      opacity: 0;
+      transition: all 0.5s;
+    }
+
+    &:hover::before {
+      left: 0;
+      right: 0;
+      opacity: 1;
+    }
   }
 `;
 
@@ -121,14 +143,31 @@ const TitleWrapper = styled.div`
 `;
 
 const SubTitle = styled.p<{ isSelected: boolean }>`
+  /* position: absolute; */
   font-size: 14px;
   letter-spacing: 0.2rem;
   color: ${({ isSelected }) => (isSelected ? '#8D9CA4' : '#b5b4b4')};
   font-weight: ${({ isSelected }) => isSelected && 500};
+  transition: 0.3s ease-out;
 
   &:hover {
     cursor: pointer;
   }
+
+  /* &::before {
+    position: absolute;
+    content: '居家生活';
+    width: 0%;
+    inset: 0;
+    color: #999999;
+    overflow: hidden;
+    transition: 0.3s ease-out;
+    transition: 0.3s ease-out;
+  }
+
+  &:hover::before {
+    width: 100%;
+  } */
 `;
 
 const FilterButton = styled.div`
@@ -142,6 +181,14 @@ const FilterButton = styled.div`
 
   &:hover {
     cursor: pointer;
+  }
+
+  & > .cancel {
+    width: 15px;
+    height: 15px;
+    color: #8d9ca4;
+    stroke-width: 0.5px;
+    transition: 0.3s ease-in;
   }
 `;
 
@@ -391,7 +438,8 @@ export default function Inventory() {
                 </SubTitle>
                 {filter.category === category && (
                   <FilterButton onClick={handleClearCategory}>
-                    <Cross size={25} color="#8D9CA4" lineWidth={6} />
+                    {/* <Cross size={25} color="#8D9CA4" lineWidth={6} /> */}
+                    <RxCross1 className="cancel" />
                   </FilterButton>
                 )}
               </TitleWrapper>
@@ -416,7 +464,8 @@ export default function Inventory() {
                 {filter.status === status && (
                   // <FilterButton onClick={handleClearStatus}>X</FilterButton>
                   <FilterButton onClick={handleClearStatus}>
-                    <Cross size={25} color="#8D9CA4" lineWidth={6} />
+                    {/* <Cross size={25} color="#8D9CA4" lineWidth={6} /> */}
+                    <RxCross1 className="cancel" />
                   </FilterButton>
                 )}
               </TitleWrapper>
