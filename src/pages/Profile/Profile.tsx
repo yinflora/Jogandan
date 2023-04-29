@@ -7,7 +7,7 @@ import { Timestamp } from 'firebase/firestore';
 import { fabric } from 'fabric';
 import { useNavigate } from 'react-router-dom';
 
-import styled, { css } from 'styled-components/macro';
+import styled, { css, keyframes } from 'styled-components/macro';
 // import Cross from '../../components/Icon/Cross';
 
 // import { HiArrowRight } from 'react-icons/hi';
@@ -393,7 +393,7 @@ const Overlay = styled.div`
 const Toast = styled.div`
   position: relative;
   display: flex;
-  z-index: 999;
+  z-index: 991;
   width: 600px;
   height: 600px;
   flex-direction: column;
@@ -473,36 +473,121 @@ const SloganWrapper = styled.div`
   flex-direction: column;
 `;
 
+const fadeIn = keyframes`
+   from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
 const MainSlogan = styled.p`
   font-size: 2.5rem;
   font-weight: 600;
   line-height: 3.25rem;
   letter-spacing: 0.1rem;
+  opacity: 0;
+  animation: ${fadeIn} 1s forwards;
+  animation-delay: 0.3s;
 `;
 
 const SubSlogan = styled.p`
   margin-top: 15px;
   letter-spacing: 0.1rem;
   color: #b5b4b4;
+  opacity: 0;
+  animation: ${fadeIn} 1s forwards;
+  animation-delay: 0.6s;
+`;
+
+// const StartButton = styled.button`
+//   display: flex;
+//   margin: 30px 10px 30px 0;
+//   align-self: flex-end;
+//   gap: 10px;
+//   font-size: 2rem;
+//   letter-spacing: 0.1rem;
+//   font-weight: 600;
+
+// & > .startArrow {
+//   stroke-width: 1px;
+// }
+
+//   &:hover {
+//     cursor: pointer;
+//     border-bottom: 1px solid #000;
+//     margin-bottom: 29px;
+//   }
+// `;
+
+const Start = styled.p`
+  position: relative;
+  margin: 0;
+  font-size: 2rem;
+  color: #000;
+
+  &::before {
+    position: absolute;
+    content: 'START';
+    width: 0%;
+    inset: 0;
+    color: #8d9ca4;
+    overflow: hidden;
+    transition: 0.3s ease-out;
+  }
 `;
 
 const StartButton = styled.button`
-  display: flex;
   margin: 30px 10px 30px 0;
   align-self: flex-end;
-  gap: 10px;
-  font-size: 2rem;
-  letter-spacing: 0.1rem;
+  width: fit-content;
+  /* width: 160px; */
+  padding: 0;
+  /* margin: 0; */
+  border: none;
+  background: none;
+  position: relative;
+  display: flex;
   font-weight: 600;
+  font-size: 2rem;
+  gap: 0.5rem;
+  align-items: center;
 
-  & > .startArrow {
-    stroke-width: 1px;
+  opacity: 0;
+  animation: ${fadeIn} 1s forwards;
+  animation-delay: 1.2s;
+
+  &::after {
+    position: absolute;
+    content: '';
+    width: 0;
+    left: 0;
+    bottom: -7px;
+    background: #8d9ca4;
+    height: 2px;
+    transition: 0.3s ease-out;
+  }
+  &:hover::after {
+    width: 100%;
+  }
+  &:hover ${Start}::before {
+    width: 100%;
+  }
+  &:hover .startArrow {
+    transform: translateX(4px);
+    color: #8d9ca4;
   }
 
-  &:hover {
-    cursor: pointer;
-    border-bottom: 1px solid #000;
-    margin-bottom: 29px;
+  & .startArrow {
+    z-index: 992;
+    width: 20px;
+    height: 20px;
+    stroke-width: 1px;
+    transition: 0.2s;
+    transition-delay: 0.2s;
   }
 `;
 
@@ -1129,7 +1214,7 @@ export default function Profile() {
               <StyledLink to="/sparkJoy">立刻去玩</StyledLink>
             </LinkButton> */}
               <StartButton onClick={() => navigate('/sparkJoy')}>
-                START
+                <Start>START</Start>
                 <TfiArrowRight className="startArrow" />
               </StartButton>
             </SloganWrapper>
