@@ -2,7 +2,6 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Reset } from 'styled-reset';
 import { createGlobalStyle } from 'styled-components';
 import { AuthContextProvider } from './context/authContext';
-
 import Header from './components/Header/Header';
 
 const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
@@ -51,6 +50,7 @@ function App() {
     <>
       <Reset />
       <GlobalStyle backgroundColor={backgroundColor} />
+
       <AuthContextProvider>
         <Header />
         <Outlet />
