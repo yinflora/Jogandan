@@ -423,11 +423,7 @@ export async function saveBoard(userId, boardId, boardData, isEdited) {
       lastUpdated: serverTimestamp(),
       isEdited,
     });
-
-    // alert('已成功儲存！');
   } catch (e) {
     console.error('Error uploading items: ', e);
   }
 }
-
-// export async function getBoard() {}
