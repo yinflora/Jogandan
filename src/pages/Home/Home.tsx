@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 import background from './background.jpeg';
-import feature1 from './feature1.jpeg';
-import feature2 from './feature2.jpeg';
+import feature1 from './feature1.png';
+import feature2 from './feature2.png';
 
 import Chevron from '../../components/Icon/Chevron';
 import Button from '../../components/Button/Button';
@@ -89,7 +89,7 @@ const FeatureCard = styled.div`
   display: flex;
   width: 300px;
   flex-direction: column;
-  gap: 5vh;
+  gap: 2vh;
 `;
 
 const FeatureCardBottom = styled(FeatureCard)`

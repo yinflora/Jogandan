@@ -26,6 +26,7 @@ type Items = Item[];
 type AuthContextType = {
   isLogin: boolean;
   loading: boolean;
+  // setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   user: User;
   uid: string | null;
   items: Items | null;
@@ -37,6 +38,7 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType>({
   isLogin: false,
   loading: false,
+  // setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   user: {
     uid: '',
     displayName: null,
@@ -129,6 +131,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       value={{
         isLogin,
         loading,
+        // setLoading,
         user,
         uid,
         items,

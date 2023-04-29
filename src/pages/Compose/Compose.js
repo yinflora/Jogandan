@@ -18,7 +18,7 @@ import {
   getMetadata,
   // uploadString,
 } from 'firebase/storage';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 import { TfiText, TfiSaveAlt } from 'react-icons/tfi';
 import { CiCircleInfo, CiTrash, CiUndo } from 'react-icons/ci';
@@ -225,7 +225,7 @@ const VisionBoard = styled.div`
 
 export default function Compose() {
   const { uid } = useContext(AuthContext);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [images, setImages] = useState(null);
   const [isUploaded, setIsUploaded] = useState(false);
@@ -249,8 +249,6 @@ export default function Compose() {
   //   console.log(prevData);
   //   visionBoard.loadFromJSON(prevData.data);
   // }
-
-  useEffect(() => {});
 
   useEffect(() => {
     async function renderBoard() {
@@ -305,6 +303,10 @@ export default function Compose() {
   }, [uid, isUploaded]);
 
   useEffect(() => {
+    saveProject();
+  }, [activeItem]);
+
+  useEffect(() => {
     if (!uid || !visionBoard) return;
 
     async function createBoard() {
@@ -343,7 +345,6 @@ export default function Compose() {
       }
     }
     visionBoard.on('mouse:down', findActiveObject);
-
     return () => visionBoard.off('mouse:down', findActiveObject);
   }, [uid, visionBoard]);
 
@@ -430,9 +431,9 @@ export default function Compose() {
   function deleteActiveItem() {
     if (!activeItem || !visionBoard) return;
 
-    //!刪除template文字需要按兩次
     visionBoard.remove(activeItem);
     visionBoard.renderAll();
+    saveProject();
   }
 
   function addText() {
@@ -444,8 +445,10 @@ export default function Compose() {
       lineHeight: 1.25,
       fontFamily: 'TT Norms Pro',
       fontSize: textConfig.fontSize,
-      selectable: true,
+      // selectable: true,
       hasControls: false,
+      lockScalingX: true,
+      lockScalingY: true,
     });
     visionBoard.add(newText).setActiveObject(newText);
     setActiveItem(newText);
@@ -460,6 +463,7 @@ export default function Compose() {
     // visionBoard.setBackgroundColor('#F4F3EF', () => {
     //   visionBoard.renderAll();
     // });
+    saveProject();
   }
 
   async function saveProject() {
@@ -471,6 +475,8 @@ export default function Compose() {
 
     // await uploadTemplate(visionBoard.toJSON(['isClipFrame']));
 
+    // setLoading(true);
+
     await saveBoard(
       uid,
       boardIdRef.current,
@@ -479,7 +485,11 @@ export default function Compose() {
       true
     );
 
-    navigate(`/profile`);
+    // saved && setLoading(false);
+
+    // console.log('saved');
+
+    // navigate(`/profile`);
   }
 
   // function setLayout(canvas) {
@@ -608,6 +618,7 @@ export default function Compose() {
   return (
     <Container>
       <PageTitle>VISION BOARD</PageTitle>
+      {/* <p>{loading ? 'Saving...' : 'Saved'}</p> */}
 
       <BoardContainer>
         <UploadContainer>
@@ -700,7 +711,6 @@ export default function Compose() {
               )}
               <TfiText className="text" onClick={addText} />
               <CiUndo className="undo" onClick={clear} />
-              {/* <CiSaveDown2 className="save" onClick={saveProject} /> */}
               <TfiSaveAlt className="save" onClick={saveProject} />
             </ActionWrapper>
           </SettingWrapper>
