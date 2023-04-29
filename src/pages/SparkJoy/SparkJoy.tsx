@@ -185,6 +185,13 @@ const Status = styled.p`
   color: #8d9ca4;
 `;
 
+// const ChooseButton = styled.button`
+//   width: 90px;
+//   height: 90px;
+//   border-radius: 50%;
+//   background-color: rgba(255, 255, 255, 0.1);
+// `;
+
 type Item = {
   id: string;
   name: string;
@@ -205,7 +212,6 @@ export default function SparkJoy() {
 
   const [randomItems, setRandomItems] = useState<Items | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(9);
-  // const [lastDirection, setLastDirection] = useState<string | null>(null);
 
   const currentIndexRef = useRef(currentIndex);
   const childRefs = useMemo<Array<React.RefObject<API>>>(
@@ -215,10 +221,6 @@ export default function SparkJoy() {
         .map(() => React.createRef<API>()),
     []
   );
-  // console.log(lastDirection);
-
-  console.log(currentIndex);
-  console.log(randomItems);
 
   useEffect(() => {
     if (!items) return;
@@ -370,7 +372,7 @@ export default function SparkJoy() {
             </TinderCardWrapper>
           ))}
       </CardContainer>
-      <div className="buttons">
+      <div>
         <button onClick={() => swipe('left')}>
           <Cancel />
         </button>

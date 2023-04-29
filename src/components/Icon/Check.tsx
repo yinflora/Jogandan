@@ -7,12 +7,13 @@ export default function Check() {
       viewBox="0 0 24 24"
       stroke-width="1"
       stroke="#ffffff"
-      fill="rgba(255, 255, 255, 0.1)"
+      // fill="rgba(255, 255, 255, 0.1)"
+      fill="none"
       stroke-linecap="round"
       stroke-linejoin="round"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="9" fill="rgba(255, 255, 255, 0.1)" />
       <path d="M9 12l2 2l4 -4" />
     </svg>
   );
