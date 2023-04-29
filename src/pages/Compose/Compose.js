@@ -25,6 +25,7 @@ import { CiCircleInfo, CiTrash, CiUndo } from 'react-icons/ci';
 // import { CiCircleInfo, CiTrash, CiUndo, CiSaveDown2 } from 'react-icons/ci';
 
 import Button from '../../components/Button/Button';
+import Alert from '../../components/Alert/Alert';
 
 const Container = styled.div`
   margin: 0 auto;
@@ -617,6 +618,7 @@ export default function Compose() {
 
   return (
     <Container>
+      <Alert />
       <PageTitle>VISION BOARD</PageTitle>
       {/* <p>{loading ? 'Saving...' : 'Saved'}</p> */}
 
