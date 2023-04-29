@@ -14,7 +14,7 @@ import {
 } from 'firebase/storage';
 import { Timestamp } from 'firebase/firestore';
 import { AuthContext } from '../../context/authContext';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
@@ -27,6 +27,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { CiCircleInfo } from 'react-icons/ci';
 import { RxCross1 } from 'react-icons/rx';
 
+import Alert from '../../components/Alert/Alert';
+
 const Container = styled.div<{ isEdit: boolean }>`
   margin: ${({ isEdit }) => (isEdit ? 0 : '0 auto')};
   padding: ${({ isEdit }) => (isEdit ? 0 : '0 250px')};
@@ -36,6 +38,7 @@ const Container = styled.div<{ isEdit: boolean }>`
 const TitleWrapper = styled.div<{ isBulkMode: boolean }>`
   display: flex;
   margin-bottom: ${({ isBulkMode }) => (isBulkMode ? 0 : '80px')};
+  justify-content: space-between;
   align-items: end;
 `;
 
@@ -191,9 +194,12 @@ const PromptRemind = styled.span<{ color: string }>`
 const BulkCountWrapper = styled.div`
   display: flex;
   width: 100%;
-  height: 80px;
+  margin: 20px 0 10px;
+  /* height: 80px; */
+  /* margin-top: 40px; */
   justify-content: end;
-  align-items: center;
+  /* align-items: center; */
+  align-items: flex-end;
 `;
 
 const SlideCount = styled.div`
@@ -438,7 +444,7 @@ const BulkImageWrapper = styled.div`
   display: flex;
   width: 100%;
   height: 500px;
-  margin: 40px 0;
+  margin: 40px 0 0;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -568,9 +574,9 @@ export default function Upload({
   const SINGLE_LIMIT = 8;
   const BULK_LIMIT = 16;
 
-  const { uid } = useContext(AuthContext);
+  const { uid, isPopout, setIsPopout } = useContext(AuthContext);
   const { id } = useParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [singleForm, setSingleForm] = useState<Form>({
     name: '',
@@ -919,6 +925,7 @@ export default function Upload({
 
   return (
     <Container isEdit={isEdit}>
+      {isPopout && <Alert url="/inventory" />}
       {!isEdit && (
         <TitleWrapper isBulkMode={isBulkMode}>
           <PageTitle>UPLOAD</PageTitle>
@@ -958,7 +965,7 @@ export default function Upload({
             <BulkMode isBulkMode={isBulkMode}>批量</BulkMode>
           </ModeToggler>
 
-          {isBulkMode && bulkForms.length > 0 && (
+          {/* {isBulkMode && bulkForms.length > 0 && (
             <BulkUploadWrapper>
               <input
                 id="uploadImage"
@@ -982,9 +989,12 @@ export default function Upload({
               <Button
                 buttonType="dark"
                 onClick={() =>
+                  // Promise.all(
+                  //   bulkForms.map((item) => handleUploadItems(item))
+                  // ).then(() => navigate('/inventory'))
                   Promise.all(
                     bulkForms.map((item) => handleUploadItems(item))
-                  ).then(() => navigate('/inventory'))
+                  ).then(() => setIsPopout(!isPopout))
                 }
                 disabled={
                   !bulkForms
@@ -998,7 +1008,7 @@ export default function Upload({
                 確認上傳
               </Button>
             </BulkUploadWrapper>
-          )}
+          )} */}
         </TitleWrapper>
       )}
 
@@ -1207,6 +1217,7 @@ export default function Upload({
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 isEdit ? handleUpdateItems() : handleUploadItems(singleForm);
+                setIsPopout(!isPopout);
               }}
               disabled={
                 // Object.values(singleForm).includes('') ||
@@ -1225,10 +1236,53 @@ export default function Upload({
       {bulkForms.length > 0 && (
         <>
           <BulkCountWrapper>
-            <SlideCount>
+            <SlideCount style={{ margin: 0 }}>
               <NowIndex>{bulkForms.length}</NowIndex>
               <TotalIndex>/{BULK_LIMIT}</TotalIndex>
             </SlideCount>
+
+            <BulkUploadWrapper>
+              <input
+                id="uploadImage"
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  handleFileUpload(e, BULK_LIMIT - bulkForms.length)
+                }
+                multiple
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="uploadImage">
+                <Button
+                  buttonType="light"
+                  onClick={handleSelectImage}
+                  disabled={bulkForms.length === BULK_LIMIT}
+                >
+                  選擇照片
+                </Button>
+              </label>
+              <Button
+                buttonType="dark"
+                onClick={() =>
+                  // Promise.all(
+                  //   bulkForms.map((item) => handleUploadItems(item))
+                  // ).then(() => navigate('/inventory'))
+                  Promise.all(
+                    bulkForms.map((item) => handleUploadItems(item))
+                  ).then(() => setIsPopout(!isPopout))
+                }
+                disabled={
+                  !bulkForms
+                    .map((form) => {
+                      const { name, category, status } = form;
+                      return name !== '' && category !== '' && status !== '';
+                    })
+                    .every(Boolean)
+                }
+              >
+                確認上傳
+              </Button>
+            </BulkUploadWrapper>
           </BulkCountWrapper>
 
           <BulkContainer>
