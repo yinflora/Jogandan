@@ -8,6 +8,7 @@ export default function Cancel() {
       stroke-width="1"
       stroke="#ffffff"
       fill="rgba(255, 255, 255, 0.1)"
+      // fill="none"
       stroke-linecap="round"
       stroke-linejoin="round"
     >
