@@ -185,12 +185,18 @@ const Status = styled.p`
   color: #8d9ca4;
 `;
 
-// const ChooseButton = styled.button`
-//   width: 90px;
-//   height: 90px;
-//   border-radius: 50%;
-//   background-color: rgba(255, 255, 255, 0.1);
-// `;
+const ChooseButton = styled.button`
+  transition: transform 0.2s ease-in-out;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+
+  &:hover:disabled {
+    cursor: not-allowed;
+  }
+`;
 
 type Item = {
   id: string;
@@ -221,6 +227,8 @@ export default function SparkJoy() {
         .map(() => React.createRef<API>()),
     []
   );
+
+  console.log(currentIndex);
 
   useEffect(() => {
     if (!items) return;
@@ -373,12 +381,18 @@ export default function SparkJoy() {
           ))}
       </CardContainer>
       <div>
-        <button onClick={() => swipe('left')}>
+        <ChooseButton
+          onClick={() => swipe('left')}
+          disabled={currentIndex === -1}
+        >
           <Cancel />
-        </button>
-        <button onClick={() => swipe('right')}>
+        </ChooseButton>
+        <ChooseButton
+          onClick={() => swipe('right')}
+          disabled={currentIndex === -1}
+        >
           <Check />
-        </button>
+        </ChooseButton>
       </div>
       <Background />
       <Yes>YES</Yes>

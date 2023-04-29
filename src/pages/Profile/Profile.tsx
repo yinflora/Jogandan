@@ -8,7 +8,7 @@ import { fabric } from 'fabric';
 import { useNavigate } from 'react-router-dom';
 
 import styled, { css } from 'styled-components/macro';
-import Cross from '../../components/Icon/Cross';
+// import Cross from '../../components/Icon/Cross';
 
 // import { HiArrowRight } from 'react-icons/hi';
 import { TfiArrowRight } from 'react-icons/tfi';
@@ -369,41 +369,101 @@ const QtyTitle = styled.p`
   letter-spacing: 0.2rem;
 `;
 
-const Overlay = styled.div`
+const ToastContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 900;
   display: flex;
   width: 100vw;
   height: 100vh;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
 const Toast = styled.div`
   position: relative;
   display: flex;
+  z-index: 999;
   width: 600px;
   height: 600px;
-  /* background-color: #fff; */
-  justify-content: center;
-  align-items: end;
-  /* background-image: url(sparkJoy); */
-`;
+  flex-direction: column;
+  justify-content: end;
+  /* align-items:  */
+  /* gap: 20px; */
+  background-color: rgba(141, 156, 164, 0.9);
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 0;
-  right: 10px;
-  /* font-size: 1.25rem; */
+  & > .close {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    color: #fff;
 
-  &:hover {
-    cursor: pointer;
+    &:hover {
+      cursor: pointer;
+    }
   }
 `;
+
+// const Overlay = styled.div`
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   z-index: 1;
+//   display: flex;
+//   width: 100vw;
+//   height: 100vh;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   background-color: rgba(0, 0, 0, 0.5);
+// `;
+
+// const Toast = styled.div`
+//   position: relative;
+//   display: flex;
+//   width: 600px;
+//   height: 600px;
+//   /* background-color: #fff; */
+//   justify-content: center;
+//   align-items: end;
+//   /* background-image: url(sparkJoy); */
+
+//   & > .close {
+//     position: absolute;
+//     width: 20px;
+//     height: 20px;
+//     top: -30px;
+//     right: 0;
+//     color: #fff;
+
+//     &:hover {
+//       cursor: pointer;
+//     }
+//   }
+// `;
+
+// const CloseButton = styled.button`
+//   position: absolute;
+//   top: 0;
+//   right: 10px;
+//   /* font-size: 1.25rem; */
+
+//   &:hover {
+//     cursor: pointer;
+//   }
+// `;
 
 const SloganWrapper = styled.div`
   display: flex;
@@ -1047,11 +1107,14 @@ export default function Profile() {
       </div> */}
 
       {canPlay && (
-        <Overlay>
+        <ToastContainer>
+          <Overlay />
+
           <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
-            <CloseButton onClick={() => setCanPlay(false)}>
+            {/* <CloseButton onClick={() => setCanPlay(false)}>
               <Cross size={60} color="#000" lineWidth={2} />
-            </CloseButton>
+            </CloseButton> */}
+            <RxCross1 className="close" onClick={() => setCanPlay(false)} />
 
             <SloganWrapper>
               <MainSlogan>
@@ -1071,7 +1134,33 @@ export default function Profile() {
               </StartButton>
             </SloganWrapper>
           </Toast>
-        </Overlay>
+        </ToastContainer>
+        // <Overlay>
+        //   <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
+        //     {/* <CloseButton onClick={() => setCanPlay(false)}>
+        //       <Cross size={60} color="#000" lineWidth={2} />
+        //     </CloseButton> */}
+        //     <RxCross1 className="close" onClick={() => setCanPlay(false)} />
+
+        //     <SloganWrapper>
+        //       <MainSlogan>
+        //         您是否有太多物品，
+        //         <br />
+        //         卻難以抉擇去留？
+        //       </MainSlogan>
+        //       <SubSlogan>
+        //         現在馬上通過簡單的二選一小遊戲提升整理動力！
+        //       </SubSlogan>
+        //       {/* <LinkButton>
+        //       <StyledLink to="/sparkJoy">立刻去玩</StyledLink>
+        //     </LinkButton> */}
+        //       <StartButton onClick={() => navigate('/sparkJoy')}>
+        //         START
+        //         <TfiArrowRight className="startArrow" />
+        //       </StartButton>
+        //     </SloganWrapper>
+        //   </Toast>
+        // </Overlay>
       )}
     </>
   );
