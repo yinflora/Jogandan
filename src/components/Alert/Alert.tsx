@@ -12,7 +12,7 @@ const StyledContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 5;
+  z-index: 900;
   display: flex;
   width: 100vw;
   height: 100vh;
@@ -32,7 +32,7 @@ const Overlay = styled.div`
 const AlertWrapper = styled.div`
   position: relative;
   display: flex;
-  z-index: 6;
+  z-index: 999;
   width: 600px;
   height: 400px;
   flex-direction: column;
