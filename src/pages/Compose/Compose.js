@@ -225,7 +225,7 @@ const VisionBoard = styled.div`
 `;
 
 export default function Compose() {
-  const { uid } = useContext(AuthContext);
+  const { uid, isPopout, setIsPopout } = useContext(AuthContext);
   // const navigate = useNavigate();
 
   const [images, setImages] = useState(null);
@@ -244,6 +244,8 @@ export default function Compose() {
   const storageRef = ref(storage, `/${uid}/images/`);
 
   const LAYOUT_1_ID = 'eDuLEGPS3NCJsyeIYzXl';
+
+  console.log(isPopout);
 
   // async function loadPrevBoard() {
   //   const prevData = await getBoard(uid, boardIdRef.current);
@@ -485,7 +487,6 @@ export default function Compose() {
       visionBoard.toJSON(['isClipFrame']),
       true
     );
-
     // saved && setLoading(false);
 
     // console.log('saved');
@@ -618,7 +619,7 @@ export default function Compose() {
 
   return (
     <Container>
-      <Alert />
+      {isPopout && <Alert url="/profile" />}
       <PageTitle>VISION BOARD</PageTitle>
       {/* <p>{loading ? 'Saving...' : 'Saved'}</p> */}
 
@@ -713,7 +714,13 @@ export default function Compose() {
               )}
               <TfiText className="text" onClick={addText} />
               <CiUndo className="undo" onClick={clear} />
-              <TfiSaveAlt className="save" onClick={saveProject} />
+              <TfiSaveAlt
+                className="save"
+                onClick={() => {
+                  saveProject();
+                  setIsPopout(!isPopout);
+                }}
+              />
             </ActionWrapper>
           </SettingWrapper>
 

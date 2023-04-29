@@ -33,6 +33,8 @@ type AuthContextType = {
   lastLoginInTime: string | null | undefined;
   login: () => Promise<void>;
   logout: () => void;
+  isPopout: boolean;
+  setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -50,6 +52,8 @@ export const AuthContext = createContext<AuthContextType>({
   lastLoginInTime: null,
   login: async () => {},
   logout: () => {},
+  isPopout: false,
+  setIsPopout: () => {},
 });
 //!Fixme
 
@@ -71,6 +75,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     string | null | undefined
   >(null);
   const [items, setItems] = useState<Items | null>(null);
+  const [isPopout, setIsPopout] = useState<boolean>(false);
 
   async function getUserItems(id: string) {
     const itemList = await getItems(id);
@@ -138,6 +143,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         lastLoginInTime,
         login,
         logout,
+        isPopout,
+        setIsPopout,
       }}
     >
       {children}
