@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 
 import EditItem from '../Upload/Upload';
@@ -8,45 +8,72 @@ import { useEffect, useState, useRef } from 'react';
 
 import Chevron from '../../components/Icon/Chevron';
 // import edit from './edit.png';
-import Cross from '../../components/Icon/Cross';
+// import Cross from '../../components/Icon/Cross';
+
+import { RxCross1 } from 'react-icons/rx';
 
 // import { RxCross1 } from 'react-icons/rx';
 
-const Overlay = styled.div`
+const StyledContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 900;
   display: flex;
   width: 100vw;
   height: 100vh;
-  /* padding: 10vh 10vw; */
-  padding: 10vh 15vw;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  /* gap: 10px; */
-
-  /* & > .close {
-    width: 40px;
-    height: 40px;
-    margin-left: auto;
-    margin-bottom: 10px;
-    color: #fff;
-  } */
 `;
 
-const Cancel = styled(Link)`
-  /* margin-left: auto;
-  margin-bottom: -10px; */
-  margin: 40px 0 0 auto;
-  /* color: #f1f2ed; */
-`;
+// const Overlay = styled.div`
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   z-index: 1;
+//   display: flex;
+//   width: 100vw;
+//   height: 100vh;
+//   /* padding: 10vh 10vw; */
+//   padding: 10vh 15vw;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   background-color: rgba(0, 0, 0, 0.5);
+//   /* gap: 10px; */
+
+//   /* & > .close {
+//     width: 40px;
+//     height: 40px;
+//     margin-left: auto;
+//     margin-bottom: 10px;
+//     color: #fff;
+//   } */
+// `;
+
+// const Cancel = styled(Link)`
+//   /* margin-left: auto;
+//   margin-bottom: -10px; */
+//   margin: 40px 0 0 auto;
+//   /* color: #f1f2ed; */
+// `;
 
 const Container = styled.div<{ isEdit: boolean }>`
+  position: relative;
   display: flex;
-  width: 100%;
+  z-index: 999;
+  width: 1000px;
+  height: 600px;
+  /* width: 100%; */
   /* height: 650px; */
   /* padding: 40px 60px; */
 
@@ -56,6 +83,19 @@ const Container = styled.div<{ isEdit: boolean }>`
   align-items: center;
   background-color: ${({ isEdit }) =>
     isEdit ? 'rgba(141, 156, 164, 0.9)' : 'rgb(255, 255, 255, 0.7)'};
+
+  & > .clear {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    color: #fff;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 `;
 
 const ImageWrapper = styled.div``;
@@ -192,16 +232,6 @@ const Category = styled.span`
   /* margin-bottom: 20px; */
 `;
 
-// const Edit = styled.img`
-//   /* font-size: 14px; */
-//   width: 20px;
-//   height: 20px;
-
-//   &:hover {
-//     cursor: pointer;
-//   }
-// `;
-
 const Name = styled.p`
   /* margin-top: 30px; */
   font-size: 2rem;
@@ -249,6 +279,9 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
 
   const intervalRef = useRef<number | null>(null);
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!selectedItem) return;
 
@@ -278,14 +311,17 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
 
   if (selectedItem) {
     return (
-      <Overlay>
-        <Cancel to="/inventory">
+      <StyledContainer>
+        <Overlay onClick={() => navigate('/inventory')} />
+        {/* <Cancel to="/inventory">
           <Cross size={50} lineWidth={3} />
-        </Cancel>
+          <RxCross1 className="clear" />
+        </Cancel> */}
 
         {/* <RxCross1 className="close" onClick={() => navigate('/inventory')} /> */}
 
         <Container isEdit={isEdit}>
+          <RxCross1 className="clear" onClick={() => navigate('/inventory')} />
           {isEdit ? (
             <EditItem
               isEdit={isEdit}
@@ -295,6 +331,11 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
             />
           ) : (
             <>
+              <RxCross1
+                className="clear"
+                onClick={() => navigate('/inventory')}
+              />
+
               <ImageWrapper>
                 <ChangeSlideBtn>
                   <Chevron
@@ -407,7 +448,7 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
             </>
           )}
         </Container>
-      </Overlay>
+      </StyledContainer>
     );
   }
   return null;
