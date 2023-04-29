@@ -38,7 +38,8 @@ export default function Success() {
     <svg width="100" height="100">
       <Circle
         fill="none"
-        stroke="#8d9ca4"
+        // stroke="#8d9ca4"
+        stroke="#fff"
         strokeWidth="4"
         cx="50"
         cy="50"
@@ -49,7 +50,8 @@ export default function Success() {
       />
       <Check
         fill="none"
-        stroke="#8d9ca4"
+        // stroke="#8d9ca4"
+        stroke="#fff"
         points="22,54 43.25,75.5 76,42"
         strokeWidth="4"
         strokeLinecap="round"
