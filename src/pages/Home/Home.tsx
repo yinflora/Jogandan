@@ -29,20 +29,36 @@ const Main = styled.div`
   background: center / cover no-repeat url(${background});
 `;
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 const MainTitle = styled.h1`
+  opacity: 0;
   text-align: start;
   font-size: 3rem;
   letter-spacing: 0.2rem;
   line-height: 4rem;
+  animation: ${fadeIn} 1s ease-in-out forwards;
 `;
 
 const SubTitle = styled.h2`
   width: fit-content;
+  opacity: 0;
   text-align: start;
   letter-spacing: 0.4rem;
   line-height: 3rem;
   color: #8d9ca4;
   border-bottom: 1px solid #8d9ca4;
+  animation: ${fadeIn} 1s ease-in-out 0.5s forwards;
+  animation-delay: 0.5s;
 `;
 
 const bounce = keyframes`
@@ -64,9 +80,11 @@ const DownBtn = styled.button`
   transform: translateX(-(100% - 100px)/2);
   width: 100px;
   height: 100px;
+  opacity: 0;
   background-color: rgba(223, 223, 223, 0.5);
   border-radius: 50%;
-  animation: ${bounce} 1s infinite;
+  animation: ${fadeIn} 1s ease-in-out 1s forwards, ${bounce} 1s infinite;
+  animation-delay: 1s;
   cursor: pointer;
 `;
 
@@ -190,7 +208,7 @@ export default function Home() {
           </IntroTitle>
           <IntroDescription>
             在現代社會，人們的生活越來越複雜，JOGANDAN
-            希望可以簡化用戶在管理自己物品遇到的困難，提供一個可以簡單管理的平台讓您可以輕鬆管理物品，並且設立目標檢視自己的成果，量化自己在斷捨離的成長，藉由對物品進行減法來為自己的生活加分。
+            希望可以簡化用戶在管理自己物品遇到的困難，提供一個平台讓您可以輕鬆管理物品，並且可以設立目標檢視自己的成果，量化自己在斷捨離的成長，藉由對物品進行減法來為自己的生活加分。
           </IntroDescription>
         </Introduction>
       </Container>
