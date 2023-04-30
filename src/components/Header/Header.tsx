@@ -9,7 +9,7 @@ import Login from '../Login/Login';
 import Home from '../../components/Icon/Home';
 
 const Container = styled.section`
-  position: fixed;
+  position: absolute;
   z-index: 10;
   top: 0;
   left: 0;
@@ -26,7 +26,6 @@ const Logo = styled(Link)`
   letter-spacing: 0.2rem;
   color: inherit;
   text-decoration: none;
-  /* text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); */
 `;
 
 const Nav = styled.nav`
@@ -46,25 +45,6 @@ const NavButton = styled(Link)<{ color: string; isActive: boolean }>`
   &:hover {
     cursor: pointer;
   }
-
-  /* &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 100%;
-    left: 0;
-    border-bottom: 1px solid ${({ color }) => color};
-    opacity: 0;
-    z-index: -1;
-    transition: all 0.5s;
-  }
-
-  &:hover::before {
-    left: 0;
-    right: 0;
-    opacity: 1;
-  } */
 
   ${({ isActive, color }) =>
     isActive
@@ -164,21 +144,6 @@ export default function Header() {
               {route.text}
             </NavButton>
           ))}
-          {/* <NavButton
-            to="/inventory"
-            color={fillColor}
-          >
-            Inventory
-          </NavButton>
-          <NavButton to="/upload" color={fillColor}>
-            Upload
-          </NavButton>
-          <NavButton to="/achievement" color={fillColor}>
-            Achievement
-          </NavButton>
-          <NavButton to="/compose" color={fillColor}>
-            Vision Board
-          </NavButton> */}
           <Login onClick={logout} color={fillColor}>
             Logout
           </Login>
@@ -189,9 +154,6 @@ export default function Header() {
           >
             <Home fill={fillColor} />
           </HomeWrapper>
-          {/* <Link to="/profile">
-            <Home fill={fillColor} />
-          </Link> */}
         </Nav>
       ) : (
         <Login onClick={login} color={fillColor}>
