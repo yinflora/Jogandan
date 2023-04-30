@@ -3,6 +3,7 @@ import { Reset } from 'styled-reset';
 import { createGlobalStyle } from 'styled-components';
 import { AuthContextProvider } from './context/authContext';
 import Header from './components/Header/Header';
+import BackButton from './components/Button/BackButton';
 
 const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
   * {
@@ -31,7 +32,7 @@ const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
 
   #root {
     min-height: 100vh;
-    padding-top: 150px;
+    /* padding-top: 150px; */
     position: relative;
     overflow: hidden;
   }
@@ -54,6 +55,7 @@ function App() {
       <AuthContextProvider>
         <Header />
         <Outlet />
+        <BackButton />
       </AuthContextProvider>
     </>
   );

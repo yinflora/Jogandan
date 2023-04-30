@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useContext, useEffect } from 'react';
 import TinderCard from 'react-tinder-card';
 import AuthContext from '../../context/authContext';
 import { Timestamp } from 'firebase/firestore';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { updateItem } from '../../utils/firebase';
 import circle from './circle-blue.png';
 import cross from './cross-blue.png';
@@ -76,7 +76,7 @@ const CardContainer = styled.div`
   position: relative;
   width: 300px;
   height: 450px;
-  margin: 20px auto 40px;
+  margin: 20px auto 20px;
 `;
 
 const EndingCard = styled.div`
