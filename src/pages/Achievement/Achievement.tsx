@@ -21,7 +21,7 @@ const Background = styled.div`
 `;
 
 const PageTitle = styled.h1`
-  margin-left: 125px;
+  margin: 150px 0 0 125px;
   font-size: 3rem;
   font-weight: 500;
   letter-spacing: 0.4rem;

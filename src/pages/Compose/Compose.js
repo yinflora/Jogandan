@@ -28,7 +28,7 @@ import Button from '../../components/Button/Button';
 import Alert from '../../components/Alert/Alert';
 
 const Container = styled.div`
-  margin: 0 auto;
+  margin: 150px auto 0;
   padding: 0 150px;
 `;
 

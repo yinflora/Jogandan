@@ -16,6 +16,7 @@ import {
   deleteField,
   arrayRemove,
   onSnapshot,
+  orderBy,
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -163,7 +164,7 @@ export async function getItems(userId) {
     userId,
     'items'
   );
-  const itemsQuery = query(itemsRef);
+  const itemsQuery = query(itemsRef, orderBy('created', 'desc'));
   const items = [];
 
   const querySnapshot = await getDocs(itemsQuery);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useRef, useState, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 import styled from 'styled-components/macro';
 
@@ -13,7 +13,7 @@ import { RxCross1 } from 'react-icons/rx';
 
 const Container = styled.div`
   /* width: 1000px; */
-  margin: 0 auto;
+  margin: 150px auto 0;
   padding: 0 250px 60px;
   color: #fff;
 `;
@@ -237,9 +237,13 @@ const ProductWrapper = styled.div`
   grid-row-gap: 60px;
 `;
 
-const Product = styled(Link)`
+// const Product = styled(Link)`
+//   width: 100%;
+//   background-color: #fff;
+// `;
+
+const Product = styled.div`
   width: 100%;
-  background-color: #fff;
 `;
 
 const Image = styled.img`
@@ -248,6 +252,7 @@ const Image = styled.img`
   object-position: center;
   aspect-ratio: 1/1;
   border: 0.5px solid #cdcdcd;
+  cursor: pointer;
 
   filter: grayscale(50%);
   transition: all 0.2s ease-in-out;
@@ -301,6 +306,7 @@ type Filter = {
 export default function Inventory() {
   const { uid } = useContext(AuthContext);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [items, setItems] = useState<Items | null>(null);
   const [filter, setFilter] = useState<Filter>({
@@ -504,9 +510,15 @@ export default function Inventory() {
         </FilterWrapper>
         <ProductWrapper>
           {items &&
-            items.map((item: any) => (
-              <Product to={`/inventory/${item.id}`}>
-                {item.images && <Image src={item.images[0]}></Image>}
+            items.map((item: any, index: number) => (
+              // <Product to={`/inventory/${item.id}`}>
+              <Product key={index}>
+                {item.images && (
+                  <Image
+                    src={item.images[0]}
+                    onClick={() => navigate(`/inventory/${item.id}`)}
+                  ></Image>
+                )}
                 <Name>{item.name}</Name>
               </Product>
             ))}

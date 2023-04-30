@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -71,9 +71,11 @@ const Message = styled.p`
 
 type AlertProps = {
   url: string;
+  isEdit?: boolean;
+  setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function Alert({ url }: AlertProps) {
+export default function Alert({ url, isEdit, setIsEdit }: AlertProps) {
   const { isPopout, setIsPopout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -81,7 +83,12 @@ export default function Alert({ url }: AlertProps) {
     <StyledContainer>
       <Overlay />
       <AlertWrapper>
-        <RxCross1 className="close" onClick={() => setIsPopout(!isPopout)} />
+        <RxCross1
+          className="close"
+          onClick={() => {
+            setIsPopout(!isPopout);
+          }}
+        />
         <SuccessWrapper>
           <Success />
         </SuccessWrapper>
@@ -89,6 +96,7 @@ export default function Alert({ url }: AlertProps) {
         <Button
           buttonType="dark"
           onClick={() => {
+            isEdit && setIsEdit && setIsEdit(false);
             navigate(url);
             setIsPopout(!isPopout);
           }}
