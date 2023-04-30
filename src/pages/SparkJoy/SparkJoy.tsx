@@ -20,6 +20,7 @@ import { CiFaceSmile } from 'react-icons/ci';
 const Container = styled.div`
   display: flex;
   width: 100vw;
+  margin-top: 150px;
   justify-content: center;
   flex-direction: column;
   align-items: center;

@@ -60,7 +60,7 @@ export default function BackButton() {
 
   return (
     <StyledButton onClick={scrollToTop} isVisible={isVisible}>
-      <Chevron rotateDeg={0} />
+      <Chevron rotateDeg={0} color="#a2a2a2" />
     </StyledButton>
   );
 }

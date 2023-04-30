@@ -19,7 +19,7 @@ import Button from '../../components/Button/Button';
 import sparkJoy from './sparkJoy.png';
 
 const Container = styled.div`
-  margin: 0 auto;
+  margin: 150px auto 0;
   /* padding: 0 280px 60px 150px; */
   padding: 0 0 100px 150px;
 `;

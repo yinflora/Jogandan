@@ -30,7 +30,7 @@ import { RxCross1 } from 'react-icons/rx';
 import Alert from '../../components/Alert/Alert';
 
 const Container = styled.div<{ isEdit: boolean }>`
-  margin: ${({ isEdit }) => (isEdit ? 0 : '0 auto')};
+  margin: ${({ isEdit }) => (isEdit ? 0 : '150px auto 0')};
   padding: ${({ isEdit }) => (isEdit ? 0 : '0 250px')};
   color: #fff;
 `;
@@ -832,7 +832,7 @@ export default function Upload({
     );
 
     await updateItem(uid, id, newForm);
-    setIsEdit(false);
+    // setIsEdit(false);
     setSelectedItem(newForm);
 
     // await updateItem(uid, id, singleForm);
@@ -925,7 +925,16 @@ export default function Upload({
 
   return (
     <Container isEdit={isEdit}>
-      {isPopout && <Alert url="/inventory" />}
+      {isEdit
+        ? isPopout && (
+            <Alert
+              url={`/inventory/${id}`}
+              setIsEdit={setIsEdit}
+              isEdit={isEdit}
+            />
+          )
+        : isPopout && <Alert url="/inventory" />}
+
       {!isEdit && (
         <TitleWrapper isBulkMode={isBulkMode}>
           <PageTitle>UPLOAD</PageTitle>

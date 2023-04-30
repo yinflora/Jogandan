@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import styled, { keyframes } from 'styled-components/macro';
 
 import background from './background.jpeg';
@@ -99,7 +100,7 @@ const FeatureLoginWrapper = styled.div`
 
 const Feature = styled.div`
   position: absolute;
-  top: -20%;
+  top: -30%;
   display: flex;
   width: 100%;
   height: 600px;
@@ -155,6 +156,8 @@ const LoginSubTitle = styled.p`
 `;
 
 export default function Home() {
+  const introRef = useRef<HTMLDivElement | null>(null);
+
   return (
     <>
       <Container>
@@ -167,13 +170,18 @@ export default function Home() {
             Declutter Your Life
           </MainTitle>
           <SubTitle>理想的簡單生活從JOGANDAN開始</SubTitle>
-          <DownBtn>
-            <Chevron rotateDeg={180} color="#c6c6c6" />
+          <DownBtn
+            onClick={() =>
+              introRef.current &&
+              introRef.current.scrollIntoView({ behavior: 'smooth' })
+            }
+          >
+            <Chevron rotateDeg={180} color="#b5b5b5" />
           </DownBtn>
         </Main>
       </Container>
 
-      <Container>
+      <Container ref={introRef}>
         <Introduction>
           <IntroTitle>
             「春至陋室中，
@@ -181,14 +189,8 @@ export default function Home() {
             &nbsp;&nbsp;&nbsp;無一物中萬物足。」
           </IntroTitle>
           <IntroDescription>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Amet
-            cursus sit amet dictum. Elementum sagittis vitae et leo duis ut
-            diam. Aliquet porttitor lacus luctus accumsan tortor posuere. Netus
-            et malesuada fames ac turpis egestas integer. Ac orci phasellus
-            egestas tellus rutrum tellus pellentesque eu. Turpis egestas pretium
-            aenean pharetra magna ac placerat vestibulum. Vestibulum mattis
-            ullamcorper velit sed ullamcorper morbi tincidunt ornare massa.
+            在現代社會，人們的生活越來越複雜，JOGANDAN
+            希望可以簡化用戶在管理自己物品遇到的困難，提供一個可以簡單管理的平台讓您可以輕鬆管理物品，並且設立目標檢視自己的成果，量化自己在斷捨離的成長，藉由對物品進行減法來為自己的生活加分。
           </IntroDescription>
         </Introduction>
       </Container>

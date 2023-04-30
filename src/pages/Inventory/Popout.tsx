@@ -160,7 +160,7 @@ const SubImageWrapper = styled.div`
     left: 0;
     width: 100%;
     height: calc(100% - 10px);
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.1);
     z-index: -1;
   }
 
@@ -186,6 +186,7 @@ const InfoWrapper = styled.div`
   flex: 1;
   padding: 40px 0;
   flex-direction: column;
+  justify-content: space-between;
   color: #000;
   letter-spacing: 0.1rem;
 `;
@@ -244,15 +245,25 @@ const Status = styled.p`
   font-size: 1.25rem;
 `;
 
-const Description = styled.div`
+const DescriptionWrapper = styled.div`
+  max-height: 50%;
   padding: 20px 0;
-  overflow-y: scroll;
-  white-space: pre-wrap;
   border-top: 1px solid #000;
 `;
 
+const Description = styled.div`
+  /* max-height: 50%;
+  padding: 20px 0; */
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  white-space: pre-wrap;
+  /* border-top: 1px solid #000; */
+`;
+
 const CreatedTime = styled.p`
-  margin-top: auto;
+  /* margin-top: auto; */
+  justify-self: end;
   font-size: 14px;
   text-align: end;
   color: #959595;
@@ -440,7 +451,9 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
                 </FirstRow>
                 <Name>{selectedItem.name}</Name>
                 <Status>{selectedItem.status}</Status>
-                <Description>{selectedItem.description}</Description>
+                <DescriptionWrapper>
+                  <Description>{selectedItem.description}</Description>
+                </DescriptionWrapper>
                 <CreatedTime>
                   {formatTime(selectedItem.created!.seconds)}
                 </CreatedTime>
