@@ -42,7 +42,7 @@ const Container = styled.div<{ isEdit: boolean }>`
   justify-content: center;
   align-items: center;
   background-color: ${({ isEdit }) =>
-    isEdit ? 'rgba(141, 156, 164, 0.9)' : 'rgb(255, 255, 255, 0.7)'};
+    isEdit ? 'rgba(141, 156, 164, 0.9)' : 'rgb(255, 255, 255, 0.9)'};
 
   & > .clear {
     position: absolute;
@@ -210,6 +210,8 @@ const Description = styled.div`
   height: 100%;
   overflow-y: scroll;
   white-space: pre-wrap;
+  font-size: 1rem;
+  line-height: 1.25rem;
 `;
 
 const CreatedTime = styled.p`
@@ -375,10 +377,11 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
 
                   <SlideCount>
                     <NowIndex>
-                      {
+                      {/* {
                         selectedItem.images.filter((image) => image !== '')
                           .length
-                      }
+                      } */}
+                      {activeItemIndex + 1}
                     </NowIndex>
                     <TotalIndex>/8</TotalIndex>
                   </SlideCount>
