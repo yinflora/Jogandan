@@ -100,7 +100,7 @@ const ImageArea = styled.div`
 
 const MainImage = styled.img`
   height: 100%;
-  padding: 5px;
+  padding: 10px; //fix
   aspect-ratio: 1/1;
   object-fit: cover;
   object-position: center;
@@ -109,7 +109,8 @@ const MainImage = styled.img`
 const SubImageWrapper = styled.div`
   position: relative;
   display: flex;
-  height: 100%;
+  height: calc(100% - 10px); //fix
+  margin: auto 0; //fix
   flex-direction: column;
   overflow-y: scroll;
 

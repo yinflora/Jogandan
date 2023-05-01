@@ -282,6 +282,8 @@ export default function Inventory() {
     if (!uid) return;
 
     async function fetchData() {
+      if (filter.category !== '' || filter.status !== '') return;
+
       const itemList = await getItems(uid);
       itemsRef.current = itemList;
 
@@ -373,7 +375,7 @@ export default function Inventory() {
       setItems(filteredItems);
     }
     handleFilter();
-  }, [filter]);
+  }, [filter, isPopout]);
 
   function handleClearCategory() {
     if (filter.status === '') {
@@ -420,7 +422,7 @@ export default function Inventory() {
           </SearchWrapper>
           <SearchText>
             FILTER：
-            {(() => {
+            {/* {(() => {
               if (filter.category === '' && filter.status === '') {
                 return 'All';
               } else if (filter.category !== '' && filter.status !== '') {
@@ -442,6 +444,32 @@ export default function Inventory() {
               return `${filter.status} (${
                 items &&
                 items.filter((item) => item.status === filter.status).length
+              })`;
+            })()} */}
+            {(() => {
+              if (filter.category === '' && filter.status === '') {
+                return 'All';
+              } else if (filter.category !== '' && filter.status !== '') {
+                return `${filter.category}｜${filter.status} (${
+                  itemsRef.current &&
+                  itemsRef.current.filter(
+                    (item) =>
+                      item.category === filter.category &&
+                      item.status === filter.status
+                  ).length
+                })`;
+              } else if (filter.category !== '') {
+                return `${filter.category} (${
+                  itemsRef.current &&
+                  itemsRef.current.filter(
+                    (item) => item.category === filter.category
+                  ).length
+                })`;
+              }
+              return `${filter.status} (${
+                itemsRef.current &&
+                itemsRef.current.filter((item) => item.status === filter.status)
+                  .length
               })`;
             })()}
           </SearchText>
