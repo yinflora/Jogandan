@@ -100,30 +100,31 @@ const ImageArea = styled.div`
 
 const MainImage = styled.img`
   height: 100%;
-  padding: 10px; //fix
+  margin-left: 5px;
+  padding: 5px;
   aspect-ratio: 1/1;
   object-fit: cover;
   object-position: center;
 `;
 
+const SubImageContainer = styled.div`
+  height: 100%;
+  height: 100%;
+  --background-height: calc(100% - 5px);
+  --background-top: 5px;
+  background: linear-gradient(
+    to bottom,
+    transparent var(--background-top),
+    rgba(0, 0, 0, 0.1) var(--background-top) var(--background-height),
+    transparent var(--background-height)
+  );
+`;
+
 const SubImageWrapper = styled.div`
-  position: relative;
   display: flex;
-  height: calc(100% - 10px); //fix
-  margin: auto 0; //fix
+  height: 100%;
   flex-direction: column;
   overflow-y: scroll;
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 5px;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 10px);
-    background-color: rgba(0, 0, 0, 0.1);
-    z-index: -1;
-  }
 
   &:hover {
     cursor: pointer;
@@ -132,7 +133,7 @@ const SubImageWrapper = styled.div`
 
 const SubImage = styled.img`
   height: calc((100% - 40px) / 4);
-  padding: 5px;
+  margin: 5px;
   aspect-ratio: 1/1;
   object-fit: cover;
   object-position: center;
@@ -320,32 +321,36 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
                   />
                 </ChangeSlideBtn>
                 <ImageArea>
-                  <SubImageWrapper>
-                    {selectedItem.images.map(
-                      (image: string, index: number) =>
-                        image !== '' && (
-                          <SubImage
-                            key={image}
-                            src={image}
-                            onClick={() => {
-                              setActiveItemIndex(index);
-                              intervalRef.current &&
-                                window.clearInterval(intervalRef.current);
-                              intervalRef.current = window.setInterval(() => {
-                                const hasUrlImages = selectedItem.images.filter(
-                                  (image: string) => image !== ''
-                                );
-                                setActiveItemIndex((prev) =>
-                                  prev === hasUrlImages.length - 1
-                                    ? 0
-                                    : prev + 1
-                                );
-                              }, 5000);
-                            }}
-                          />
-                        )
-                    )}
-                  </SubImageWrapper>
+                  <SubImageContainer>
+                    <SubImageWrapper>
+                      {selectedItem.images.map(
+                        (image: string, index: number) =>
+                          image !== '' && (
+                            <SubImage
+                              key={image}
+                              src={image}
+                              onClick={() => {
+                                setActiveItemIndex(index);
+                                intervalRef.current &&
+                                  window.clearInterval(intervalRef.current);
+                                intervalRef.current = window.setInterval(() => {
+                                  const hasUrlImages =
+                                    selectedItem.images.filter(
+                                      (image: string) => image !== ''
+                                    );
+                                  setActiveItemIndex((prev) =>
+                                    prev === hasUrlImages.length - 1
+                                      ? 0
+                                      : prev + 1
+                                  );
+                                }, 5000);
+                              }}
+                            />
+                          )
+                      )}
+                    </SubImageWrapper>
+                  </SubImageContainer>
+
                   <MainImage src={selectedItem.images[activeItemIndex]} />
                 </ImageArea>
                 <BtnWrapper>
