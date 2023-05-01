@@ -13,8 +13,6 @@ import Check from '../../components/Icon/Check';
 import Cancel from '../../components/Icon/Cancel';
 import Button from '../../components/Button/Button';
 
-// import { RxCircle, RxCross1 } from 'react-icons/rx';
-// import { GiCircle } from 'react-icons/gi';
 import { CiFaceSmile } from 'react-icons/ci';
 
 const Container = styled.div`
@@ -90,7 +88,6 @@ const EndingCard = styled.div`
   background-color: #fff;
   justify-content: center;
   align-items: center;
-  /* border: 1px solid black; */
   box-shadow: 0px 4px 90px rgba(0, 0, 0, 0.15);
 
   & > .smile {
@@ -117,7 +114,6 @@ const TinderCardWrapper = styled(TinderCard)`
   padding: 30px;
   border-radius: 10px;
   background-color: #fff;
-  /* border: 1px solid rgba(0, 0, 0, 0.15); */
 `;
 
 const Card = styled.div`
@@ -148,23 +144,14 @@ const StatusWrapper = styled.div`
   display: flex;
   margin: auto 0 0 auto;
   flex-direction: column;
-  /* gap: 5px; */
   align-self: flex-end;
   justify-content: center;
   align-items: center;
-
-  /* & > .yes,
-  .no {
-    width: 50px;
-    height: 50px;
-    color: #8d9ca4;
-  } */
 `;
 
 const StatusIcon = styled.img`
   width: 50px;
   height: 50px;
-  /* background: center / contain no-repeat; */
 `;
 
 const Undo = styled.img`
@@ -180,7 +167,6 @@ const Undo = styled.img`
 `;
 
 const Status = styled.p`
-  /* font-size: 1.25rem; */
   text-align: center;
   letter-spacing: 0.1rem;
   color: #8d9ca4;
@@ -229,8 +215,6 @@ export default function SparkJoy() {
     []
   );
 
-  console.log(currentIndex);
-
   useEffect(() => {
     if (!items) return;
 
@@ -255,10 +239,7 @@ export default function SparkJoy() {
       setCurrentIndex(selectedElements.length - 1);
     }
 
-    if (items) {
-      getRandomElements();
-      // setCurrentIndex(items.length - 1);
-    }
+    if (items) getRandomElements();
   }, [items]);
 
   const updateCurrentIndex = (val: number) => {
@@ -266,11 +247,7 @@ export default function SparkJoy() {
     currentIndexRef.current = val;
   };
 
-  // const canGoBack = currentIndex && currentIndex < 10;
-  // const canSwipe = currentIndex && currentIndex >= 0;
-
   const swiped = (direction: string, idToDelete: string, index: number) => {
-    // setLastDirection(direction);
     updateCurrentIndex(index - 1);
   };
 
@@ -279,10 +256,6 @@ export default function SparkJoy() {
   };
 
   const swipe = async (direction: string) => {
-    // if (canSwipe && currentIndex < randomItems!.length) {
-    //   await childRefs[currentIndex].current.swipe(direction);
-    // }
-
     const canSwipe =
       currentIndex !== null &&
       currentIndex >= 0 &&
@@ -365,16 +338,6 @@ export default function SparkJoy() {
                 <Name>{item.name}</Name>
                 <StatusWrapper>
                   <StatusIcon src={item.status === '保留' ? circle : cross} />
-                  {/* <StatusIcon
-                    style={{
-                      background:
-                        item.status === '保留'
-                          ? `url(${circle})`
-                          : `center 80% / contain no-repeat url(${cross})`,
-                    }}
-                  /> */}
-                  {/* <RxCircle className="yes" /> */}
-                  {/* <RxCross1 className="no" /> */}
                   <Status>{item.status}</Status>
                 </StatusWrapper>
               </InfoWrapper>

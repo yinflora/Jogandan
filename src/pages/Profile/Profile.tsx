@@ -434,6 +434,7 @@ const StartButton = styled.button`
   font-size: 2rem;
   gap: 0.5rem;
   align-items: center;
+  cursor: pointer;
 
   opacity: 0;
   animation: ${fadeIn} 1s forwards;
