@@ -8,9 +8,7 @@ import { fabric } from 'fabric';
 import { useNavigate } from 'react-router-dom';
 
 import styled, { css, keyframes } from 'styled-components/macro';
-// import Cross from '../../components/Icon/Cross';
 
-// import { HiArrowRight } from 'react-icons/hi';
 import { TfiArrowRight } from 'react-icons/tfi';
 import { RxCross1 } from 'react-icons/rx';
 
@@ -20,7 +18,6 @@ import sparkJoy from './sparkJoy.png';
 
 const Container = styled.div`
   margin: 150px auto 0;
-  /* padding: 0 280px 60px 150px; */
   padding: 0 0 100px 150px;
 `;
 
@@ -72,14 +69,6 @@ const UserGrade = styled.p`
   color: #8d9ca4;
 `;
 
-// const VisionBoard = styled.img`
-//   /* width: 100%; */
-//   width: 980px;
-//   margin-top: 100px;
-//   aspect-ratio: 625/475;
-//   background-color: gray;
-// `;
-
 const VisionBoardWrapper = styled.div`
   display: flex;
   width: 980px;
@@ -107,27 +96,6 @@ const VisionBoardOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-// const FirstBoardText = styled.div`
-//   font-size: 1.25rem;
-//   letter-spacing: 0.1rem;
-//   color: #fff;
-// `;
-
-// const FirstEditButton = styled.button`
-//   display: flex;
-//   padding: 5px 0;
-//   align-items: center;
-//   gap: 10px;
-//   font-size: 1.5rem;
-//   letter-spacing: 0.1rem;
-//   color: #fff;
-
-//   &:hover {
-//     border-bottom: 1px solid #fff;
-//     cursor: pointer;
-//   }
-// `;
-
 const EditButton = styled.button<{ canShow: boolean }>`
   position: relative;
   display: flex;
@@ -141,7 +109,6 @@ const EditButton = styled.button<{ canShow: boolean }>`
 
   &:hover {
     margin-bottom: 99px;
-    /* border-bottom: 1px solid #fff; */
     cursor: pointer;
   }
 
@@ -167,7 +134,6 @@ const EditButton = styled.button<{ canShow: boolean }>`
 
 const ModeFilter = styled.div`
   display: flex;
-  /* margin-top: 100px; */
   align-items: center;
 `;
 
@@ -293,7 +259,6 @@ const Dash = styled.div`
 
 const Cancel = styled.div`
   margin-left: 10px;
-  /* color: #fff; */
 
   &:hover {
     cursor: pointer;
@@ -328,19 +293,7 @@ const FilterBtn = styled.button`
   }
 `;
 
-// const AnalyzeWrapper = styled.div`
-//   display: flex;
-//   width: 100%;
-//   height: 500px;
-//   margin-top: 50px;
-// `;
-
 const ReportWrapper = styled.div`
-  /* position: relative;
-  width: 100%;
-  height: 0;
-  padding-top: 60%;
-  overflow: hidden; */
   display: flex;
   margin-right: auto;
 `;
@@ -398,8 +351,6 @@ const Toast = styled.div`
   height: 600px;
   flex-direction: column;
   justify-content: end;
-  /* align-items:  */
-  /* gap: 20px; */
   background-color: rgba(141, 156, 164, 0.9);
 
   & > .close {
@@ -416,59 +367,9 @@ const Toast = styled.div`
   }
 `;
 
-// const Overlay = styled.div`
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   z-index: 1;
-//   display: flex;
-//   width: 100vw;
-//   height: 100vh;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: center;
-//   background-color: rgba(0, 0, 0, 0.5);
-// `;
-
-// const Toast = styled.div`
-//   position: relative;
-//   display: flex;
-//   width: 600px;
-//   height: 600px;
-//   /* background-color: #fff; */
-//   justify-content: center;
-//   align-items: end;
-//   /* background-image: url(sparkJoy); */
-
-//   & > .close {
-//     position: absolute;
-//     width: 20px;
-//     height: 20px;
-//     top: -30px;
-//     right: 0;
-//     color: #fff;
-
-//     &:hover {
-//       cursor: pointer;
-//     }
-//   }
-// `;
-
-// const CloseButton = styled.button`
-//   position: absolute;
-//   top: 0;
-//   right: 10px;
-//   /* font-size: 1.25rem; */
-
-//   &:hover {
-//     cursor: pointer;
-//   }
-// `;
-
 const SloganWrapper = styled.div`
   display: flex;
   width: 100%;
-  /* padding-bottom: 50px; */
   padding: 0 10px 0 30px;
   flex-direction: column;
 `;
@@ -503,26 +404,6 @@ const SubSlogan = styled.p`
   animation-delay: 0.6s;
 `;
 
-// const StartButton = styled.button`
-//   display: flex;
-//   margin: 30px 10px 30px 0;
-//   align-self: flex-end;
-//   gap: 10px;
-//   font-size: 2rem;
-//   letter-spacing: 0.1rem;
-//   font-weight: 600;
-
-// & > .startArrow {
-//   stroke-width: 1px;
-// }
-
-//   &:hover {
-//     cursor: pointer;
-//     border-bottom: 1px solid #000;
-//     margin-bottom: 29px;
-//   }
-// `;
-
 const Start = styled.p`
   position: relative;
   margin: 0;
@@ -544,9 +425,7 @@ const StartButton = styled.button`
   margin: 30px 10px 30px 0;
   align-self: flex-end;
   width: fit-content;
-  /* width: 160px; */
   padding: 0;
-  /* margin: 0; */
   border: none;
   background: none;
   position: relative;
@@ -591,35 +470,6 @@ const StartButton = styled.button`
   }
 `;
 
-// const LinkButton = styled.button`
-//   width: 300px;
-//   height: 50px;
-//   /* margin: 0 auto; */
-//   background-color: #8d9ca4;
-// `;
-
-// const StyledLink = styled(Link)`
-//   font-size: 1.5rem;
-//   color: #fff;
-// `;
-
-// type Row = string[];
-
-// const CATEGORIES: Row = [
-//   '居家生活',
-//   '服飾配件',
-//   '美妝保養',
-//   '3C產品',
-//   '影音產品',
-//   '書報雜誌',
-//   '體育器材',
-//   '寵物用品',
-//   '食物及飲料',
-//   '興趣及遊戲',
-//   '紀念意義',
-//   '其他',
-// ];
-
 type Action =
   | { type: 'FETCH_DATA'; payload: { data: Items } }
   | {
@@ -657,81 +507,6 @@ function reducer(items: Items, action: Action): Items {
     }
   }
 }
-// function reducer(items: Items, action: Action): Items {
-//   const { type, payload } = action;
-//   switch (type) {
-//     case 'FETCH_DATA': {
-//       return payload.data;
-//     }
-//     case 'FILTER_PERIOD':
-//       return (
-//         payload.data.filter((item: Item) => {
-//           const createdTime = new Date(
-//             item.created.seconds * 1000 + item.created.nanoseconds / 1000000
-//           ).getTime();
-//           return (
-//             createdTime >= payload.periodStart &&
-//             createdTime <= payload.periodEnd
-//           );
-//         }) ?? []
-//       );
-//     default: {
-//       throw Error('err');
-//     }
-//   }
-// }
-
-// function reducer(items: Items, action: Action): Items {
-//   const { type, payload } = action;
-//   switch (type) {
-//     case 'FETCH_DATA': {
-//       return payload.data;
-//     }
-//     case 'FILTER_PERIOD':
-// if (payload.periodStart.isNaN() || payload.periodEnd.isNaN()) {
-//   return payload.data ?? [];
-// }
-// return (
-//   payload.data.filter((item: Item) => {
-//     const createdTime = new Date(
-//       item.created.seconds * 1000 + item.created.nanoseconds / 1000000
-//     ).getTime();
-//     return (
-//       createdTime >= payload.periodStart &&
-//       createdTime <= payload.periodEnd
-//     );
-//   }) ?? []
-// );
-//     default: {
-//       throw Error('err');
-//     }
-//   }
-// }
-
-// async function reducer(items: Items, action: Action): Items {
-//   const { type, payload } = action;
-//   switch (type) {
-//     case 'FETCH_DATA': {
-//       const data = await getItems(payload.uid);
-//       return data;
-//     }
-//     case 'FILTER_PERIOD':
-//       return (
-//         payload.items?.filter((item: Item) => {
-//           const createdTime = new Date(
-//             item.created.seconds * 1000 + item.created.nanoseconds / 1000000
-//           ).getTime();
-//           return (
-//             createdTime >= payload.periodStart &&
-//             createdTime <= payload.periodEnd
-//           );
-//         }) ?? []
-//       );
-//     default: {
-//       throw Error('err');
-//     }
-//   }
-// }
 
 type Item = {
   id: string;
@@ -756,21 +531,14 @@ export default function Profile() {
   const navigate = useNavigate();
 
   const [items, dispatch] = useReducer(reducer, []);
-  // const [existingItems, setExistingItems] = useState<[]>([]);
-  // const [declutteredItems, setDeclutteredItems] = useState<Items>(null);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
   const [canPlay, setCanPlay] = useState<boolean>(false);
-  // const [boardUrl, setBoardUrl] = useState<string>('');
   const [isDeclutteredMode, setIsDeclutteredMode] = useState<boolean>(false);
 
   const [isFirst, setIsFirst] = useState<boolean>(false);
 
   const itemRef = useRef<Items | null>(null);
   const existingItemsRef = useRef<Items | []>([]);
-  // const isEditedRef = useRef<boolean | null>(null);
-
-  // console.log(canPlay);
-  // console.log(items);
 
   useEffect(() => {
     async function fetchData() {
@@ -780,21 +548,13 @@ export default function Profile() {
 
       const boardId = localStorage.getItem('boardId');
       const board = await getBoard(uid, boardId);
-      // if (board) setBoardUrl(board.url);
       if (board) {
-        // isEditedRef.current = board.isEdited;
-
         if (!board.isEdited) setIsFirst(true);
 
         const canvas = new fabric.Canvas('canvas', {
           width: 980,
           height: 748,
         });
-
-        // fabric.loadSVGFromString(board.url, (objects, options) => {
-        //   const obj = fabric.util.groupSVGElements(objects, options);
-        //   canvas.add(obj).renderAll();
-        // });
 
         canvas.loadFromJSON(board.data, () => {
           const scaleX = canvas.getWidth() / 625;
@@ -807,15 +567,6 @@ export default function Profile() {
           });
         });
       }
-
-      // const filteredItems = data.filter((item) => item.status !== '已處理');
-      // const qtyList = filteredItems.reduce((acc, item) => {
-      //   const index = CATEGORIES.indexOf(item.category);
-      //   if (index !== -1) {
-      //     acc[index]++;
-      //   }
-      //   return acc;
-      // }, Array(CATEGORIES.length).fill(0));
 
       existingItemsRef.current = data.filter(
         (item) => item.status !== '已處理'
@@ -837,15 +588,14 @@ export default function Profile() {
         date.getMonth() === today.getMonth() &&
         date.getFullYear() === today.getFullYear();
 
-      //Todo: popout小遊戲
+      //Todo: 修正跳出時間
       if (isToday) {
-        console.log('是今天');
+        // console.log('是今天');
         setCanPlay(false);
       } else if (isYesterday || date < today) {
-        console.log('是昨天以前');
+        // console.log('是昨天以前');
         setCanPlay(true);
       }
-      return null;
     }
 
     fetchData();
@@ -853,29 +603,6 @@ export default function Profile() {
   }, [uid, lastLoginInTime]);
 
   useEffect(() => {
-    // function countItems() {
-    //   const hasPeriod: boolean = Object.values(period).every(
-    //     (time) => time !== ''
-    //   );
-    //   if (hasPeriod) {
-    //     const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
-    //     const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
-    //     const declutteredItems = itemRef.current?.filter(
-    //       (item) => item.status === '已處理'
-    //     );
-
-    //     dispatch({
-    //       type: 'FILTER_PERIOD',
-    //       payload: { data: declutteredItems, periodStart, periodEnd },
-    //     });
-    //   }
-    // }
-    // countItems();
-
-    // const hasPeriod: boolean = Object.values(period).every(
-    //   (time) => time !== ''
-    // );
-    // if (hasPeriod)
     if (isDeclutteredMode) countItems();
   }, [period, isDeclutteredMode]);
 
@@ -889,38 +616,11 @@ export default function Profile() {
       (item) => item.status === '已處理'
     );
 
-    // console.log(periodStart, periodEnd);
-    // console.log(declutteredItems);
-
     dispatch({
       type: 'FILTER_PERIOD',
       payload: { data: declutteredItems, periodStart, periodEnd },
     });
   }
-
-  // function caculateReportItems() {
-  //   const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
-  //   const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
-
-  //   if (isDeclutteredMode) {
-  //     const declutteredItems = items.filter((item) => item.status === '已處理');
-
-  //     dispatch({
-  //       type: 'FILTER_PERIOD',
-  //       payload: { data: declutteredItems, periodStart, periodEnd },
-  //     });
-  //   } else {
-  //     if (!itemRef.current) return;
-  //     const existingItems = itemRef.current.filter(
-  //       (item) => item.status !== '已處理'
-  //     );
-
-  //     dispatch({
-  //       type: 'FETCH_DATA',
-  //       payload: { data: existingItems },
-  //     });
-  //   }
-  // }
 
   function handleLevel() {
     const disposedItems: number | undefined = itemRef.current?.filter(
@@ -942,7 +642,6 @@ export default function Profile() {
   function getLastWeek() {
     const today = new Date();
     const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    // 格式化日期为 YYYY-MM-DD
     const formattedSevenDaysAgo = `${sevenDaysAgo.getFullYear()}-${String(
       sevenDaysAgo.getMonth() + 1
     ).padStart(2, '0')}-${String(sevenDaysAgo.getDate()).padStart(2, '0')}`;
@@ -967,7 +666,6 @@ export default function Profile() {
       today.getMonth() + 1,
       0
     );
-    // 格式化日期为 YYYY-MM-DD
     const formattedFirstDayOfMonth = `${firstDayOfMonth.getFullYear()}-${String(
       firstDayOfMonth.getMonth() + 1
     ).padStart(2, '0')}-${String(firstDayOfMonth.getDate()).padStart(2, '0')}`;
@@ -992,7 +690,6 @@ export default function Profile() {
       today.getMonth(),
       0
     );
-    // 格式化日期为 YYYY-MM-DD
     const formattedFirstDayOfLastMonth = `${firstDayOfLastMonth.getFullYear()}-${String(
       firstDayOfLastMonth.getMonth() + 1
     ).padStart(2, '0')}-${String(firstDayOfLastMonth.getDate()).padStart(
@@ -1015,7 +712,6 @@ export default function Profile() {
     const today = new Date();
     const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
     const lastDayOfYear = new Date(today.getFullYear(), 11, 31);
-    // 格式化日期为 YYYY-MM-DD
     const formattedFirstDayOfYear = `${firstDayOfYear.getFullYear()}-${String(
       firstDayOfYear.getMonth() + 1
     ).padStart(2, '0')}-${String(firstDayOfYear.getDate()).padStart(2, '0')}`;
@@ -1030,9 +726,8 @@ export default function Profile() {
 
   function setLastYear() {
     const today = new Date();
-    const lastYearStartDate = new Date(today.getFullYear() - 1, 0, 1); // 去年的第一天
-    const lastYearEndDate = new Date(today.getFullYear() - 1, 11, 31); // 去年的最后一天
-    // 格式化日期为 YYYY-MM-DD
+    const lastYearStartDate = new Date(today.getFullYear() - 1, 0, 1);
+    const lastYearEndDate = new Date(today.getFullYear() - 1, 11, 31);
     const formattedLastYearStartDate = `${lastYearStartDate.getFullYear()}-${String(
       lastYearStartDate.getMonth() + 1
     ).padStart(2, '0')}-${String(lastYearStartDate.getDate()).padStart(
@@ -1073,7 +768,6 @@ export default function Profile() {
           }
         />
 
-        {/* <VisionBoard src={boardUrl} /> */}
         <VisionBoardWrapper>
           <VisionBoard>
             <canvas id="canvas" />
@@ -1088,11 +782,7 @@ export default function Profile() {
               </VisionBoardOverlay>
             )}
           </VisionBoard>
-          <EditButton
-            // canShow={isEditedRef.current ? isEditedRef.current === true : false}
-            canShow={!isFirst}
-            onClick={() => navigate(`/compose`)}
-          >
+          <EditButton canShow={!isFirst} onClick={() => navigate(`/compose`)}>
             <span>編輯夢想板</span>
             <TfiArrowRight />
           </EditButton>
@@ -1134,7 +824,6 @@ export default function Profile() {
               />
             </InputWrapper>
             <Cancel onClick={() => setPeriod({ start: '', end: '' })}>
-              {/* <Cross size={30} color="#fff" lineWidth={4} /> */}
               <RxCross1 className="clear" />
             </Cancel>
           </PeriodWrapper>
@@ -1154,26 +843,16 @@ export default function Profile() {
           </FilterWrapper>
         </PeriodFilter>
 
-        {/* <AnalyzeWrapper> */}
         <ReportWrapper>
-          {/* <Report existingItems={existingItems} /> */}
           <Report
             items={isDeclutteredMode ? items : existingItemsRef.current}
           />
-          {/* <Report items={items} /> */}
 
-          {/* </AnalyzeWrapper> */}
           <QtyWrapper>
             <Qty>
               {isDeclutteredMode
                 ? items.length
                 : existingItemsRef.current.length}
-              {/* {isDeclutteredMode
-                ? items.filter((item: any) => item.status === '已處理').length
-                : existingItemsRef.current.reduce(
-                    (acc: number, curr: number) => acc + curr,
-                    0
-                  )} */}
             </Qty>
             <QtyTitle>
               {items.length <= 1 || existingItemsRef.current.length <= 1
@@ -1184,21 +863,12 @@ export default function Profile() {
         </ReportWrapper>
       </Container>
       <Background />
-      {/* //Todo: 昨天以前才可以popout */}
-      {/* <div>
-        <button onClick={() => setCanPlay(false)}>X</button>
-        你今天TOUCH了嗎？
-        <Link to="/sparkJoy">馬上開始</Link>
-      </div> */}
 
       {canPlay && (
         <ToastContainer>
           <Overlay />
 
           <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
-            {/* <CloseButton onClick={() => setCanPlay(false)}>
-              <Cross size={60} color="#000" lineWidth={2} />
-            </CloseButton> */}
             <RxCross1 className="close" onClick={() => setCanPlay(false)} />
 
             <SloganWrapper>
@@ -1210,9 +880,6 @@ export default function Profile() {
               <SubSlogan>
                 現在馬上通過簡單的二選一小遊戲提升整理動力！
               </SubSlogan>
-              {/* <LinkButton>
-              <StyledLink to="/sparkJoy">立刻去玩</StyledLink>
-            </LinkButton> */}
               <StartButton onClick={() => navigate('/sparkJoy')}>
                 <Start>START</Start>
                 <TfiArrowRight className="startArrow" />
@@ -1220,32 +887,6 @@ export default function Profile() {
             </SloganWrapper>
           </Toast>
         </ToastContainer>
-        // <Overlay>
-        //   <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
-        //     {/* <CloseButton onClick={() => setCanPlay(false)}>
-        //       <Cross size={60} color="#000" lineWidth={2} />
-        //     </CloseButton> */}
-        //     <RxCross1 className="close" onClick={() => setCanPlay(false)} />
-
-        //     <SloganWrapper>
-        //       <MainSlogan>
-        //         您是否有太多物品，
-        //         <br />
-        //         卻難以抉擇去留？
-        //       </MainSlogan>
-        //       <SubSlogan>
-        //         現在馬上通過簡單的二選一小遊戲提升整理動力！
-        //       </SubSlogan>
-        //       {/* <LinkButton>
-        //       <StyledLink to="/sparkJoy">立刻去玩</StyledLink>
-        //     </LinkButton> */}
-        //       <StartButton onClick={() => navigate('/sparkJoy')}>
-        //         START
-        //         <TfiArrowRight className="startArrow" />
-        //       </StartButton>
-        //     </SloganWrapper>
-        //   </Toast>
-        // </Overlay>
       )}
     </>
   );
