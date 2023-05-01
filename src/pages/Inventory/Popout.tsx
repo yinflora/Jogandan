@@ -7,12 +7,7 @@ import EditItem from '../Upload/Upload';
 import { useEffect, useState, useRef } from 'react';
 
 import Chevron from '../../components/Icon/Chevron';
-// import edit from './edit.png';
-// import Cross from '../../components/Icon/Cross';
-
 import { RxCross1 } from 'react-icons/rx';
-
-// import { RxCross1 } from 'react-icons/rx';
 
 const StyledContainer = styled.div`
   position: fixed;
@@ -35,47 +30,12 @@ const Overlay = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-// const Overlay = styled.div`
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   z-index: 1;
-//   display: flex;
-//   width: 100vw;
-//   height: 100vh;
-//   /* padding: 10vh 10vw; */
-//   padding: 10vh 15vw;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: center;
-//   background-color: rgba(0, 0, 0, 0.5);
-//   /* gap: 10px; */
-
-//   /* & > .close {
-//     width: 40px;
-//     height: 40px;
-//     margin-left: auto;
-//     margin-bottom: 10px;
-//     color: #fff;
-//   } */
-// `;
-
-// const Cancel = styled(Link)`
-//   /* margin-left: auto;
-//   margin-bottom: -10px; */
-//   margin: 40px 0 0 auto;
-//   /* color: #f1f2ed; */
-// `;
-
 const Container = styled.div<{ isEdit: boolean }>`
   position: relative;
   display: flex;
   z-index: 999;
   width: 1000px;
   height: 600px;
-  /* width: 100%; */
-  /* height: 650px; */
-  /* padding: 40px 60px; */
 
   padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')};
   gap: 60px;
@@ -170,7 +130,6 @@ const SubImageWrapper = styled.div`
 `;
 
 const SubImage = styled.img`
-  /* width: 100%; */
   height: calc((100% - 40px) / 4);
   padding: 5px;
   aspect-ratio: 1/1;
@@ -181,7 +140,6 @@ const SubImage = styled.img`
 
 const InfoWrapper = styled.div`
   display: flex;
-  /* width: 40%; */
   height: 100%;
   flex: 1;
   padding: 40px 0;
@@ -218,7 +176,6 @@ const Edit = styled.button`
     left: 0;
     border-bottom: 1px solid #000;
     opacity: 0;
-    /* z-index: -1; */
     transition: all 0.5s;
   }
 
@@ -229,12 +186,9 @@ const Edit = styled.button`
   }
 `;
 
-const Category = styled.span`
-  /* margin-bottom: 20px; */
-`;
+const Category = styled.span``;
 
 const Name = styled.p`
-  /* margin-top: 30px; */
   font-size: 2rem;
   font-weight: 600;
 `;
@@ -252,17 +206,13 @@ const DescriptionWrapper = styled.div`
 `;
 
 const Description = styled.div`
-  /* max-height: 50%;
-  padding: 20px 0; */
   width: 100%;
   height: 100%;
   overflow-y: scroll;
   white-space: pre-wrap;
-  /* border-top: 1px solid #000; */
 `;
 
 const CreatedTime = styled.p`
-  /* margin-top: auto; */
   justify-self: end;
   font-size: 14px;
   text-align: end;
@@ -324,12 +274,6 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
     return (
       <StyledContainer>
         <Overlay onClick={() => navigate('/inventory')} />
-        {/* <Cancel to="/inventory">
-          <Cross size={50} lineWidth={3} />
-          <RxCross1 className="clear" />
-        </Cancel> */}
-
-        {/* <RxCross1 className="close" onClick={() => navigate('/inventory')} /> */}
 
         <Container isEdit={isEdit}>
           <RxCross1 className="clear" onClick={() => navigate('/inventory')} />
@@ -445,7 +389,6 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
                 <FirstRow>
                   <Category>{selectedItem.category}</Category>
                   {selectedItem.status !== '已處理' && (
-                    // <Edit onClick={() => setIsEdit(true)} src={edit} />
                     <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
                   )}
                 </FirstRow>
