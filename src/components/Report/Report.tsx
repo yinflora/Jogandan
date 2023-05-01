@@ -2,15 +2,8 @@ import styled from 'styled-components';
 import { Timestamp } from 'firebase/firestore';
 
 const Svg = styled.svg`
-  /* position: absolute;
-  top: 0;
-  left: 0; */
-  /* width: 100%;
-  height: 100%; */
-  /* display: block; */
   width: 1000px;
   height: 600px;
-  /* transform: scale(0.85) translate(-10%, -15%); */
   transform: translate(-25px);
 `;
 
@@ -92,7 +85,6 @@ type Item = {
 type Items = Item[];
 
 type ReportProps = {
-  // items: number[];
   items: Items;
 };
 
@@ -160,8 +152,6 @@ export default function Report({ items }: ReportProps) {
         <>
           <Rect
             x={XTAG_START_AXIS + index * XTAG_SPACE}
-            // y={YTAG_START_AXIS - item * HEIGHT_PER_QTY}
-            // height={item * HEIGHT_PER_QTY}
             y={YTAG_START_AXIS - item * qtyHeight}
             height={item * qtyHeight}
           />
