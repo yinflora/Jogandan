@@ -532,6 +532,7 @@ export default function Profile() {
   const navigate = useNavigate();
 
   const [items, dispatch] = useReducer(reducer, []);
+  const [existingItems, setExistingItems] = useState<Items | []>([]);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
   const [canPlay, setCanPlay] = useState<boolean>(false);
   const [isDeclutteredMode, setIsDeclutteredMode] = useState<boolean>(false);
@@ -539,7 +540,7 @@ export default function Profile() {
   const [isFirst, setIsFirst] = useState<boolean>(false);
 
   const itemRef = useRef<Items | null>(null);
-  const existingItemsRef = useRef<Items | []>([]);
+  // const existingItemsRef = useRef<Items | []>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -569,9 +570,12 @@ export default function Profile() {
         });
       }
 
-      existingItemsRef.current = data.filter(
-        (item) => item.status !== '已處理'
-      );
+      // existingItemsRef.current = data.filter(
+      //   (item) => item.status !== '已處理'
+      // );
+
+      const existing = data.filter((item) => item.status !== '已處理');
+      setExistingItems(existing);
     }
 
     function compareTime() {
@@ -846,17 +850,19 @@ export default function Profile() {
 
         <ReportWrapper>
           <Report
-            items={isDeclutteredMode ? items : existingItemsRef.current}
+            // items={isDeclutteredMode ? items : existingItemsRef.current}
+            items={isDeclutteredMode ? items : existingItems}
           />
 
           <QtyWrapper>
             <Qty>
-              {isDeclutteredMode
+              {/* {isDeclutteredMode
                 ? items.length
-                : existingItemsRef.current.length}
+                : existingItemsRef.current.length} */}
+              {isDeclutteredMode ? items.length : existingItems.length}
             </Qty>
             <QtyTitle>
-              {items.length <= 1 || existingItemsRef.current.length <= 1
+              {items.length <= 1 || existingItems.length <= 1
                 ? 'ITEM'
                 : 'ITEMS'}
             </QtyTitle>
