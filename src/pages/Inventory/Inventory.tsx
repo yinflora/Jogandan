@@ -1,4 +1,3 @@
-import React from 'react';
 import { useEffect, useRef, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
@@ -8,11 +7,9 @@ import { getItems, getItemById } from '../../utils/firebase';
 import { AuthContext } from '../../context/authContext';
 import Popout from './Popout';
 import Search from '../../components/Icon/Search';
-// import Cross from '../../components/Icon/Cross';
 import { RxCross1 } from 'react-icons/rx';
 
 const Container = styled.div`
-  /* width: 1000px; */
   margin: 150px auto 0;
   padding: 0 250px 60px;
   color: #fff;
@@ -60,12 +57,6 @@ const SearchWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #fff;
-  /* transition: all 0.5s; */
-
-  /* &:focus-within {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-bottom: 2px solid #fff;
-  } */
 
   &::before {
     content: '';
@@ -77,7 +68,6 @@ const SearchWrapper = styled.div`
     background-color: rgba(255, 255, 255, 0.1);
     border-bottom: 2px solid #fff;
     opacity: 0;
-    /* z-index: -1; */
     transition: all 0.5s;
   }
 
@@ -99,16 +89,11 @@ const SearchBar = styled.input`
 `;
 
 const SearchBtn = styled.button`
-  /* position: absolute;
-  top: 0;
-  right: 0; */
   border: none;
   cursor: pointer;
 `;
 
-const SearchText = styled.p`
-  /* font-size: 1.25rem; */
-`;
+const SearchText = styled.p``;
 
 const ItemContainer = styled.div`
   display: flex;
@@ -173,47 +158,21 @@ const TitleWrapper = styled.div`
 `;
 
 const SubTitle = styled.p<{ isSelected: boolean }>`
-  /* position: absolute; */
   font-size: 14px;
   letter-spacing: 0.2rem;
   color: ${({ isSelected }) => (isSelected ? '#8D9CA4' : '#b5b4b4')};
   font-weight: ${({ isSelected }) => isSelected && 500};
   transition: 0.3s ease-out;
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  /* &::before {
-    position: absolute;
-    content: '居家生活';
-    width: 0%;
-    inset: 0;
-    color: #999999;
-    overflow: hidden;
-    transition: 0.3s ease-out;
-    transition: 0.3s ease-out;
-  }
-
-  &:hover::before {
-    width: 100%;
-  } */
+  cursor: pointer;
 `;
 
 const FilterButton = styled.div`
-  /* padding: 0; */
-  /* font-size: 14px;
-  color: #8d9ca4; */
-
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
 
-  &:hover {
-    cursor: pointer;
-  }
-
-  & > .cancel {
+  & .cancel {
     width: 15px;
     height: 15px;
     color: #8d9ca4;
@@ -236,11 +195,6 @@ const ProductWrapper = styled.div`
   grid-column-gap: 30px;
   grid-row-gap: 60px;
 `;
-
-// const Product = styled(Link)`
-//   width: 100%;
-//   background-color: #fff;
-// `;
 
 const Product = styled.div`
   width: 100%;
@@ -305,8 +259,6 @@ type Filter = {
 
 export default function Inventory() {
   const { uid } = useContext(AuthContext);
-  const { id } = useParams();
-  const navigate = useNavigate();
 
   const [items, setItems] = useState<Items | null>(null);
   const [filter, setFilter] = useState<Filter>({
@@ -316,8 +268,14 @@ export default function Inventory() {
   const [isPopout, setIsPopout] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [search, setSearch] = useState<string>('');
+  const [isBottom, setIsBottom] = useState<boolean>(false);
 
   const itemsRef = useRef<Items | null>(null);
+  const startIndexRef = useRef<number>(0);
+  const MAX_ITEMS = 24;
+
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!uid) return;
@@ -325,7 +283,10 @@ export default function Inventory() {
     async function fetchData() {
       const itemList = await getItems(uid);
       itemsRef.current = itemList;
-      setItems(itemList);
+
+      const slicedItems = itemList.slice(0, MAX_ITEMS);
+      setItems(slicedItems);
+      startIndexRef.current = MAX_ITEMS;
     }
 
     async function fetchSelectedData() {
@@ -342,6 +303,48 @@ export default function Inventory() {
       setIsPopout(false);
     }
   }, [uid, id]);
+
+  useEffect(() => {
+    function handleScroll() {
+      const scrollY =
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop;
+      const pageHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+      const distanceFromBottom = pageHeight - (scrollY + windowHeight);
+
+      setIsBottom(distanceFromBottom < 150); // 設定一個閾值，例如 100 像素，用來判斷是否接近底部
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      !isBottom ||
+      !itemsRef.current ||
+      !items ||
+      items.length === itemsRef.current.length ||
+      filter.category !== '' ||
+      filter.status !== ''
+    )
+      return;
+
+    const startIndex = startIndexRef.current;
+    const endIndex = startIndexRef.current + MAX_ITEMS;
+
+    const slicedItems = itemsRef.current.slice(startIndex, endIndex);
+    const newItems = [...items, ...slicedItems];
+
+    setItems(newItems);
+
+    startIndexRef.current = endIndex;
+  }, [isBottom]);
 
   useEffect(() => {
     function handleFilter() {
@@ -474,7 +477,6 @@ export default function Inventory() {
                 </SubTitle>
                 {filter.category === category && (
                   <FilterButton onClick={handleClearCategory}>
-                    {/* <Cross size={25} color="#8D9CA4" lineWidth={6} /> */}
                     <RxCross1 className="cancel" />
                   </FilterButton>
                 )}
@@ -498,9 +500,7 @@ export default function Inventory() {
                   {status}
                 </SubTitle>
                 {filter.status === status && (
-                  // <FilterButton onClick={handleClearStatus}>X</FilterButton>
                   <FilterButton onClick={handleClearStatus}>
-                    {/* <Cross size={25} color="#8D9CA4" lineWidth={6} /> */}
                     <RxCross1 className="cancel" />
                   </FilterButton>
                 )}
@@ -511,7 +511,6 @@ export default function Inventory() {
         <ProductWrapper>
           {items &&
             items.map((item: any, index: number) => (
-              // <Product to={`/inventory/${item.id}`}>
               <Product key={index}>
                 {item.images && (
                   <Image
