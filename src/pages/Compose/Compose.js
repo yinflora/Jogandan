@@ -7,7 +7,6 @@ import {
   setNewBoard,
   saveBoard,
   getBoard,
-  // uploadTemplate,
   getTemplate,
 } from '../../utils/firebase';
 import {
@@ -16,13 +15,10 @@ import {
   uploadBytes,
   getDownloadURL,
   getMetadata,
-  // uploadString,
 } from 'firebase/storage';
-// import { useNavigate } from 'react-router-dom';
 
 import { TfiText, TfiSaveAlt } from 'react-icons/tfi';
 import { CiCircleInfo, CiTrash, CiUndo } from 'react-icons/ci';
-// import { CiCircleInfo, CiTrash, CiUndo, CiSaveDown2 } from 'react-icons/ci';
 
 import Button from '../../components/Button/Button';
 import Alert from '../../components/Alert/Alert';
@@ -90,9 +86,7 @@ const ImageWrapper = styled.div`
   width: 100%;
   height: calc(100% - 80px);
   padding-top: 10px;
-  /* grid-template-rows: repeat(auto-fit, minmax(100px, auto)); */
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  /* grid-auto-rows: 100px; */
   align-content: start;
   grid-gap: 10px;
   overflow-y: scroll;
@@ -226,7 +220,6 @@ const VisionBoard = styled.div`
 
 export default function Compose() {
   const { uid, isPopout, setIsPopout } = useContext(AuthContext);
-  // const navigate = useNavigate();
 
   const [images, setImages] = useState(null);
   const [isUploaded, setIsUploaded] = useState(false);
@@ -245,20 +238,10 @@ export default function Compose() {
 
   const LAYOUT_1_ID = 'eDuLEGPS3NCJsyeIYzXl';
 
-  console.log(isPopout);
-
-  // async function loadPrevBoard() {
-  //   const prevData = await getBoard(uid, boardIdRef.current);
-  //   console.log(prevData);
-  //   visionBoard.loadFromJSON(prevData.data);
-  // }
-
   useEffect(() => {
     async function renderBoard() {
       if (canvasRef.current) {
         const { template } = await getTemplate(LAYOUT_1_ID);
-
-        // console.log(templateData);
 
         const canvas = new fabric.Canvas('canvas', {
           width: 625,
@@ -266,7 +249,6 @@ export default function Compose() {
           backgroundColor: bgColor,
         });
 
-        // setLayout(canvas);
         canvas.loadFromJSON(template);
         setVisionBoard(canvas);
         setActiveItem(canvas.getActiveObject());
@@ -316,8 +298,6 @@ export default function Compose() {
       const id = localStorage.getItem('boardId');
       if (id) {
         boardIdRef.current = id;
-
-        // await saveBoard(uid, id, visionBoard.toJSON(['isClipFrame']), false);
 
         const prevData = await getBoard(uid, id);
         visionBoard.loadFromJSON(prevData.data);
@@ -448,7 +428,6 @@ export default function Compose() {
       lineHeight: 1.25,
       fontFamily: 'TT Norms Pro',
       fontSize: textConfig.fontSize,
-      // selectable: true,
       hasControls: false,
       lockScalingX: true,
       lockScalingY: true,
@@ -459,169 +438,26 @@ export default function Compose() {
 
   async function clear() {
     visionBoard.clear();
-    // setLayout(visionBoard);
 
     const { template } = await getTemplate(LAYOUT_1_ID);
     visionBoard.loadFromJSON(template);
-    // visionBoard.setBackgroundColor('#F4F3EF', () => {
-    //   visionBoard.renderAll();
-    // });
+
     saveProject();
   }
 
   async function saveProject() {
-    // const dataURL = visionBoard.toDataURL('image/png', 1);
-    // const imageRef = ref(storageRef, `${boardIdRef.current}`);
-
-    // const snapshot = await uploadString(imageRef, dataURL, 'data_url');
-    // const newURL = await getDownloadURL(snapshot.ref);
-
-    // await uploadTemplate(visionBoard.toJSON(['isClipFrame']));
-
-    // setLoading(true);
-
     await saveBoard(
       uid,
       boardIdRef.current,
-      // JSON.stringify(visionBoard),
       visionBoard.toJSON(['isClipFrame']),
       true
     );
-    // saved && setLoading(false);
-
-    // console.log('saved');
-
-    // navigate(`/profile`);
   }
-
-  // function setLayout(canvas) {
-  //   const clipPathTopL = new fabric.Rect({
-  //     width: 130,
-  //     height: 90,
-  //     left: 120,
-  //     top: 53,
-  //     fill: 'rgba(141, 156, 164, 0.5)',
-  //     selectable: false,
-  //     isClipFrame: true,
-  //   });
-
-  //   const clipPathTopR = new fabric.Rect({
-  //     width: 195,
-  //     height: 90,
-  //     left: 256,
-  //     top: 53,
-  //     fill: 'rgba(141, 156, 164, 0.5)',
-  //     selectable: false,
-  //     isClipFrame: true,
-  //   });
-
-  //   const clipPathMiddleL = new fabric.Rect({
-  //     width: 130,
-  //     height: 190,
-  //     left: 120,
-  //     top: 149,
-  //     fill: 'rgba(141, 156, 164, 0.5)',
-  //     selectable: false,
-  //     isClipFrame: true,
-  //   });
-
-  //   const clipPathMiddleR = new fabric.Rect({
-  //     width: 250,
-  //     height: 150,
-  //     left: 256,
-  //     top: 149,
-  //     fill: 'rgba(141, 156, 164, 0.5)',
-  //     selectable: false,
-  //     isClipFrame: true,
-  //   });
-
-  //   const clipPathBottom = new fabric.Rect({
-  //     width: 77,
-  //     height: 77,
-  //     left: 173,
-  //     top: 345,
-  //     fill: 'rgba(141, 156, 164, 0.5)',
-  //     selectable: false,
-  //     isClipFrame: true,
-  //   });
-
-  //   const textArea = new fabric.IText('Enter Your Goal...', {
-  //     width: 250,
-  //     height: 117,
-  //     left: 266,
-  //     top: 315,
-  //     padding: 10,
-  //     fill: '#8D9CA4',
-  //     charSpacing: 20,
-  //     lineHeight: 1.25,
-  //     fontFamily: 'TT Norms Pro',
-  //     fontSize: textConfig.fontSize,
-  //     selectable: true,
-  //     hasControls: false,
-  //     lockMovementX: true,
-  //     lockMovementY: true,
-  //     lockScalingX: true,
-  //     lockScalingY: true,
-  //   });
-
-  //   const period = new fabric.IText('/2023', {
-  //     left: 556,
-  //     top: 18,
-  //     fill: '#8D9CA4',
-  //     charSpacing: 20,
-  //     lineHeight: 1.25,
-  //     fontFamily: 'TT Norms Pro',
-  //     fontSize: textConfig.fontSize,
-  //     selectable: true,
-  //     hasControls: false,
-  //     lockMovementY: true,
-  //     lockScalingX: true,
-  //     lockScalingY: true,
-  //   });
-
-  //   const boardText = new fabric.Text('VISION\nBOARD', {
-  //     left: 18,
-  //     top: 423,
-  //     fill: '#8D9CA4',
-  //     charSpacing: 20,
-  //     lineHeight: 1.25,
-  //     textAlign: 'left',
-  //     fontFamily: 'TT Norms Pro',
-  //     fontSize: 16,
-  //     selectable: false,
-  //   });
-
-  //   const visionText = new fabric.Text('Vision\nPictures', {
-  //     left: 60,
-  //     top: 53,
-  //     fill: '#D9CCC1',
-  //     fontFamily: 'TT Norms Pro',
-  //     textAlign: 'right',
-  //     charSpacing: 20,
-  //     fontSize: 14,
-  //     selectable: false,
-  //   });
-
-  //   canvas.add(
-  //     clipPathTopL,
-  //     clipPathTopR,
-  //     clipPathMiddleL,
-  //     clipPathMiddleR,
-  //     clipPathBottom,
-  //     textArea,
-  //     visionText,
-  //     period,
-  //     boardText
-  //   );
-
-  //   canvas.add(textArea).setActiveObject(textArea);
-  // }
 
   return (
     <Container>
       {isPopout && <Alert url="/profile" />}
       <PageTitle>VISION BOARD</PageTitle>
-      {/* <p>{loading ? 'Saving...' : 'Saved'}</p> */}
 
       <BoardContainer>
         <UploadContainer>
