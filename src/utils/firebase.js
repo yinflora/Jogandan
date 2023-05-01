@@ -397,6 +397,8 @@ export async function getBoard(userId, boardId) {
   const templatesRef = doc(db, 'users', userId, 'visionBoards', boardId);
   const docSnap = await getDoc(templatesRef);
 
+  console.log(docSnap.data());
+
   return docSnap.data();
 }
 
