@@ -202,12 +202,12 @@ const FeatureDescription = styled.div`
 const Login = styled.div`
   display: flex;
   width: 100%;
-  height: 40%;
+  height: 45%;
   align-self: flex-end;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgba(244, 243, 239, 0.3);
+  background-color: rgba(244, 243, 239, 0.5);
 `;
 
 const LoginTitle = styled.p`
