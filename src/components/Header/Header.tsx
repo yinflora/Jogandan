@@ -112,8 +112,8 @@ const HomeWrapper = styled.div<{ color: string; isActive: boolean }>`
 `;
 
 const routes = [
-  { pathName: '/inventory', text: 'Inventory' },
   { pathName: '/upload', text: 'Upload' },
+  { pathName: '/inventory', text: 'Inventory' },
   { pathName: '/achievement', text: 'Achievement' },
   { pathName: '/compose', text: 'Vision Board' },
 ];

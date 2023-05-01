@@ -578,33 +578,34 @@ export default function Profile() {
       setExistingItems(existing);
     }
 
-    function compareTime() {
-      if (!lastLoginInTime) return;
+    // function compareTime() {
+    //   if (!lastLoginInTime) return;
 
-      const today = new Date();
-      const date = new Date(lastLoginInTime);
+    //   const today = new Date();
+    //   const date = new Date(lastLoginInTime);
 
-      const isToday =
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear();
-      const isYesterday =
-        date.getDate() === today.getDate() - 1 &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear();
+    //   const isToday =
+    //     date.getDate() === today.getDate() &&
+    //     date.getMonth() === today.getMonth() &&
+    //     date.getFullYear() === today.getFullYear();
+    //   const isYesterday =
+    //     date.getDate() === today.getDate() - 1 &&
+    //     date.getMonth() === today.getMonth() &&
+    //     date.getFullYear() === today.getFullYear();
 
-      //Todo: 修正跳出時間
-      if (isToday) {
-        // console.log('是今天');
-        setCanPlay(false);
-      } else if (isYesterday || date < today) {
-        // console.log('是昨天以前');
-        setCanPlay(true);
-      }
-    }
+    //   //Todo: 修正跳出時間
+    //   if (isToday) {
+    //     // console.log('是今天');
+    //     setCanPlay(false);
+    //   } else if (isYesterday || date < today) {
+    //     // console.log('是昨天以前');
+    //     setCanPlay(true);
+    //   }
+    // }
 
     fetchData();
-    compareTime();
+    // compareTime();
+    setCanPlay(true);
   }, [uid, lastLoginInTime]);
 
   useEffect(() => {
@@ -637,7 +638,7 @@ export default function Profile() {
         return 'Master';
       } else if (disposedItems < 100 && disposedItems >= 50) {
         return 'Veteran';
-      } else if (disposedItems < 50 && disposedItems >= 10) {
+      } else if (disposedItems < 50 && disposedItems >= 30) {
         return 'Seasoned';
       }
     }

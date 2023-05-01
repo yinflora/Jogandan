@@ -14,7 +14,7 @@ import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
 import Button from '../../components/Button/Button';
-import Cross from '../../components/Icon/Cross';
+// import Cross from '../../components/Icon/Cross';
 import { v4 as uuidv4 } from 'uuid';
 import { CiCircleInfo } from 'react-icons/ci';
 import { RxCross1 } from 'react-icons/rx';
@@ -207,8 +207,15 @@ const PhotoIcon = styled.img`
 
 const CancelIcon = styled.button`
   position: absolute;
-  top: 0;
+  top: 20px;
   right: 15px;
+  cursor: pointer;
+
+  & .close {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+  }
 `;
 
 const RemindWrapper = styled.div`
@@ -840,7 +847,7 @@ export default function Upload({
           <PageTitle>UPLOAD</PageTitle>
 
           <ModeToggler>
-            <SingleMode isBulkMode={isBulkMode}>單品</SingleMode>
+            <SingleMode isBulkMode={isBulkMode}>單次</SingleMode>
             <SwitchContainer>
               <Input
                 id="switchUpload"
@@ -862,7 +869,7 @@ export default function Upload({
                 <Slider checked={isBulkMode} />
               </label>
             </SwitchContainer>
-            <BulkMode isBulkMode={isBulkMode}>批量</BulkMode>
+            <BulkMode isBulkMode={isBulkMode}>批次</BulkMode>
           </ModeToggler>
         </TitleWrapper>
       )}
@@ -939,7 +946,8 @@ export default function Upload({
                   <Video ref={videoRef} autoPlay />
                   <PhotoIcon src={photo} onClick={takePhoto} />
                   <CancelIcon onClick={stopCamera}>
-                    <Cross size={50} lineWidth={3} />
+                    {/* <Cross size={50} lineWidth={3} /> */}
+                    <RxCross1 className="close" />
                   </CancelIcon>
                 </VideoWrapper>
               ) : (
