@@ -6,21 +6,13 @@ import {
   getItemById,
   updateItem,
 } from '../../utils/firebase';
-import {
-  ref,
-  getDownloadURL,
-  uploadBytes,
-  // uploadString,
-} from 'firebase/storage';
+import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { Timestamp } from 'firebase/firestore';
 import { AuthContext } from '../../context/authContext';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
-// import info from './info.png';
-// import infoBlack from './info-black.png';
-// import Chevron from '../../components/Icon/Chevron';
 import Button from '../../components/Button/Button';
 import Cross from '../../components/Icon/Cross';
 import { v4 as uuidv4 } from 'uuid';
@@ -49,17 +41,6 @@ const PageTitle = styled.h1`
   letter-spacing: 0.4rem;
   text-transform: uppercase;
 `;
-
-// const ModeToggler = styled.button<{ isBulkMode: boolean }>`
-//   margin-left: ${({ isBulkMode }) => (isBulkMode ? '10px' : 'auto')};
-//   font-size: 1.25rem;
-//   border-bottom: 1px solid #fff;
-//   color: #fff;
-
-//   &:hover {
-//     cursor: pointer;
-//   }
-// `;
 
 const ModeToggler = styled.div`
   display: flex;
@@ -125,13 +106,6 @@ const Input = styled.input`
   opacity: 0;
   width: 0;
   height: 0;
-
-  /* &:checked + ${Slider} {
-    background-color: #2196f3;
-  }
-  &:checked + ${Slider}:before {
-    transform: translateX(24px);
-  } */
 `;
 
 const BulkUploadWrapper = styled.div`
@@ -144,19 +118,10 @@ const UploadContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  /* padding: 80px 0; */
   gap: 60px;
 `;
 
 const ImageWrapper = styled.div``;
-
-// const ChangeSlideBtn = styled.button`
-//   display: flex;
-//   width: 88px;
-//   height: 40px;
-//   justify-content: center;
-//   align-items: center;
-// `;
 
 const ImageInfoWrapper = styled.div`
   display: flex;
@@ -180,13 +145,7 @@ const PromptWrapper = styled.div<{ isBulkMode: boolean }>`
   }
 `;
 
-// const InfoIcon = styled.img`
-//   width: 20px;
-//   height: 20px;
-// `;
-
 const PromptRemind = styled.span<{ color: string }>`
-  /* font-size: 0.75rem; */
   letter-spacing: 0.1em;
   color: ${({ color }) => color};
 `;
@@ -195,10 +154,7 @@ const BulkCountWrapper = styled.div`
   display: flex;
   width: 100%;
   margin: 20px 0 10px;
-  /* height: 80px; */
-  /* margin-top: 40px; */
   justify-content: end;
-  /* align-items: center; */
   align-items: flex-end;
 `;
 
@@ -273,7 +229,6 @@ const BulkRemindWrapper = styled.div`
 `;
 
 const Remind = styled.p`
-  /* margin-bottom: 30px; */
   text-align: center;
   color: #fff;
 `;
@@ -291,7 +246,6 @@ const CancelBtn = styled.button`
   z-index: 2;
   top: 0;
   right: 0;
-  /* display: flex; */
   display: none;
   width: 25px;
   height: 25px;
@@ -345,7 +299,6 @@ const SubImage = styled.div<{ imageUrl: string }>`
 
 const InfoWrapper = styled.form`
   display: flex;
-  /* padding: 40px 0; */
   padding: 5px 0 45px;
   flex-grow: 1;
   flex-direction: column;
@@ -453,10 +406,6 @@ const BulkImageWrapper = styled.div`
   gap: 10px;
 `;
 
-// const RemindBlack = styled(Remind)`
-//   color: rgba(0, 0, 0, 0.6);
-// `;
-
 const BulkContainer = styled.div`
   display: flex;
   width: 100%;
@@ -493,7 +442,6 @@ const BulkCancelBtn = styled.button`
   justify-content: center;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.1);
-  /* color: #fff; */
   color: #000;
 
   &:hover {
@@ -576,7 +524,6 @@ export default function Upload({
 
   const { uid, isPopout, setIsPopout } = useContext(AuthContext);
   const { id } = useParams();
-  // const navigate = useNavigate();
 
   const [singleForm, setSingleForm] = useState<Form>({
     name: '',
@@ -585,15 +532,6 @@ export default function Upload({
     description: '',
     images: Array(SINGLE_LIMIT).fill(''),
   });
-
-  // const [images, setImages] = useState(Array(8).fill(''));
-  // const [form, setForm] = useState<Form>({
-  //   name: '',
-  //   category: '',
-  //   status: '',
-  //   description: '',
-  //   images,
-  // });
 
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [showCamera, setShowCamera] = useState<boolean>(false);
@@ -616,14 +554,6 @@ export default function Upload({
         created,
         processedDate,
       } = item[0];
-      // setImages(images);
-      // setForm({
-      //   name,
-      //   category,
-      //   status,
-      //   description,
-      //   images,
-      // });
 
       if (images.length < SINGLE_LIMIT) {
         const filledImages = new Array(SINGLE_LIMIT)
@@ -689,7 +619,6 @@ export default function Upload({
     setShowCamera(false);
   }
 
-  //!Fixme: 不能直接上傳
   function takePhoto() {
     const canvas: any = document.createElement('canvas');
 
@@ -700,17 +629,6 @@ export default function Upload({
     canvas
       .getContext('2d')
       .drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-
-    // const url = canvas.toDataURL('image/png', 1);
-    // const url = canvas.toBlob(null, 'image/png', 1);
-
-    // const newSingleForm = { ...singleForm };
-
-    // const startIndex = newSingleForm.images.findIndex((image) => image === '');
-    // newSingleForm.images.splice(startIndex, 1, url);
-
-    // setSingleForm(newSingleForm);
-    // stopCamera();
 
     canvas.toBlob(
       (blob: any) => {
@@ -730,7 +648,6 @@ export default function Upload({
     );
   }
 
-  //!Fixme: 不能直接上傳
   async function handleFileUpload(
     e: React.ChangeEvent<HTMLInputElement>,
     limit: number
@@ -788,7 +705,6 @@ export default function Upload({
           const blobImage = await res.blob();
 
           const storageRef = ref(storage, `/${uid}/images/${uuidv4()}`);
-          // const snapshot = await uploadBytes(storageRef, image);
           const snapshot = await uploadBytes(storageRef, blobImage);
           const url = await getDownloadURL(snapshot.ref);
 
@@ -811,7 +727,6 @@ export default function Upload({
   }
 
   async function handleUpdateItems() {
-    //!Modified
     const newForm = { ...singleForm };
 
     await Promise.all(
@@ -832,22 +747,10 @@ export default function Upload({
     );
 
     await updateItem(uid, id, newForm);
-    // setIsEdit(false);
     setSelectedItem(newForm);
-
-    // await updateItem(uid, id, singleForm);
-    // setIsEdit(false);
-    // setSelectedItem(singleForm);
   }
 
   function handleDeleted(index: number) {
-    //!Added
-    // const imageList = [...images];
-    // imageList.splice(index, 1);
-    // const list = [...imageList, ''];
-    // setImages(list);
-    // setForm({ ...form, images: list });
-
     const newImages = [...singleForm.images];
     newImages.splice(index, 1);
     setSingleForm({ ...singleForm, images: [...newImages, ''] });
@@ -876,16 +779,13 @@ export default function Upload({
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>, index: number) {
-    //!Modified
     e.preventDefault();
     if (draggingIndex !== null && draggingIndex !== index) {
-      // const newImages = [...images];
       const newImages = [...singleForm.images];
       [newImages[draggingIndex], newImages[index]] = [
         newImages[index],
         newImages[draggingIndex],
       ];
-      // setImages(newImages);
       setSingleForm({ ...singleForm, images: newImages });
     }
     setDraggingIndex(null);
@@ -916,7 +816,6 @@ export default function Upload({
   }
 
   function handleSelectImage() {
-    // e.preventDefault();
     const uploadImage = document.getElementById('uploadImage');
     if (uploadImage) {
       uploadImage.click();
@@ -938,15 +837,6 @@ export default function Upload({
       {!isEdit && (
         <TitleWrapper isBulkMode={isBulkMode}>
           <PageTitle>UPLOAD</PageTitle>
-          {/* <ModeToggler
-            isBulkMode={isBulkMode && bulkForms.length > 0}
-            onClick={() => {
-              setIsBulkMode(!isBulkMode);
-              setBulkForms([]);
-            }}
-          >
-            {isBulkMode ? '單品上傳' : '批量上傳'}
-          </ModeToggler> */}
 
           <ModeToggler>
             <SingleMode isBulkMode={isBulkMode}>單品</SingleMode>
@@ -973,51 +863,6 @@ export default function Upload({
             </SwitchContainer>
             <BulkMode isBulkMode={isBulkMode}>批量</BulkMode>
           </ModeToggler>
-
-          {/* {isBulkMode && bulkForms.length > 0 && (
-            <BulkUploadWrapper>
-              <input
-                id="uploadImage"
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  handleFileUpload(e, BULK_LIMIT - bulkForms.length)
-                }
-                multiple
-                style={{ display: 'none' }}
-              />
-              <label htmlFor="uploadImage">
-                <Button
-                  buttonType="light"
-                  onClick={handleSelectImage}
-                  disabled={bulkForms.length === BULK_LIMIT}
-                >
-                  選擇照片
-                </Button>
-              </label>
-              <Button
-                buttonType="dark"
-                onClick={() =>
-                  // Promise.all(
-                  //   bulkForms.map((item) => handleUploadItems(item))
-                  // ).then(() => navigate('/inventory'))
-                  Promise.all(
-                    bulkForms.map((item) => handleUploadItems(item))
-                  ).then(() => setIsPopout(!isPopout))
-                }
-                disabled={
-                  !bulkForms
-                    .map((form) => {
-                      const { name, category, status } = form;
-                      return name !== '' && category !== '' && status !== '';
-                    })
-                    .every(Boolean)
-                }
-              >
-                確認上傳
-              </Button>
-            </BulkUploadWrapper>
-          )} */}
         </TitleWrapper>
       )}
 
@@ -1027,9 +872,7 @@ export default function Upload({
             <ImageIcon src={image} />
             <BulkRemindWrapper>
               <Remind>選擇照片進行批量上傳</Remind>
-              {/* <RemindBlack> 最多只能選擇 {BULK_LIMIT} 張</RemindBlack> */}
               <PromptWrapper isBulkMode={isBulkMode}>
-                {/* <InfoIcon src={infoBlack} /> */}
                 <CiCircleInfo className="info" />
                 <PromptRemind color="#000">
                   最多只能選擇 {BULK_LIMIT} 張
@@ -1057,9 +900,6 @@ export default function Upload({
       ) : (
         <UploadContainer>
           <ImageWrapper>
-            {/* <ChangeSlideBtn>
-              <Chevron rotateDeg={0} />
-            </ChangeSlideBtn> */}
             <ImageArea>
               <SubImageContainer
                 ref={containerRef}
@@ -1142,12 +982,8 @@ export default function Upload({
               )}
             </ImageArea>
             <ImageInfoWrapper>
-              {/* <ChangeSlideBtn>
-                <Chevron rotateDeg={180} />
-              </ChangeSlideBtn> */}
               {singleForm.images.findIndex((image) => image === '') > 1 && (
                 <PromptWrapper isBulkMode={isBulkMode}>
-                  {/* <InfoIcon src={info} /> */}
                   <CiCircleInfo className="info" />
                   <PromptRemind color="#fff">拖拉照片調整位置</PromptRemind>
                 </PromptWrapper>
@@ -1229,7 +1065,6 @@ export default function Upload({
                 setIsPopout(!isPopout);
               }}
               disabled={
-                // Object.values(singleForm).includes('') ||
                 singleForm.name === '' ||
                 singleForm.category === '' ||
                 singleForm.status === '' ||
@@ -1273,9 +1108,6 @@ export default function Upload({
               <Button
                 buttonType="dark"
                 onClick={() =>
-                  // Promise.all(
-                  //   bulkForms.map((item) => handleUploadItems(item))
-                  // ).then(() => navigate('/inventory'))
                   Promise.all(
                     bulkForms.map((item) => handleUploadItems(item))
                   ).then(() => setIsPopout(!isPopout))
@@ -1324,11 +1156,7 @@ export default function Upload({
                       }}
                     >
                       {CATEGORY_OPTIONS.map((option) => (
-                        <option
-                          key={option}
-                          value={option}
-                          // selected={option === bulkForms[index].category}
-                        >
+                        <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
@@ -1344,11 +1172,7 @@ export default function Upload({
                       }}
                     >
                       {STATUS_OPTIONS.map((option) => (
-                        <option
-                          key={option}
-                          value={option}
-                          // selected={option === bulkForms[index].status}
-                        >
+                        <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
