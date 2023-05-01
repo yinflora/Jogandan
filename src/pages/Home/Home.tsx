@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import styled, { keyframes } from 'styled-components/macro';
+import { useEffect, useRef, useState } from 'react';
+import styled, { css, keyframes } from 'styled-components/macro';
 
 import background from './background.jpeg';
 import feature1 from './feature1.png';
@@ -97,16 +97,32 @@ const Introduction = styled.div`
   gap: 5%;
 `;
 
-const IntroTitle = styled.p`
+const IntroTitle = styled.p<{ isEntering: boolean }>`
   font-size: 2rem;
   line-height: 3rem;
   letter-spacing: 0.4rem;
+
+  ${({ isEntering }) =>
+    isEntering &&
+    css`
+      opacity: 0;
+      animation: ${fadeIn} 1s ease-in-out forwards;
+      animation-delay: 0.5s;
+    `}
 `;
 
-const IntroDescription = styled.p`
+const IntroDescription = styled.p<{ isEntering: boolean }>`
   max-width: 60%;
   line-height: 1.5rem;
   letter-spacing: 0.1rem;
+
+  ${({ isEntering }) =>
+    isEntering &&
+    css`
+      opacity: 0;
+      animation: ${fadeIn} 1s ease-in-out 0.5s forwards;
+      animation-delay: 1s;
+    `}
 `;
 
 const FeatureLoginWrapper = styled.div`
@@ -127,6 +143,7 @@ const Feature = styled.div`
 `;
 
 const FeatureCard = styled.div`
+  position: relative;
   display: flex;
   width: 300px;
   flex-direction: column;
@@ -136,17 +153,48 @@ const FeatureCardR = styled(FeatureCard)`
   align-self: end;
 `;
 
-const FeatureImage = styled.img`
+const FeatureImage = styled.img<{ isEntering: boolean }>`
   width: 100%;
   aspect-ratio: 2/3;
   object-fit: cover;
   object-position: center;
+
+  ${({ isEntering }) =>
+    isEntering &&
+    css`
+      opacity: 0;
+      animation: ${fadeIn} 1s ease-in-out 0.5s forwards;
+      animation-delay: 1.5s;
+    `}
+`;
+
+const FeatureTextWrapper = styled.div<{ isEntering: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  color: #828282;
+
+  ${({ isEntering }) =>
+    isEntering &&
+    css`
+      opacity: 0;
+      animation: ${fadeIn} 1s ease-in-out 0.5s forwards;
+      animation-delay: 2s;
+    `}
 `;
 
 const FeatureTitle = styled.p`
-  margin-top: 20px;
-  font-size: 1.25rem;
-  letter-spacing: 0.2rem;
+  margin-top: 40px;
+  font-size: 1.5rem;
+  letter-spacing: 0.4rem;
+`;
+
+const FeatureDescription = styled.div`
+  line-height: 2rem;
+  letter-spacing: 0.1rem;
 `;
 
 const Login = styled.div`
@@ -174,7 +222,25 @@ const LoginSubTitle = styled.p`
 `;
 
 export default function Home() {
+  const [isEntering, setIsEntering] = useState(false);
   const introRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleScroll() {
+      if (!introRef.current) return;
+
+      const introPosition = introRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      if (introPosition.top < windowHeight) setIsEntering(true);
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [introRef.current]);
 
   return (
     <>
@@ -201,12 +267,12 @@ export default function Home() {
 
       <Container ref={introRef}>
         <Introduction>
-          <IntroTitle>
+          <IntroTitle isEntering={isEntering}>
             「春至陋室中，
             <br />
             &nbsp;&nbsp;&nbsp;無一物中萬物足。」
           </IntroTitle>
-          <IntroDescription>
+          <IntroDescription isEntering={isEntering}>
             在現代社會，人們的生活越來越複雜，JOGANDAN
             希望可以簡化用戶在管理自己物品遇到的困難，提供一個平台讓您可以輕鬆管理物品，並且可以設立目標檢視自己的成果，量化自己在斷捨離的成長，藉由對物品進行減法來為自己的生活加分。
           </IntroDescription>
@@ -217,12 +283,26 @@ export default function Home() {
         <FeatureLoginWrapper>
           <Feature>
             <FeatureCard>
-              <FeatureImage src={feature1} />
-              <FeatureTitle>系統化物品管理</FeatureTitle>
+              <FeatureImage src={feature1} isEntering={isEntering} />
+              <FeatureTextWrapper isEntering={isEntering}>
+                <FeatureTitle>系統化物品管理</FeatureTitle>
+                <FeatureDescription>
+                  <p>單次 / 批量上傳</p>
+                  <p>庫存管理</p>
+                  <p>報表檢視</p>
+                </FeatureDescription>
+              </FeatureTextWrapper>
             </FeatureCard>
             <FeatureCardR>
-              <FeatureImage src={feature2} />
-              <FeatureTitle>量化自我成長</FeatureTitle>
+              <FeatureImage src={feature2} isEntering={isEntering} />
+              <FeatureTextWrapper isEntering={isEntering}>
+                <FeatureTitle>量化自我成長</FeatureTitle>
+                <FeatureDescription>
+                  <p>自製夢想板</p>
+                  <p>會員里程碑</p>
+                  <p>成就回顧</p>
+                </FeatureDescription>
+              </FeatureTextWrapper>
             </FeatureCardR>
           </Feature>
 
