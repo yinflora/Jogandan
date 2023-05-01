@@ -14,7 +14,7 @@ const Container = styled.div`
 `;
 
 const FeatureLoginContainer = styled(Container)`
-  height: 120vh;
+  height: 150vh;
 `;
 
 const Main = styled.div`
@@ -94,7 +94,7 @@ const Introduction = styled.div`
   height: 100%;
   padding: 10% 5%;
   flex-direction: column;
-  gap: 5%;
+  gap: 10%;
 `;
 
 const IntroTitle = styled.p<{ isEntering: boolean }>`
@@ -112,8 +112,9 @@ const IntroTitle = styled.p<{ isEntering: boolean }>`
 `;
 
 const IntroDescription = styled.p<{ isEntering: boolean }>`
-  max-width: 60%;
-  line-height: 1.5rem;
+  max-width: 50%;
+  margin-left: 20px;
+  line-height: 2rem;
   letter-spacing: 0.1rem;
 
   ${({ isEntering }) =>
@@ -134,18 +135,18 @@ const FeatureLoginWrapper = styled.div`
 
 const Feature = styled.div`
   position: absolute;
-  top: -30%;
+  top: -20%;
   display: flex;
   width: 100%;
-  height: 600px;
+  height: 800px;
   justify-content: center;
-  gap: 10%;
+  gap: 5%;
 `;
 
 const FeatureCard = styled.div`
   position: relative;
   display: flex;
-  width: 300px;
+  width: 400px;
   flex-direction: column;
 `;
 
@@ -158,6 +159,7 @@ const FeatureImage = styled.img<{ isEntering: boolean }>`
   aspect-ratio: 2/3;
   object-fit: cover;
   object-position: center;
+  filter: grayscale(10%);
 
   ${({ isEntering }) =>
     isEntering &&
@@ -171,7 +173,7 @@ const FeatureImage = styled.img<{ isEntering: boolean }>`
 const FeatureTextWrapper = styled.div<{ isEntering: boolean }>`
   position: absolute;
   top: 0;
-  left: 30px;
+  left: 50px;
   display: flex;
   flex-direction: column;
   gap: 60px;
@@ -187,7 +189,7 @@ const FeatureTextWrapper = styled.div<{ isEntering: boolean }>`
 `;
 
 const FeatureTitle = styled.p`
-  margin-top: 40px;
+  margin-top: 50px;
   font-size: 1.5rem;
   letter-spacing: 0.4rem;
 `;
@@ -200,7 +202,7 @@ const FeatureDescription = styled.div`
 const Login = styled.div`
   display: flex;
   width: 100%;
-  height: 50%;
+  height: 40%;
   align-self: flex-end;
   flex-direction: column;
   justify-content: center;
