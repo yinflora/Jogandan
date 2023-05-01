@@ -379,6 +379,7 @@ const Description = styled.textarea`
   padding: 10px;
   font-family: 'TT Norms Pro', sans-serif;
   font-size: 1rem;
+  line-height: 1.25rem;
   resize: none;
   border: 1px solid #fff;
   outline: none;
