@@ -485,6 +485,7 @@ export default function Inventory() {
             onClick={() => {
               setItems(itemsRef.current);
               setSearch('');
+              setFilter({ category: '', status: '' });
             }}
           >
             All
