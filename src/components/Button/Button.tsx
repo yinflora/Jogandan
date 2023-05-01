@@ -35,17 +35,10 @@ const StyledButton = styled.button<ButtonProps>`
           bottom: 0;
           right: 100%;
           left: 0;
-          /* border-bottom: 2px solid #fff; */
           background-color: #000;
           opacity: 0;
           transition: all 0.5s;
         }
-
-        /* &:hover::before {
-          left: 0;
-          right: 0;
-          opacity: 1;
-        } */
 
         &:hover:not(:disabled)::before {
           left: 0;
@@ -114,16 +107,7 @@ const StyledButton = styled.button<ButtonProps>`
       `;
     }
     return null;
-  }}/* ${({ disabled }) =>
-    disabled &&
-    css`
-      &:hover {
-        cursor: not-allowed;
-        background-color: rgb(0, 0, 0, 0.3);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-        color: #cdcdcd;
-      }
-    `} */
+  }}
 `;
 
 type ButtonProps = {
