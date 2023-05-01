@@ -273,6 +273,7 @@ export default function Inventory() {
   const itemsRef = useRef<Items | null>(null);
   const startIndexRef = useRef<number>(0);
   const MAX_ITEMS = 24;
+  const BOTTOM_HEIGHT = 150;
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -314,7 +315,7 @@ export default function Inventory() {
       const windowHeight = window.innerHeight;
       const distanceFromBottom = pageHeight - (scrollY + windowHeight);
 
-      setIsBottom(distanceFromBottom < 150); // 設定一個閾值，例如 100 像素，用來判斷是否接近底部
+      setIsBottom(distanceFromBottom < BOTTOM_HEIGHT);
     }
 
     window.addEventListener('scroll', handleScroll);
