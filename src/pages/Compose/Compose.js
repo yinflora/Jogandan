@@ -16,6 +16,7 @@ import {
   getDownloadURL,
   getMetadata,
 } from 'firebase/storage';
+import { useNavigate } from 'react-router-dom';
 
 import { TfiText, TfiSaveAlt } from 'react-icons/tfi';
 import { CiCircleInfo, CiTrash, CiUndo } from 'react-icons/ci';
@@ -24,7 +25,10 @@ import Button from '../../components/Button/Button';
 import Alert from '../../components/Alert/Alert';
 
 const Container = styled.div`
-  margin: 150px auto 0;
+  min-width: 1280px;
+  max-width: 1440px;
+  /* margin: 150px auto 0; */
+  margin: 110px auto 0;
   padding: 0 150px;
 `;
 
@@ -50,6 +54,7 @@ const BoardContainer = styled.div`
   display: flex;
   width: 100%;
   height: calc(100vh - 198px);
+  max-height: 650px;
   margin: 0 auto;
   padding-top: 30px;
   gap: 30px;
@@ -96,6 +101,7 @@ const Image = styled.img`
   max-width: 100%;
   aspect-ratio: attr(width) / attr(height);
   object-fit: cover;
+  cursor: grab;
 `;
 
 const VisionBoardContainer = styled.div`
@@ -236,6 +242,8 @@ export default function Compose() {
   const boardIdRef = useRef(null);
   const storageRef = ref(storage, `/${uid}/images/`);
 
+  const navigate = useNavigate();
+
   const LAYOUT_1_ID = 'eDuLEGPS3NCJsyeIYzXl';
 
   useEffect(() => {
@@ -309,7 +317,8 @@ export default function Compose() {
         await saveBoard(
           uid,
           boardId,
-          visionBoard.toJSON(['isClipFrame']),
+          // visionBoard.toJSON(['isClipFrame']),
+          visionBoard.toJSON(['isClipFrame', 'selectable', 'hasControls']),
           false
         );
       }
@@ -438,6 +447,12 @@ export default function Compose() {
 
   async function clear() {
     visionBoard.clear();
+    setBgColor('#F4F3EF');
+    setTextConfig({
+      color: '#000',
+      fontSize: 16,
+    });
+    setActiveItem(null);
 
     const { template } = await getTemplate(LAYOUT_1_ID);
     visionBoard.loadFromJSON(template);
@@ -449,15 +464,15 @@ export default function Compose() {
     await saveBoard(
       uid,
       boardIdRef.current,
-      visionBoard.toJSON(['isClipFrame']),
+      visionBoard.toJSON(['isClipFrame', 'selectable', 'hasControls']),
       true
     );
   }
 
   return (
     <Container>
-      {isPopout && <Alert url="/profile" />}
-      <PageTitle>VISION BOARD</PageTitle>
+      {isPopout && <Alert action={() => navigate('/profile')} />}
+      <PageTitle>Vision Board</PageTitle>
 
       <BoardContainer>
         <UploadContainer>
