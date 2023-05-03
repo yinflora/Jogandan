@@ -11,10 +11,7 @@ import { RxCross1 } from 'react-icons/rx';
 
 const Container = styled.div`
   width: 1000px;
-  /* width: 1280px; */
   margin: 150px auto 60px;
-  /* padding: 0 250px 60px; */
-  /* padding: 150px 150px 60px; */
   color: #fff;
 `;
 
@@ -223,6 +220,8 @@ const Image = styled.img`
 const Name = styled.p`
   margin-top: 30px;
   text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   letter-spacing: 0.1rem;
   color: #707070;
 `;

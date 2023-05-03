@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import AuthContext from '../../context/authContext';
@@ -69,15 +69,52 @@ const Message = styled.p`
   color: #fff;
 `;
 
+// type AlertProps = {
+//   url: string;
+//   isEdit?: boolean;
+//   setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
+// };
+
 type AlertProps = {
-  url: string;
-  isEdit?: boolean;
-  setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
+  action: () => void | {};
 };
 
-export default function Alert({ url, isEdit, setIsEdit }: AlertProps) {
+// export default function Alert({ url, isEdit, setIsEdit }: AlertProps) {
+//   const { isPopout, setIsPopout } = useContext(AuthContext);
+//   const navigate = useNavigate();
+
+//   return (
+//     <StyledContainer>
+//       <Overlay />
+//       <AlertWrapper>
+//         <RxCross1
+//           className="close"
+//           onClick={() => {
+//             setIsPopout(!isPopout);
+//           }}
+//         />
+//         <SuccessWrapper>
+//           <Success />
+//         </SuccessWrapper>
+//         <Message>儲存成功！</Message>
+//         <Button
+//           buttonType="dark"
+//           onClick={() => {
+//             isEdit && setIsEdit && setIsEdit(false);
+//             navigate(url);
+//             setIsPopout(!isPopout);
+//           }}
+//         >
+//           確認結果
+//         </Button>
+//       </AlertWrapper>
+//     </StyledContainer>
+//   );
+// }
+
+export default function Alert({ action }: AlertProps) {
   const { isPopout, setIsPopout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   return (
     <StyledContainer>
@@ -96,8 +133,7 @@ export default function Alert({ url, isEdit, setIsEdit }: AlertProps) {
         <Button
           buttonType="dark"
           onClick={() => {
-            isEdit && setIsEdit && setIsEdit(false);
-            navigate(url);
+            action();
             setIsPopout(!isPopout);
           }}
         >

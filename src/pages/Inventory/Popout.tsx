@@ -37,6 +37,8 @@ const Container = styled.div<{ isEdit: boolean }>`
   width: 1000px;
   height: 600px;
 
+  padding: ${({ isEdit }) => (isEdit ? '40px 80px 0' : '0 80px')};
+
   /* padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')}; */
   /* padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')}; */
   /* gap: 60px; */
@@ -63,7 +65,8 @@ const Container = styled.div<{ isEdit: boolean }>`
 const ContentWrapper = styled.div`
   display: flex;
   width: 100%;
-  padding: 0 80px;
+  /* padding: 0 80px; */
+
   justify-content: center;
   align-items: center;
   gap: 30px;
@@ -96,7 +99,7 @@ const ChangeSlideBtn = styled.button`
 const SubImageWrapper = styled.div`
   display: flex;
   width: 110px;
-  height: 410px;
+  height: 400px;
   flex-direction: column;
   overflow-y: scroll;
   background-color: rgba(0, 0, 0, 0.1);
@@ -111,8 +114,8 @@ const SubImageWrapper = styled.div`
 `;
 
 const SubImage = styled.img`
-  width: 90px;
-  height: 90px;
+  width: 88px;
+  height: 88px;
   margin: 0 auto 10px;
   object-fit: cover;
   object-position: center;
@@ -131,8 +134,8 @@ const MainImageWrapper = styled.div`
 `;
 
 const MainImage = styled.img`
-  width: 410px;
-  height: 410px;
+  width: 400px;
+  height: 400px;
   object-fit: cover;
   object-position: center;
 `;
@@ -311,12 +314,14 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
         <Container isEdit={isEdit}>
           <RxCross1 className="clear" onClick={() => navigate('/inventory')} />
           {isEdit ? (
-            <EditItem
-              isEdit={isEdit}
-              setIsEdit={setIsEdit}
-              setSelectedItem={setSelectedItem}
-              selectedItem={null}
-            />
+            <ContentWrapper>
+              <EditItem
+                isEdit={isEdit}
+                setIsEdit={setIsEdit}
+                setSelectedItem={setSelectedItem}
+                selectedItem={null}
+              />
+            </ContentWrapper>
           ) : (
             <>
               <RxCross1

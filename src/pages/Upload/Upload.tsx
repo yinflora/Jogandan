@@ -9,7 +9,7 @@ import {
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { Timestamp } from 'firebase/firestore';
 import { AuthContext } from '../../context/authContext';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import photo from './photo.png';
 import image from './image.png';
@@ -22,8 +22,10 @@ import { RxCross1 } from 'react-icons/rx';
 import Alert from '../../components/Alert/Alert';
 
 const Container = styled.div<{ isEdit: boolean }>`
+  width: 1000px;
+  /* margin: 150px auto 0; */
   margin: ${({ isEdit }) => (isEdit ? 0 : '150px auto 0')};
-  padding: ${({ isEdit }) => (isEdit ? 0 : '0 250px')};
+  /* padding: ${({ isEdit }) => (isEdit ? 0 : '0 250px')}; */
   color: #fff;
 `;
 
@@ -118,7 +120,8 @@ const UploadContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  gap: 60px;
+  /* gap: 60px; */
+  gap: 30px;
 `;
 
 const ImageWrapper = styled.div``;
@@ -246,6 +249,10 @@ const SubImageContainer = styled.div`
   height: 100%;
   flex-direction: column;
   overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const CancelBtn = styled.button`
@@ -429,7 +436,7 @@ const BulkItemWrapper = styled(ItemWrapper)`
   max-width: calc(50% - 10px);
   height: 250px;
   padding: 25px;
-  flex: 1;
+  flex: 1 0;
   gap: 20px;
   background: rgba(255, 255, 255, 0.1);
   border: none;
@@ -472,6 +479,7 @@ const Video = styled.video`
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
+  border: 1px solid #fff;
 `;
 
 const CATEGORY_OPTIONS = [
@@ -532,6 +540,7 @@ export default function Upload({
 
   const { uid, isPopout, setIsPopout } = useContext(AuthContext);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [singleForm, setSingleForm] = useState<Form>({
     name: '',
@@ -835,12 +844,25 @@ export default function Upload({
       {isEdit
         ? isPopout && (
             <Alert
-              url={`/inventory/${id}`}
-              setIsEdit={setIsEdit}
-              isEdit={isEdit}
+              action={() => {
+                isEdit && setIsEdit && setIsEdit(false);
+                navigate(`/inventory/${id}`);
+              }}
             />
+            // <Alert
+            //   url={`/inventory/${id}`}
+            //   setIsEdit={setIsEdit}
+            //   isEdit={isEdit}
+            // />
           )
-        : isPopout && <Alert url="/inventory" />}
+        : // : isPopout && <Alert url="/inventory" />}
+          isPopout && (
+            <Alert
+              action={() => {
+                navigate('/inventory');
+              }}
+            />
+          )}
 
       {!isEdit && (
         <TitleWrapper isBulkMode={isBulkMode}>
@@ -1119,7 +1141,10 @@ export default function Upload({
                 onClick={() =>
                   Promise.all(
                     bulkForms.map((item) => handleUploadItems(item))
-                  ).then(() => setIsPopout(!isPopout))
+                  ).then(() => {
+                    setIsPopout(!isPopout);
+                    setBulkForms([]);
+                  })
                 }
                 disabled={
                   !bulkForms
