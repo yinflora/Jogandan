@@ -8,7 +8,7 @@ import Home from './pages/Home/Home';
 import Achievement from './pages/Achievement/Achievement';
 import Compose from './pages/Compose/Compose';
 import Profile from './pages/Profile/Profile';
-// import Login from './pages/Login/Login';
+import Login from './pages/Login/Login';
 import Upload from './pages/Upload/Upload';
 import Inventory from './pages/Inventory/Inventory';
 import SparkJoy from './pages/SparkJoy/SparkJoy';
@@ -22,7 +22,7 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
-        {/* <Route path="login" element={<Login />} /> */}
+        <Route path="login" element={<Login />} />
         <Route path="profile" element={<Profile />} />
         <Route
           path="upload"
