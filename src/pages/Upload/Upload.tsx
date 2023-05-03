@@ -373,6 +373,19 @@ const FiledLabelMust = styled(FiledLabel)`
     left: 40px;
     color: #fff;
   }
+
+  &:hover::after {
+    content: '必填';
+    position: absolute;
+    top: -5px;
+    left: 50px;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const BulkFiledLabel = styled(FiledLabel)`
