@@ -71,6 +71,22 @@ const SwitchContainer = styled.div`
   position: relative;
   width: 48px;
   height: 24px;
+
+  &:hover::before {
+    content: '⚠ 切換模式將會刪除已填入的資料';
+    position: absolute;
+    left: 50%;
+    top: -30px;
+    display: flex;
+    width: max-content;
+    transform: translateX(-50%);
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const Slider = styled.div<{ checked: boolean }>`
@@ -346,9 +362,34 @@ const FiledLabel = styled.label`
   letter-spacing: 0.1rem;
 `;
 
+const FiledLabelMust = styled(FiledLabel)`
+  position: relative;
+  letter-spacing: 0.1rem;
+
+  &::before {
+    content: '*';
+    position: absolute;
+    top: -5px;
+    left: 40px;
+    color: #fff;
+  }
+`;
+
 const BulkFiledLabel = styled(FiledLabel)`
   width: 45px;
   line-height: 30px;
+`;
+
+const BulkFiledLabelMust = styled(BulkFiledLabel)`
+  position: relative;
+
+  &::before {
+    content: '*';
+    position: absolute;
+    top: -5px;
+    right: 0;
+    color: #fff;
+  }
 `;
 
 const TextInput = styled.input`
@@ -378,6 +419,7 @@ const SelectInput = styled.select`
   letter-spacing: 0.1rem;
   border-bottom: 1px solid #fff;
   color: #fff;
+  cursor: pointer;
 `;
 
 const BulkSelectInput = styled(SelectInput)`
@@ -399,6 +441,11 @@ const Description = styled.textarea`
   outline: none;
   background-color: transparent;
   color: #fff;
+
+  &::placeholder {
+    content: '非必填';
+    color: rgba(255, 255, 255, 0.8);
+  }
 `;
 
 const ItemWrapper = styled.div`
@@ -1030,7 +1077,8 @@ export default function Upload({
           </ImageWrapper>
           <InfoWrapper>
             <FieldWrapper>
-              <FiledLabel>名稱</FiledLabel>
+              <FiledLabelMust>名稱</FiledLabelMust>
+
               <TextInput
                 type="text"
                 value={singleForm.name}
@@ -1041,7 +1089,7 @@ export default function Upload({
             </FieldWrapper>
             <SelectWrapper>
               <HalfFieldWrapper>
-                <FiledLabel>分類</FiledLabel>
+                <FiledLabelMust>分類</FiledLabelMust>
                 <SelectInput
                   onChange={(e) =>
                     setSingleForm({ ...singleForm, category: e.target.value })
@@ -1059,7 +1107,7 @@ export default function Upload({
                 </SelectInput>
               </HalfFieldWrapper>
               <HalfFieldWrapper>
-                <FiledLabel>狀態</FiledLabel>
+                <FiledLabelMust>狀態</FiledLabelMust>
                 <SelectInput
                   onChange={(e) =>
                     setSingleForm({ ...singleForm, status: e.target.value })
@@ -1169,7 +1217,7 @@ export default function Upload({
                 <BulkImage imageUrl={form.images[0]} />
                 <BulkInfoWrapper>
                   <BulkFieldWrapper>
-                    <BulkFiledLabel>名稱</BulkFiledLabel>
+                    <BulkFiledLabelMust>名稱</BulkFiledLabelMust>
                     <BulkTextInput
                       type="text"
                       value={form.name}
@@ -1181,7 +1229,7 @@ export default function Upload({
                     />
                   </BulkFieldWrapper>
                   <BulkFieldWrapper>
-                    <BulkFiledLabel>分類</BulkFiledLabel>
+                    <BulkFiledLabelMust>分類</BulkFiledLabelMust>
                     <BulkSelectInput
                       onChange={(e) => {
                         const newForm = [...bulkForms];
@@ -1197,7 +1245,7 @@ export default function Upload({
                     </BulkSelectInput>
                   </BulkFieldWrapper>
                   <BulkFieldWrapper>
-                    <BulkFiledLabel>狀態</BulkFiledLabel>
+                    <BulkFiledLabelMust>狀態</BulkFiledLabelMust>
                     <BulkSelectInput
                       onChange={(e) => {
                         const newForm = [...bulkForms];

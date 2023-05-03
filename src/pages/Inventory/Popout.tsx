@@ -222,7 +222,7 @@ const Category = styled.span`
 
 const Name = styled.p`
   margin-bottom: 20px;
-  overflow: scroll;
+  overflow: auto;
   white-space: break-spaces;
   font-size: 2rem;
   font-weight: 600;
