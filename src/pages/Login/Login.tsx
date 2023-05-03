@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 import Button from '../../components/Button/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import background from './background.jpeg';
 import { TfiArrowRight } from 'react-icons/tfi';
 
-// import { useContext } from 'react';
-// import { AuthContext } from '../../context/authContext';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/authContext';
 
 // export default function Login() {
 //   const { isLogin, login, logout } = useContext(AuthContext);
@@ -244,7 +245,11 @@ const BackgroundImage = styled.div`
 `;
 
 export default function Login() {
-  // const { isLogin, login, logout } = useContext(AuthContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const { login } = useContext(AuthContext);
+
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   console.log(setIsSignUp);
   // function validatePassword(event) {
@@ -258,6 +263,10 @@ export default function Login() {
   //   }
   // }
 
+  useEffect(() => {
+    if (location.pathname === '/signup') setIsSignUp(true);
+  }, [location]);
+
   return (
     <>
       <BackgroundImage />
@@ -265,7 +274,7 @@ export default function Login() {
       <Container>
         <Title>{isSignUp ? 'SIGN UP' : 'LOGIN'}</Title>
         {/* <SubTitle>請先登入後再開始使用</SubTitle> */}
-        <SocialLogin>Google 登入</SocialLogin>
+        <SocialLogin onClick={login}>Google 登入</SocialLogin>
         {isSignUp && (
           <FieldWrapper>
             <InputLabel htmlFor="userName">用戶名稱</InputLabel>
@@ -303,7 +312,9 @@ export default function Login() {
           <SignUpPrompt>
             <SignUpMessage>還沒有帳號？</SignUpMessage>
             <StartButton>
-              <SignUpLink>立即註冊</SignUpLink>
+              <SignUpLink onClick={() => navigate('/signup')}>
+                立即註冊
+              </SignUpLink>
               <TfiArrowRight className="arrow" />
             </StartButton>
           </SignUpPrompt>
