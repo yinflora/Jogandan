@@ -10,8 +10,11 @@ import Search from '../../components/Icon/Search';
 import { RxCross1 } from 'react-icons/rx';
 
 const Container = styled.div`
-  margin: 150px auto 0;
-  padding: 0 250px 60px;
+  width: 1000px;
+  /* width: 1280px; */
+  margin: 150px auto 60px;
+  /* padding: 0 250px 60px; */
+  /* padding: 150px 150px 60px; */
   color: #fff;
 `;
 
@@ -21,14 +24,14 @@ const Background = styled.div`
   top: 0;
   left: 0;
   width: 100vw;
-  height: 500px;
+  height: 460px;
   background-color: #8d9ca4;
 `;
 
 const TopWrapper = styled.div`
   display: flex;
   width: 100%;
-  margin-bottom: 100px;
+  margin-bottom: 60px;
   justify-content: space-between;
 `;
 
@@ -93,17 +96,20 @@ const SearchBtn = styled.button`
   cursor: pointer;
 `;
 
-const SearchText = styled.p``;
+const SearchText = styled.p`
+  font-size: 1rem;
+`;
 
 const ItemContainer = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
+  justify-content: space-between;
 `;
 
 const FilterWrapper = styled.div`
   display: flex;
-  width: 25%;
+  width: auto;
   height: 100%;
   margin-top: 70px;
   flex-direction: column;
@@ -151,7 +157,6 @@ const SubFilterWrapper = styled.div`
 
 const TitleWrapper = styled.div`
   display: flex;
-  width: 50%;
   height: 15px;
   justify-content: space-between;
   align-items: center;
@@ -182,7 +187,7 @@ const FilterButton = styled.div`
 `;
 
 const Split = styled.div`
-  width: 50%;
+  width: 100%;
   height: 1px;
   background-color: #000;
 `;
@@ -190,7 +195,7 @@ const Split = styled.div`
 const ProductWrapper = styled.div`
   display: grid;
   width: 75%;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
   grid-template-rows: repeat(4, 1fr);
   grid-column-gap: 30px;
   grid-row-gap: 60px;
@@ -206,10 +211,9 @@ const Image = styled.img`
   object-position: center;
   aspect-ratio: 1/1;
   border: 0.5px solid #cdcdcd;
-  cursor: pointer;
-
-  filter: grayscale(50%);
   transition: all 0.2s ease-in-out;
+  filter: grayscale(50%);
+  cursor: pointer;
 
   &:hover {
     filter: none;
@@ -218,6 +222,7 @@ const Image = styled.img`
 
 const Name = styled.p`
   margin-top: 30px;
+  text-overflow: ellipsis;
   letter-spacing: 0.1rem;
   color: #707070;
 `;

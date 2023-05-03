@@ -37,12 +37,14 @@ const Container = styled.div<{ isEdit: boolean }>`
   width: 1000px;
   height: 600px;
 
-  padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')};
-  gap: 60px;
+  /* padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')}; */
+  /* padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')}; */
+  /* gap: 60px; */
   justify-content: center;
   align-items: center;
   background-color: ${({ isEdit }) =>
     isEdit ? 'rgba(141, 156, 164, 0.9)' : 'rgb(255, 255, 255, 0.9)'};
+  cursor: default;
 
   & > .clear {
     position: absolute;
@@ -58,7 +60,26 @@ const Container = styled.div<{ isEdit: boolean }>`
   }
 `;
 
-const ImageWrapper = styled.div``;
+const ContentWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 0 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+`;
+
+const ImageWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: end;
+`;
+
+const SlideWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const ChangeSlideBtn = styled.button`
   display: flex;
@@ -72,8 +93,53 @@ const ChangeSlideBtn = styled.button`
   }
 `;
 
+const SubImageWrapper = styled.div`
+  display: flex;
+  width: 110px;
+  height: 410px;
+  flex-direction: column;
+  overflow-y: scroll;
+  background-color: rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const SubImage = styled.img`
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 10px;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  /* flex-shrink: 0 0 25%; */
+
+  &:first-of-type {
+    margin-top: 10px;
+  }
+`;
+
+const MainImageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+`;
+
+const MainImage = styled.img`
+  width: 410px;
+  height: 410px;
+  object-fit: cover;
+  object-position: center;
+`;
+
 const BtnWrapper = styled.div`
   display: flex;
+  height: 40px;
   justify-content: space-between;
   align-items: center;
 `;
@@ -93,62 +159,21 @@ const TotalIndex = styled.span`
   color: #000;
 `;
 
-const ImageArea = styled.div`
-  display: flex;
-  height: 400px;
-`;
-
-const MainImage = styled.img`
-  height: 100%;
-  margin-left: 5px;
-  padding: 5px;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  object-position: center;
-`;
-
-const SubImageContainer = styled.div`
-  height: 100%;
-  height: 100%;
-  --background-height: calc(100% - 5px);
-  --background-top: 5px;
-  background: linear-gradient(
-    to bottom,
-    transparent var(--background-top),
-    rgba(0, 0, 0, 0.1) var(--background-top) var(--background-height),
-    transparent var(--background-height)
-  );
-`;
-
-const SubImageWrapper = styled.div`
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  overflow-y: scroll;
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const SubImage = styled.img`
-  height: calc((100% - 40px) / 4);
-  margin: 5px;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  object-position: center;
-  flex-shrink: 0 0 25%;
-`;
-
 const InfoWrapper = styled.div`
   display: flex;
-  height: 100%;
+  height: 490px;
   flex: 1;
   padding: 40px 0;
   flex-direction: column;
-  justify-content: space-between;
   color: #000;
   letter-spacing: 0.1rem;
+`;
+
+const TopInfo = styled.div`
+  display: flex;
+  height: 50%;
+  flex-direction: column;
+  border-bottom: 1px solid #000;
 `;
 
 const FirstRow = styled.div`
@@ -188,9 +213,14 @@ const Edit = styled.button`
   }
 `;
 
-const Category = styled.span``;
+const Category = styled.span`
+  font-size: 1rem;
+`;
 
 const Name = styled.p`
+  margin-bottom: 20px;
+  overflow: scroll;
+  white-space: break-spaces;
   font-size: 2rem;
   font-weight: 600;
 `;
@@ -201,23 +231,22 @@ const Status = styled.p`
   font-size: 1.25rem;
 `;
 
-const DescriptionWrapper = styled.div`
-  max-height: 50%;
-  padding: 20px 0;
-  border-top: 1px solid #000;
+const BottomInfo = styled.div`
+  display: flex;
+  height: 50%;
+  flex-direction: column;
 `;
 
 const Description = styled.div`
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
+  margin: 20px 0;
+  overflow: scroll;
   white-space: pre-wrap;
   font-size: 1rem;
   line-height: 1.25rem;
 `;
 
 const CreatedTime = styled.p`
-  justify-self: end;
+  margin-top: auto;
   font-size: 14px;
   text-align: end;
   color: #959595;
@@ -294,34 +323,34 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
                 className="clear"
                 onClick={() => navigate('/inventory')}
               />
-
-              <ImageWrapper>
-                <ChangeSlideBtn>
-                  <Chevron
-                    rotateDeg={0}
-                    color="#000"
-                    onClick={() => {
-                      setActiveItemIndex((prevIndex) =>
-                        prevIndex > 0
-                          ? prevIndex - 1
-                          : selectedItem.images.filter((item) => item !== '')
-                              .length - 1
-                      );
-                      intervalRef.current &&
-                        window.clearInterval(intervalRef.current);
-                      intervalRef.current = window.setInterval(() => {
-                        const hasUrlImages = selectedItem.images.filter(
-                          (image: string) => image !== ''
-                        );
-                        setActiveItemIndex((prev) =>
-                          prev === hasUrlImages.length - 1 ? 0 : prev + 1
-                        );
-                      }, 5000);
-                    }}
-                  />
-                </ChangeSlideBtn>
-                <ImageArea>
-                  <SubImageContainer>
+              <ContentWrapper>
+                <ImageWrapper>
+                  <SlideWrapper>
+                    <ChangeSlideBtn>
+                      <Chevron
+                        rotateDeg={0}
+                        color="#000"
+                        onClick={() => {
+                          setActiveItemIndex((prevIndex) =>
+                            prevIndex > 0
+                              ? prevIndex - 1
+                              : selectedItem.images.filter(
+                                  (item) => item !== ''
+                                ).length - 1
+                          );
+                          intervalRef.current &&
+                            window.clearInterval(intervalRef.current);
+                          intervalRef.current = window.setInterval(() => {
+                            const hasUrlImages = selectedItem.images.filter(
+                              (image: string) => image !== ''
+                            );
+                            setActiveItemIndex((prev) =>
+                              prev === hasUrlImages.length - 1 ? 0 : prev + 1
+                            );
+                          }, 5000);
+                        }}
+                      />
+                    </ChangeSlideBtn>
                     <SubImageWrapper>
                       {selectedItem.images.map(
                         (image: string, index: number) =>
@@ -349,67 +378,65 @@ export default function Popout({ selectedItem, setSelectedItem }: PopoutProp) {
                           )
                       )}
                     </SubImageWrapper>
-                  </SubImageContainer>
-
-                  <MainImage src={selectedItem.images[activeItemIndex]} />
-                </ImageArea>
-                <BtnWrapper>
-                  <ChangeSlideBtn>
-                    <Chevron
-                      rotateDeg={180}
-                      color="#000"
-                      onClick={() => {
-                        setActiveItemIndex((prevIndex) =>
-                          prevIndex <
-                          selectedItem.images.filter((item) => item !== '')
-                            .length -
-                            1
-                            ? prevIndex + 1
-                            : 0
-                        );
-                        intervalRef.current &&
-                          window.clearInterval(intervalRef.current);
-                        intervalRef.current = window.setInterval(() => {
-                          const hasUrlImages = selectedItem.images.filter(
-                            (image: string) => image !== ''
+                    <ChangeSlideBtn>
+                      <Chevron
+                        rotateDeg={180}
+                        color="#000"
+                        onClick={() => {
+                          setActiveItemIndex((prevIndex) =>
+                            prevIndex <
+                            selectedItem.images.filter((item) => item !== '')
+                              .length -
+                              1
+                              ? prevIndex + 1
+                              : 0
                           );
-                          setActiveItemIndex((prev) =>
-                            prev === hasUrlImages.length - 1 ? 0 : prev + 1
-                          );
-                        }, 5000);
-                      }}
-                    />
-                  </ChangeSlideBtn>
+                          intervalRef.current &&
+                            window.clearInterval(intervalRef.current);
+                          intervalRef.current = window.setInterval(() => {
+                            const hasUrlImages = selectedItem.images.filter(
+                              (image: string) => image !== ''
+                            );
+                            setActiveItemIndex((prev) =>
+                              prev === hasUrlImages.length - 1 ? 0 : prev + 1
+                            );
+                          }, 5000);
+                        }}
+                      />
+                    </ChangeSlideBtn>
+                  </SlideWrapper>
 
-                  <SlideCount>
-                    <NowIndex>
-                      {/* {
-                        selectedItem.images.filter((image) => image !== '')
-                          .length
-                      } */}
-                      {activeItemIndex + 1}
-                    </NowIndex>
-                    <TotalIndex>/8</TotalIndex>
-                  </SlideCount>
-                </BtnWrapper>
-              </ImageWrapper>
+                  <MainImageWrapper>
+                    <MainImage src={selectedItem.images[activeItemIndex]} />
+                    <BtnWrapper>
+                      <SlideCount>
+                        <NowIndex>{activeItemIndex + 1}</NowIndex>
+                        <TotalIndex>/8</TotalIndex>
+                      </SlideCount>
+                    </BtnWrapper>
+                  </MainImageWrapper>
+                </ImageWrapper>
 
-              <InfoWrapper>
-                <FirstRow>
-                  <Category>{selectedItem.category}</Category>
-                  {selectedItem.status !== '已處理' && (
-                    <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
-                  )}
-                </FirstRow>
-                <Name>{selectedItem.name}</Name>
-                <Status>{selectedItem.status}</Status>
-                <DescriptionWrapper>
-                  <Description>{selectedItem.description}</Description>
-                </DescriptionWrapper>
-                <CreatedTime>
-                  {formatTime(selectedItem.created!.seconds)}
-                </CreatedTime>
-              </InfoWrapper>
+                <InfoWrapper>
+                  <TopInfo>
+                    <FirstRow>
+                      <Category>{selectedItem.category}</Category>
+                      {selectedItem.status !== '已處理' && (
+                        <Edit onClick={() => setIsEdit(true)}>Edit</Edit>
+                      )}
+                    </FirstRow>
+                    <Name>{selectedItem.name}</Name>
+                    <Status>{selectedItem.status}</Status>
+                  </TopInfo>
+
+                  <BottomInfo>
+                    <Description>{selectedItem.description}</Description>
+                    <CreatedTime>
+                      {formatTime(selectedItem.created!.seconds)}
+                    </CreatedTime>
+                  </BottomInfo>
+                </InfoWrapper>
+              </ContentWrapper>
             </>
           )}
         </Container>

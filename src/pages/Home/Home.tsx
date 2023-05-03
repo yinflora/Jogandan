@@ -26,7 +26,19 @@ const Main = styled.div`
   flex-direction: column;
   justify-content: end;
   gap: 10px;
-  background: center / cover no-repeat url(${background});
+  /* background: center / cover no-repeat url(${background}); */
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: center / cover no-repeat url(${background});
+    opacity: 0.4;
+    z-index: -1;
+  }
 `;
 
 const fadeIn = keyframes`
