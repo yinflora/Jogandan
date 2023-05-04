@@ -541,15 +541,20 @@ export default function Profile() {
 
   const itemRef = useRef<Items | null>(null);
   // const existingItemsRef = useRef<Items | []>([]);
-
+  // console.log(uid);
   useEffect(() => {
+    // console.log(uid);
     async function fetchData() {
       const data = await getItems(uid);
       dispatch({ type: 'FETCH_DATA', payload: { data } });
       itemRef.current = data;
 
-      const boardId = localStorage.getItem('boardId');
+      // const boardId = localStorage.getItem('boardId');
+      const boardId = localStorage.getItem(`${uid}/boardId`);
+      // console.log('boardId', boardId);
       const board = await getBoard(uid, boardId);
+      // console.log(board.data);
+
       if (board) {
         if (!board.isEdited) setIsFirst(true);
 

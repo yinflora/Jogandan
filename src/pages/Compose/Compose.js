@@ -303,7 +303,8 @@ export default function Compose() {
     if (!uid || !visionBoard) return;
 
     async function createBoard() {
-      const id = localStorage.getItem('boardId');
+      // const id = localStorage.getItem('boardId');
+      const id = localStorage.getItem(`${uid}/boardId`);
       if (id) {
         boardIdRef.current = id;
 
@@ -316,7 +317,7 @@ export default function Compose() {
         );
         // const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
         // localStorage.setItem('boardId', boardId);
-        localStorage.setItem('boardId', boardId);
+        localStorage.setItem(`${uid}/boardId`, boardId);
         boardIdRef.current = boardId;
 
         await saveBoard(

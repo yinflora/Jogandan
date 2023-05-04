@@ -221,7 +221,7 @@ export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { signUp, login, previousPath } = useContext(AuthContext);
+  const { signUp, login, previousPath, uid } = useContext(AuthContext);
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [signUpForm, setSignUpForm] = useState({
@@ -258,7 +258,7 @@ export default function Login() {
       console.log('登入！');
       nativeLogin(loginForm);
     }
-    previousPath ? navigate(previousPath) : navigate('/');
+    !uid && previousPath ? navigate(previousPath) : navigate('/');
   }
 
   return (
@@ -268,7 +268,14 @@ export default function Login() {
       <Container>
         <Title>{isSignUp ? 'SIGN UP' : 'LOGIN'}</Title>
         {/* <SubTitle>請先登入後再開始使用</SubTitle> */}
-        <SocialLogin onClick={login}>Google 登入</SocialLogin>
+        <SocialLogin
+          onClick={() => {
+            login();
+            previousPath && navigate(previousPath);
+          }}
+        >
+          Google 登入
+        </SocialLogin>
         {isSignUp && (
           <FieldWrapper>
             <InputLabel htmlFor="userName">用戶名稱</InputLabel>
