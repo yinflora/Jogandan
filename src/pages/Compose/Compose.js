@@ -310,7 +310,12 @@ export default function Compose() {
         const prevData = await getBoard(uid, id);
         visionBoard.loadFromJSON(prevData.data);
       } else {
-        const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
+        const boardId = await setNewBoard(
+          uid,
+          visionBoard.toJSON(['isClipFrame', 'selectable', 'hasControls'])
+        );
+        // const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
+        // localStorage.setItem('boardId', boardId);
         localStorage.setItem('boardId', boardId);
         boardIdRef.current = boardId;
 

@@ -1,5 +1,12 @@
 import React, { useState, createContext, useEffect } from 'react';
-import { signin, signout, auth, getUser, getItems } from '../utils/firebase';
+import {
+  signin,
+  signout,
+  auth,
+  getUser,
+  getItems,
+  nativeSignup,
+} from '../utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -31,6 +38,12 @@ type Item = {
 
 type Items = Item[];
 
+type Form = {
+  name: string;
+  email: string;
+  password: string;
+};
+
 type AuthContextType = {
   isLogin: boolean;
   loading: boolean;
@@ -44,6 +57,8 @@ type AuthContextType = {
   isPopout: boolean;
   setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
   previousPath: string | null;
+  // eslint-disable-next-line no-unused-vars
+  signUp: (form: Form) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -64,6 +79,8 @@ export const AuthContext = createContext<AuthContextType>({
   isPopout: false,
   setIsPopout: () => {},
   previousPath: null,
+  // eslint-disable-next-line no-unused-vars
+  signUp: async (form: Form) => {},
 });
 //!Fixme
 
@@ -102,13 +119,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setItems(itemList);
   }
 
-  useEffect(() => {
-    if (!uid && location.pathname !== '/') {
-      setPreviousPath(location.pathname);
-      navigate('/login');
-    }
-  }, [uid]);
-
   // useEffect(() => {
   //   onAuthStateChanged(auth, (userInfo) => {
   //     if (userInfo) {
@@ -139,6 +149,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   // }, []);
 
   useEffect(() => {
+    console.log(auth);
     onAuthStateChanged(auth, async (userInfo) => {
       if (userInfo) {
         const userData = await getUser(userInfo.uid);
@@ -168,6 +179,18 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setLoading(false);
       }
     });
+  }, []);
+
+  useEffect(() => {
+    if (auth.currentUser) return;
+    if (
+      location.pathname !== '/' &&
+      location.pathname !== '/login' &&
+      location.pathname !== '/signup'
+    ) {
+      setPreviousPath(location.pathname);
+      navigate('/login');
+    }
   }, []);
 
   // const login = async () => {
@@ -204,6 +227,24 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
     setIsLogin(false);
     setLoading(false);
+    navigate('/');
+  };
+
+  const signUp = async (form: Form) => {
+    if (!form) return;
+
+    const userData = await nativeSignup(form);
+
+    if (!userData) return;
+
+    setUser({
+      uid: userData.uid,
+      name: userData.name,
+      email: userData.email,
+      image: userData.image,
+    });
+    setIsLogin(true);
+    setLoading(false);
   };
 
   return (
@@ -221,6 +262,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         isPopout,
         setIsPopout,
         previousPath,
+        signUp,
       }}
     >
       {children}
