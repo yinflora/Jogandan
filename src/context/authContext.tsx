@@ -9,6 +9,7 @@ import {
 } from '../utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
+// import { getAuth } from 'firebase/auth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // type User = {
@@ -149,7 +150,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   // }, []);
 
   useEffect(() => {
-    console.log(auth);
     onAuthStateChanged(auth, async (userInfo) => {
       if (userInfo) {
         const userData = await getUser(userInfo.uid);
@@ -167,6 +167,14 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setUid(userData.uid);
         setLastLoginInTime(userInfo.metadata.lastSignInTime);
         setLoading(false);
+
+        if (
+          location.pathname !== '/' &&
+          location.pathname !== '/login' &&
+          location.pathname !== '/signup'
+        ) {
+          setPreviousPath(location.pathname);
+        }
       } else {
         setUser({
           uid: '',
@@ -177,21 +185,51 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setIsLogin(false);
         setUid(null);
         setLoading(false);
+
+        if (
+          location.pathname !== '/' &&
+          location.pathname !== '/login' &&
+          location.pathname !== '/signup'
+        ) {
+          setPreviousPath(location.pathname);
+          navigate('/login');
+        }
       }
     });
   }, []);
 
-  useEffect(() => {
-    if (auth.currentUser) return;
-    if (
-      location.pathname !== '/' &&
-      location.pathname !== '/login' &&
-      location.pathname !== '/signup'
-    ) {
-      setPreviousPath(location.pathname);
-      navigate('/login');
-    }
-  }, []);
+  // useEffect(() => {
+  //   function checkIfNewUser() {
+  //     // const auth = await getAuth();
+
+  //     if (uid) return;
+
+  //     console.log(auth, auth.currentUser);
+
+  //     if (
+  //       location.pathname !== '/' &&
+  //       location.pathname !== '/login' &&
+  //       location.pathname !== '/signup'
+  //     ) {
+  //       setPreviousPath(location.pathname);
+  //       !auth.currentUser && navigate('/login');
+  //       // console.log('氣鼠');
+  //     }
+  //   }
+  //   checkIfNewUser();
+  //   // if (!auth) return;
+  //   // if (auth.currentUser && uid) return;
+
+  //   // if (
+  //   //   location.pathname !== '/' &&
+  //   //   location.pathname !== '/login' &&
+  //   //   location.pathname !== '/signup'
+  //   // ) {
+  //   //   setPreviousPath(location.pathname);
+  //   //   navigate('/login');
+  //   //   console.log('氣鼠');
+  //   // }
+  // }, [uid]);
 
   // const login = async () => {
   //   const response = await signin();
@@ -227,7 +265,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
     setIsLogin(false);
     setLoading(false);
-    navigate('/');
+    // navigate('/');
   };
 
   const signUp = async (form: Form) => {
@@ -243,6 +281,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       email: userData.email,
       image: userData.image,
     });
+    setUid(userData.uid);
     setIsLogin(true);
     setLoading(false);
   };

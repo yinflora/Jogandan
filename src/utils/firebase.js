@@ -554,7 +554,7 @@ export async function setFirstBoard(userId) {
     const userBoardRef = collection(db, 'users', userId, 'visionBoards');
 
     const docRef = await addDoc(userBoardRef, {
-      data: templateData,
+      data: templateData.template,
       lastUpdated: serverTimestamp(),
       isEdited: false,
     });
