@@ -2,6 +2,7 @@ import React, { useState, createContext, useEffect } from 'react';
 import { signin, signout, auth, getUser, getItems } from '../utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // type User = {
 //   uid: string;
@@ -42,6 +43,7 @@ type AuthContextType = {
   logout: () => void;
   isPopout: boolean;
   setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
+  previousPath: string | null;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -61,6 +63,7 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   isPopout: false,
   setIsPopout: () => {},
+  previousPath: null,
 });
 //!Fixme
 
@@ -89,11 +92,22 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   >(null);
   const [items, setItems] = useState<Items | null>(null);
   const [isPopout, setIsPopout] = useState<boolean>(false);
+  const [previousPath, setPreviousPath] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   async function getUserItems(id: string) {
     const itemList = await getItems(id);
     setItems(itemList);
   }
+
+  useEffect(() => {
+    if (!uid && location.pathname !== '/') {
+      setPreviousPath(location.pathname);
+      navigate('/login');
+    }
+  }, [uid]);
 
   // useEffect(() => {
   //   onAuthStateChanged(auth, (userInfo) => {
@@ -206,6 +220,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         logout,
         isPopout,
         setIsPopout,
+        previousPath,
       }}
     >
       {children}

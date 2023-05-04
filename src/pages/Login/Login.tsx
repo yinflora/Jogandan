@@ -220,7 +220,7 @@ export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { login } = useContext(AuthContext);
+  const { login, previousPath } = useContext(AuthContext);
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [signUpForm, setSignUpForm] = useState({
@@ -248,6 +248,8 @@ export default function Login() {
     if (location.pathname === '/signup') setIsSignUp(true);
   }, [location]);
 
+  console.log(location);
+
   function onSubmit() {
     if (isSignUp) {
       console.log('註冊！');
@@ -256,6 +258,7 @@ export default function Login() {
       console.log('登入！');
       nativeLogin(loginForm);
     }
+    previousPath ? navigate(previousPath) : navigate('/');
   }
 
   return (
@@ -328,16 +331,16 @@ export default function Login() {
           width="100%"
           onClick={() => {
             onSubmit();
-            // isSignUp
-            //   ? setSignUpForm({
-            //       displayName: '',
-            //       email: '',
-            //       password: '',
-            //     })
-            //   : setLoginForm({
-            //       email: '',
-            //       password: '',
-            //     });
+            isSignUp
+              ? setSignUpForm({
+                  displayName: '',
+                  email: '',
+                  password: '',
+                })
+              : setLoginForm({
+                  email: '',
+                  password: '',
+                });
           }}
         >
           SUBMIT
