@@ -9,7 +9,6 @@ import {
 } from '../utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
-// import { getAuth } from 'firebase/auth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // type User = {
@@ -111,6 +110,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [items, setItems] = useState<Items | null>(null);
   const [isPopout, setIsPopout] = useState<boolean>(false);
   const [previousPath, setPreviousPath] = useState<string | null>(null);
+  // const [errorMessage, setErrorMessage] =useState<string | null>('');
 
   const navigate = useNavigate();
   const location = useLocation();

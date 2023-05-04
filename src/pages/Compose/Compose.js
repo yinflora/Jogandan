@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import { fabric } from 'fabric';
-import styled from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import AuthContext from '../../context/authContext';
 import {
   storage,
@@ -50,7 +50,45 @@ const PageTitle = styled.h1`
   color: #000;
 `;
 
+const blink = keyframes`
+  0% {
+    opacity: .2;
+  }
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: .2;
+  }
+`;
+
+const SavePrompt = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 65px;
+  height: 20px;
+  font-size: 1rem;
+  display: flex;
+  align-items: end;
+`;
+
+const SavingDot = styled.div`
+  font-size: 1.5rem;
+  animation: ${blink} 1.4s linear infinite both;
+`;
+
+const SecondSavingDot = styled(SavingDot)`
+  animation-delay: 0.2s;
+`;
+
+const ThirdSavingDot = styled(SavingDot)`
+  animation-delay: 0.4s;
+`;
+
 const BoardContainer = styled.div`
+  position: relative;
   display: flex;
   width: 100%;
   height: calc(100vh - 198px);
@@ -237,6 +275,7 @@ export default function Compose() {
     fontSize: 16,
   });
   const [activeItem, setActiveItem] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const canvasRef = useRef(null);
   const boardIdRef = useRef(null);
@@ -245,6 +284,8 @@ export default function Compose() {
   const navigate = useNavigate();
 
   const LAYOUT_1_ID = 'eDuLEGPS3NCJsyeIYzXl';
+
+  console.log(isSaving);
 
   useEffect(() => {
     async function renderBoard() {
@@ -309,11 +350,17 @@ export default function Compose() {
         boardIdRef.current = id;
 
         const prevData = await getBoard(uid, id);
+        console.log(prevData);
         visionBoard.loadFromJSON(prevData.data);
       } else {
         const boardId = await setNewBoard(
           uid,
-          visionBoard.toJSON(['isClipFrame', 'selectable', 'hasControls'])
+          visionBoard.toJSON([
+            'isClipFrame',
+            'selectable',
+            'hasControls',
+            'hoverCursor',
+          ])
         );
         // const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
         // localStorage.setItem('boardId', boardId);
@@ -324,7 +371,12 @@ export default function Compose() {
           uid,
           boardId,
           // visionBoard.toJSON(['isClipFrame']),
-          visionBoard.toJSON(['isClipFrame', 'selectable', 'hasControls']),
+          visionBoard.toJSON([
+            'isClipFrame',
+            'selectable',
+            'hasControls',
+            'hoverCursor',
+          ]),
           false
         );
       }
@@ -400,6 +452,8 @@ export default function Compose() {
         },
         { crossOrigin: 'anonymous' }
       );
+
+      saveProject();
     }
 
     visionBoard.on('drop', dropImage);
@@ -467,12 +521,23 @@ export default function Compose() {
   }
 
   async function saveProject() {
+    setIsSaving(true);
+
     await saveBoard(
       uid,
       boardIdRef.current,
-      visionBoard.toJSON(['isClipFrame', 'selectable', 'hasControls']),
+      visionBoard.toJSON([
+        'isClipFrame',
+        'selectable',
+        'hasControls',
+        'hoverCursor',
+      ]),
       true
     );
+
+    setTimeout(() => setIsSaving(false), 1000);
+
+    console.log('儲存囉');
   }
 
   return (
@@ -481,6 +546,16 @@ export default function Compose() {
       <PageTitle>Vision Board</PageTitle>
 
       <BoardContainer>
+        {isSaving ? (
+          <SavePrompt>
+            Saving<SavingDot>.</SavingDot>
+            <SecondSavingDot>.</SecondSavingDot>
+            <ThirdSavingDot>.</ThirdSavingDot>
+          </SavePrompt>
+        ) : (
+          <SavePrompt>Saved</SavePrompt>
+        )}
+
         <UploadContainer>
           <input
             id="uploadImage"
