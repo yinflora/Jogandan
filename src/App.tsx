@@ -4,6 +4,7 @@ import { createGlobalStyle } from 'styled-components';
 import { AuthContextProvider } from './context/authContext';
 import Header from './components/Header/Header';
 import BackButton from './components/Button/BackButton';
+// import { useContext, useEffect } from 'react';
 
 const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
   * {
@@ -39,13 +40,19 @@ const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
 `;
 
 function App() {
+  // const { uid } = useContext(AuthContext);
   const location = useLocation();
+  // const navigate = useNavigate();
 
   const backgroundColor =
     location.pathname.includes('/upload') ||
     location.pathname.includes('/profile')
       ? '#8D9CA4'
       : '#fff';
+
+  // useEffect(() => {
+  //   if (!uid && location.pathname !== '/') navigate('/login');
+  // }, [uid]);
 
   return (
     <>
