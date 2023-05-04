@@ -224,7 +224,7 @@ export default function Login() {
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [signUpForm, setSignUpForm] = useState({
-    userName: '',
+    displayName: '',
     email: '',
     password: '',
   });
@@ -277,7 +277,10 @@ export default function Login() {
                 maxLength={30}
                 onChange={(e) => {
                   isSignUp &&
-                    setSignUpForm({ ...signUpForm, userName: e.target.value });
+                    setSignUpForm({
+                      ...signUpForm,
+                      displayName: e.target.value,
+                    });
                 }}
               />
             </InputWrapper>
@@ -325,16 +328,16 @@ export default function Login() {
           width="100%"
           onClick={() => {
             onSubmit();
-            isSignUp
-              ? setSignUpForm({
-                  userName: '',
-                  email: '',
-                  password: '',
-                })
-              : setLoginForm({
-                  email: '',
-                  password: '',
-                });
+            // isSignUp
+            //   ? setSignUpForm({
+            //       displayName: '',
+            //       email: '',
+            //       password: '',
+            //     })
+            //   : setLoginForm({
+            //       email: '',
+            //       password: '',
+            //     });
           }}
         >
           SUBMIT
