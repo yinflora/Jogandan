@@ -119,7 +119,8 @@ const routes = [
 ];
 
 export default function Header() {
-  const { isLogin, login, logout } = useContext(AuthContext);
+  // const { isLogin, login, logout } = useContext(AuthContext);
+  const { isLogin, logout } = useContext(AuthContext);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -129,6 +130,9 @@ export default function Header() {
     location.pathname.includes('/inventory')
       ? '#fff'
       : '#000';
+
+  const isAtLogin =
+    location.pathname === '/signup' || location.pathname === '/login';
 
   return (
     <Container color={fillColor}>
@@ -156,9 +160,12 @@ export default function Header() {
           </HomeWrapper>
         </Nav>
       ) : (
-        <Login onClick={login} color={fillColor}>
-          Login
-        </Login>
+        !isAtLogin && (
+          // <Login onClick={login} color={fillColor}>
+          <Login onClick={() => navigate('/login')} color={fillColor}>
+            Login
+          </Login>
+        )
       )}
     </Container>
   );

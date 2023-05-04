@@ -556,6 +556,7 @@ export default function Profile() {
         const canvas = new fabric.Canvas('canvas', {
           width: 980,
           height: 748,
+          hoverCursor: 'default',
         });
 
         canvas.loadFromJSON(board.data, () => {

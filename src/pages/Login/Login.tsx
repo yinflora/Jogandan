@@ -9,24 +9,7 @@ import { TfiArrowRight } from 'react-icons/tfi';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 
-// export default function Login() {
-//   const { isLogin, login, logout } = useContext(AuthContext);
-
-//   if (isLogin) {
-//     return (
-//       <>
-//         <h1>Welcome to JOGANDAN</h1>
-//         <button onClick={logout}>登出</button>
-//       </>
-//     );
-//   }
-//   return (
-//     <>
-//       <h1>Welcome to JOGANDAN</h1>
-//       <button onClick={login}>註冊/登入</button>
-//     </>
-//   );
-// }
+import { nativeLogin, nativeSignup } from '../../utils/firebase';
 
 const Container = styled.div`
   position: absolute;
@@ -99,7 +82,6 @@ const FieldWrapper = styled.div`
 
 const InputLabel = styled.label`
   font-size: 1rem;
-  /* font-weight: 500; */
   letter-spacing: 0.1rem;
   color: #b5b4b4;
 `;
@@ -128,16 +110,11 @@ const InputWrapper = styled.div`
     right: 0;
     opacity: 1;
   }
-
-  /* &:focus-within {
-    border: none;
-  } */
 `;
 
 const Input = styled.input`
   width: 100%;
   height: 100%;
-  /* padding-left: 5px; */
   overflow-x: scroll;
   font-family: 'TT Norms Pro', sans-serif;
   font-size: 1rem;
@@ -168,12 +145,6 @@ const SignUpMessage = styled.span`
   font-size: 1rem;
   cursor: default;
 `;
-
-// const SignUpLink = styled.span`
-//   position: relative;
-//   font-size: 1rem;
-//   cursor: pointer;
-// `;
 
 const SignUpLink = styled.p`
   position: relative;
@@ -214,9 +185,11 @@ const StartButton = styled.button`
   &:hover::after {
     width: 100%;
   }
+
   /* &:hover ${SignUpLink}::before {
     width: 100%;
   } */
+
   &:hover ${SignUpLink} {
     color: #8d9ca4;
   }
@@ -237,7 +210,6 @@ const StartButton = styled.button`
 const BackgroundImage = styled.div`
   position: absolute;
   z-index: -1;
-  /* opacity: 0.7; */
   width: 100vw;
   height: 100vh;
   filter: contrast(120%);
@@ -251,7 +223,16 @@ export default function Login() {
   const { login } = useContext(AuthContext);
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  console.log(setIsSignUp);
+  const [signUpForm, setSignUpForm] = useState({
+    userName: '',
+    email: '',
+    password: '',
+  });
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    password: '',
+  });
+
   // function validatePassword(event) {
   //   const password = event.target.value;
   //   const regex = /^[a-zA-Z0-9]+$/;
@@ -267,6 +248,16 @@ export default function Login() {
     if (location.pathname === '/signup') setIsSignUp(true);
   }, [location]);
 
+  function onSubmit() {
+    if (isSignUp) {
+      console.log('註冊！');
+      nativeSignup(signUpForm);
+    } else {
+      console.log('登入！');
+      nativeLogin(loginForm);
+    }
+  }
+
   return (
     <>
       <BackgroundImage />
@@ -279,15 +270,32 @@ export default function Login() {
           <FieldWrapper>
             <InputLabel htmlFor="userName">用戶名稱</InputLabel>
             <InputWrapper>
-              <Input type="text" id="userName" minLength={1} maxLength={30} />
+              <Input
+                type="text"
+                id="userName"
+                minLength={1}
+                maxLength={30}
+                onChange={(e) => {
+                  isSignUp &&
+                    setSignUpForm({ ...signUpForm, userName: e.target.value });
+                }}
+              />
             </InputWrapper>
-            <PromptMessage>密碼需要超過6個字</PromptMessage>
+            <PromptMessage>最多 30 字</PromptMessage>
           </FieldWrapper>
         )}
         <FieldWrapper>
           <InputLabel htmlFor="email">信箱</InputLabel>
           <InputWrapper>
-            <Input type="email" id="email" />
+            <Input
+              type="email"
+              id="email"
+              onChange={(e) => {
+                isSignUp
+                  ? setSignUpForm({ ...signUpForm, email: e.target.value })
+                  : setLoginForm({ ...loginForm, email: e.target.value });
+              }}
+            />
           </InputWrapper>
           <PromptMessage>密碼需要超過6個字</PromptMessage>
         </FieldWrapper>
@@ -300,12 +308,35 @@ export default function Login() {
               minLength={6}
               maxLength={16}
               pattern="[a-zA-Z0-9]+"
+              onChange={(e) => {
+                isSignUp
+                  ? setSignUpForm({ ...signUpForm, password: e.target.value })
+                  : setLoginForm({ ...loginForm, password: e.target.value });
+              }}
             />
             {/* <input type="password" onBlur={validatePassword} onChange={validatePassword} /> */}
           </InputWrapper>
-          <PromptMessage>密碼需要超過 6 個字</PromptMessage>
+          <PromptMessage>
+            請輸入英文或數字做為密碼，最少 6 位最多 16 位
+          </PromptMessage>
         </FieldWrapper>
-        <Button buttonType="dark" width="100%">
+        <Button
+          buttonType="dark"
+          width="100%"
+          onClick={() => {
+            onSubmit();
+            isSignUp
+              ? setSignUpForm({
+                  userName: '',
+                  email: '',
+                  password: '',
+                })
+              : setLoginForm({
+                  email: '',
+                  password: '',
+                });
+          }}
+        >
           SUBMIT
         </Button>
         {!isSignUp && (
