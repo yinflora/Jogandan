@@ -1,13 +1,20 @@
 import React, { useState, createContext, useEffect } from 'react';
-import { signin, signout, auth, getItems } from '../utils/firebase';
+import { signin, signout, auth, getUser, getItems } from '../utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
 
+// type User = {
+//   uid: string;
+//   displayName: string | null;
+//   email: string | null;
+//   photoURL: string | null;
+// };
+
 type User = {
   uid: string;
-  displayName: string | null;
-  email: string | null;
-  photoURL: string | null;
+  name: string;
+  email: string;
+  image: string;
 };
 
 type Item = {
@@ -43,9 +50,9 @@ export const AuthContext = createContext<AuthContextType>({
   // setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   user: {
     uid: '',
-    displayName: null,
-    email: null,
-    photoURL: null,
+    name: '',
+    email: '',
+    image: '',
   },
   uid: null,
   items: null,
@@ -64,11 +71,17 @@ type AuthContextProviderProps = {
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  // const [user, setUser] = useState<User>({
+  //   uid: '',
+  //   displayName: null,
+  //   email: null,
+  //   photoURL: null,
+  // });
   const [user, setUser] = useState<User>({
     uid: '',
-    displayName: null,
-    email: null,
-    photoURL: null,
+    name: '',
+    email: '',
+    image: '',
   });
   const [uid, setUid] = useState<string | null>(null);
   const [lastLoginInTime, setLastLoginInTime] = useState<
@@ -82,27 +95,59 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setItems(itemList);
   }
 
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (userInfo) => {
+  //     if (userInfo) {
+  //       console.log(userInfo);
+  //       setUser({
+  //         uid: userInfo.uid,
+  //         displayName: userInfo.displayName,
+  //         email: userInfo.email,
+  //         photoURL: userInfo.photoURL,
+  //       });
+  //       setIsLogin(true);
+  //       getUserItems(userInfo.uid);
+  //       setUid(userInfo.uid);
+  //       setLastLoginInTime(userInfo.metadata.lastSignInTime);
+  //       setLoading(false);
+  //     } else {
+  //       setUser({
+  //         uid: '',
+  //         displayName: null,
+  //         email: null,
+  //         photoURL: null,
+  //       });
+  //       setIsLogin(false);
+  //       setUid(null);
+  //       setLoading(false);
+  //     }
+  //   });
+  // }, []);
+
   useEffect(() => {
-    onAuthStateChanged(auth, (userInfo) => {
+    onAuthStateChanged(auth, async (userInfo) => {
       if (userInfo) {
-        console.log(userInfo);
+        const userData = await getUser(userInfo.uid);
+
+        if (!userData) return;
+        // console.log(userInfo);
         setUser({
-          uid: userInfo.uid,
-          displayName: userInfo.displayName,
-          email: userInfo.email,
-          photoURL: userInfo.photoURL,
+          uid: userData.uid,
+          name: userData.name,
+          email: userData.email,
+          image: userData.image,
         });
         setIsLogin(true);
-        getUserItems(userInfo.uid);
-        setUid(userInfo.uid);
+        getUserItems(userData.uid);
+        setUid(userData.uid);
         setLastLoginInTime(userInfo.metadata.lastSignInTime);
         setLoading(false);
       } else {
         setUser({
           uid: '',
-          displayName: null,
-          email: null,
-          photoURL: null,
+          name: '',
+          email: '',
+          image: '',
         });
         setIsLogin(false);
         setUid(null);
@@ -111,10 +156,26 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
   }, []);
 
+  // const login = async () => {
+  //   const response = await signin();
+  //   setLastLoginInTime(response.metadata.lastSignInTime);
+  //   setUser(response);
+  //   setIsLogin(true);
+  //   setLoading(false);
+  // };
+
   const login = async () => {
-    const response = await signin();
-    setLastLoginInTime(response.metadata.lastSignInTime);
-    setUser(response);
+    const userInfo = await signin();
+    // setLastLoginInTime(response.metadata.lastSignInTime);
+
+    if (!userInfo) return;
+
+    setUser({
+      uid: userInfo.uid,
+      name: userInfo.name,
+      email: userInfo.email,
+      image: userInfo.image,
+    });
     setIsLogin(true);
     setLoading(false);
   };
@@ -123,9 +184,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     signout();
     setUser({
       uid: '',
-      displayName: null,
-      email: null,
-      photoURL: null,
+      name: '',
+      email: '',
+      image: '',
     });
     setIsLogin(false);
     setLoading(false);

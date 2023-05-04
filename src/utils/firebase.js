@@ -47,11 +47,18 @@ provider.setCustomParameters({
 
 export const auth = getAuth();
 
+// export async function signin() {
+//   const response = await signInWithPopup(auth, provider);
+//   const userProfile = response.user;
+//   await createUser(userProfile);
+//   return userProfile;
+// }
+
 export async function signin() {
   const response = await signInWithPopup(auth, provider);
   const userProfile = response.user;
-  await createUser(userProfile);
-  return userProfile;
+  const userInfo = await createUser(userProfile);
+  return userInfo;
 }
 
 export function signout() {
@@ -70,14 +77,16 @@ export const db = getFirestore(app);
 
 export async function nativeSignup(form) {
   try {
-    const { userName, email, password } = form;
-    console.log(userName, email, password);
+    const { displayName, email, password } = form;
+    console.log(displayName, email, password);
+
     const { user } = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-    console.log(user);
+
+    user && (await createUser(user, displayName));
   } catch (error) {
     console.error(error);
   }
@@ -94,35 +103,52 @@ export async function nativeLogin(form) {
   }
 }
 
-async function createUser(userAuth) {
-  // 建立一個 document 實例
+async function createUser(userAuth, name) {
   const userDocRef = doc(db, 'users', userAuth.uid);
-
-  // 將 document 實例的資料取出來
   const userSnapshot = await getDoc(userDocRef);
 
-  // 如果使用者不存在
   if (!userSnapshot.exists()) {
-    const { displayName, email, photoURL } = userAuth;
+    const provider = userAuth.providerData[0].providerId;
     const createdAt = new Date();
-    // 就把資料寫進 Firestore
-    try {
-      await setDoc(userDocRef, {
-        name: displayName,
-        email,
-        image: photoURL,
-        createdAt,
-        // period: { start: null, end: null },
-        // processedItems: null,
-      });
-      console.log(`建立使用者-${displayName}成功`);
-    } catch (error) {
-      console.log(`${error.message}: 建立使用者失敗`);
+
+    if (provider === 'password') {
+      const { email, uid } = userAuth;
+      const image =
+        'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/userPhoto.png?alt=media&token=679fd51a-4928-4201-870e-1d9b2b592e3f';
+
+      try {
+        await setDoc(userDocRef, {
+          name,
+          email,
+          image,
+          createdAt,
+          uid,
+        });
+
+        console.log(`建立本地使用者-${name}成功`);
+      } catch (error) {
+        console.log(`${error.message}: 建立本地使用者失敗`);
+      }
+    } else if (provider === 'google.com') {
+      const { displayName, email, photoURL, uid } = userAuth;
+
+      try {
+        await setDoc(userDocRef, {
+          name: displayName,
+          email,
+          image: photoURL,
+          createdAt,
+          uid,
+        });
+        console.log(`建立Google使用者-${displayName}成功`);
+      } catch (error) {
+        console.log(`${error.message}: 建立Google使用者失敗`);
+      }
     }
   }
 
-  // 如果使用者存在直接回傳 userDocRef
-  return userDocRef;
+  // return userDocRef;
+  return userSnapshot.data();
 }
 
 // async function createUser(userAuth) {
@@ -155,6 +181,14 @@ async function createUser(userAuth) {
 //   // 如果使用者存在直接回傳 userDocRef
 //   return userDocRef;
 // }
+
+export async function getUser(userId) {
+  const userRef = doc(db, 'users', userId);
+  const docSnap = await getDoc(userRef);
+  console.log(docSnap.data());
+
+  return docSnap.data();
+}
 
 export async function uploadItems(userId, form) {
   try {

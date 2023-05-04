@@ -759,9 +759,9 @@ export default function Profile() {
           BACK
         </WelcomeMessage>
         <UserInfo>
-          <UserImage src={user.photoURL as string} />
+          <UserImage src={user.image as string} />
           <InfoWrapper>
-            <UserName>{user.displayName}</UserName>
+            <UserName>{user.name}</UserName>
             <UserGrade>{items && handleLevel()}</UserGrade>
           </InfoWrapper>
         </UserInfo>
