@@ -90,6 +90,11 @@ export async function nativeSignup(form) {
     return userData;
   } catch (error) {
     console.error(error);
+    // switch (error) {
+    //   case 'auth/email-already-in-use':
+    //     return '信箱已存在';
+    //     break;
+    // }
   }
 }
 
