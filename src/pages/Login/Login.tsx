@@ -312,7 +312,7 @@ export default function Login() {
               }}
             />
           </InputWrapper>
-          <PromptMessage>密碼需要超過6個字</PromptMessage>
+          <PromptMessage />
         </FieldWrapper>
         <FieldWrapper style={{ marginBottom: 30 }}>
           <InputLabel htmlFor="password">密碼</InputLabel>
@@ -321,7 +321,7 @@ export default function Login() {
               type="password"
               id="password"
               minLength={6}
-              maxLength={16}
+              maxLength={30}
               pattern="[a-zA-Z0-9]+"
               value={isSignUp ? signUpForm.password : loginForm.password}
               onChange={(e) => {
@@ -333,7 +333,7 @@ export default function Login() {
             {/* <input type="password" onBlur={validatePassword} onChange={validatePassword} /> */}
           </InputWrapper>
           <PromptMessage>
-            請輸入英文或數字做為密碼，最少 6 位最多 16 位
+            請輸入英文或數字做為密碼，最少 6 位最多 30 位
           </PromptMessage>
         </FieldWrapper>
         <Button
@@ -352,6 +352,9 @@ export default function Login() {
                   password: '',
                 });
           }}
+          disabled={Object.values(isSignUp ? signUpForm : loginForm).some(
+            (form) => form === ''
+          )}
         >
           SUBMIT
         </Button>
