@@ -9,7 +9,8 @@ import { TfiArrowRight } from 'react-icons/tfi';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 
-import { nativeLogin, nativeSignup } from '../../utils/firebase';
+// import { nativeLogin, nativeSignup } from '../../utils/firebase';
+import { nativeLogin } from '../../utils/firebase';
 
 const Container = styled.div`
   position: absolute;
@@ -220,11 +221,11 @@ export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { login, previousPath } = useContext(AuthContext);
+  const { signUp, login, previousPath } = useContext(AuthContext);
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [signUpForm, setSignUpForm] = useState({
-    displayName: '',
+    name: '',
     email: '',
     password: '',
   });
@@ -248,12 +249,11 @@ export default function Login() {
     if (location.pathname === '/signup') setIsSignUp(true);
   }, [location]);
 
-  console.log(location);
-
-  function onSubmit() {
+  async function onSubmit() {
     if (isSignUp) {
       console.log('註冊！');
-      nativeSignup(signUpForm);
+      // nativeSignup(signUpForm);
+      await signUp(signUpForm);
     } else {
       console.log('登入！');
       nativeLogin(loginForm);
@@ -278,11 +278,12 @@ export default function Login() {
                 id="userName"
                 minLength={1}
                 maxLength={30}
+                value={signUpForm.name}
                 onChange={(e) => {
                   isSignUp &&
                     setSignUpForm({
                       ...signUpForm,
-                      displayName: e.target.value,
+                      name: e.target.value,
                     });
                 }}
               />
@@ -296,6 +297,7 @@ export default function Login() {
             <Input
               type="email"
               id="email"
+              value={isSignUp ? signUpForm.email : loginForm.email}
               onChange={(e) => {
                 isSignUp
                   ? setSignUpForm({ ...signUpForm, email: e.target.value })
@@ -314,6 +316,7 @@ export default function Login() {
               minLength={6}
               maxLength={16}
               pattern="[a-zA-Z0-9]+"
+              value={isSignUp ? signUpForm.password : loginForm.password}
               onChange={(e) => {
                 isSignUp
                   ? setSignUpForm({ ...signUpForm, password: e.target.value })
@@ -333,7 +336,7 @@ export default function Login() {
             onSubmit();
             isSignUp
               ? setSignUpForm({
-                  displayName: '',
+                  name: '',
                   email: '',
                   password: '',
                 })

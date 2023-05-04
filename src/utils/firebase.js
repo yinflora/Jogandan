@@ -77,8 +77,8 @@ export const db = getFirestore(app);
 
 export async function nativeSignup(form) {
   try {
-    const { displayName, email, password } = form;
-    console.log(displayName, email, password);
+    const { name, email, password } = form;
+    console.log(name, email, password);
 
     const { user } = await createUserWithEmailAndPassword(
       auth,
@@ -86,7 +86,8 @@ export async function nativeSignup(form) {
       password
     );
 
-    user && (await createUser(user, displayName));
+    const userData = user && (await createUser(user, name));
+    return userData;
   } catch (error) {
     console.error(error);
   }
@@ -109,7 +110,7 @@ async function createUser(userAuth, name) {
 
   if (!userSnapshot.exists()) {
     const provider = userAuth.providerData[0].providerId;
-    const createdAt = new Date();
+    // const createdAt = new Date();
 
     if (provider === 'password') {
       const { email, uid } = userAuth;
@@ -117,15 +118,25 @@ async function createUser(userAuth, name) {
         'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/userPhoto.png?alt=media&token=679fd51a-4928-4201-870e-1d9b2b592e3f';
 
       try {
-        await setDoc(userDocRef, {
+        const userData = {
           name,
           email,
           image,
-          createdAt,
+          created: serverTimestamp(),
           uid,
-        });
+        };
+        await setDoc(userDocRef, userData);
 
-        console.log(`建立本地使用者-${name}成功`);
+        const boardDocId = await setFirstBoard(userAuth.uid);
+        const boardId = localStorage.getItem(`${userAuth.uid}/boardId`);
+
+        console.log('firebase回傳的', boardDocId);
+        console.log('localstorage回傳的', boardId);
+        console.log(`建立本地使用者-${name}成功!用戶資訊：`, userData);
+
+        if (!boardId)
+          localStorage.setItem(`${userAuth.uid}/boardId`, boardDocId);
+        return userData;
       } catch (error) {
         console.log(`${error.message}: 建立本地使用者失敗`);
       }
@@ -133,19 +144,35 @@ async function createUser(userAuth, name) {
       const { displayName, email, photoURL, uid } = userAuth;
 
       try {
-        await setDoc(userDocRef, {
+        const googleUserData = {
           name: displayName,
           email,
           image: photoURL,
-          createdAt,
+          created: serverTimestamp(),
           uid,
-        });
-        console.log(`建立Google使用者-${displayName}成功`);
+        };
+        await setDoc(userDocRef, googleUserData);
+
+        const boardDocId = await setFirstBoard(userAuth.uid);
+        const boardId = localStorage.getItem(`${userAuth.uid}/boardId`);
+
+        console.log('firebase回傳的', boardDocId);
+        console.log('localstorage回傳的', boardId);
+        console.log(
+          `建立Google使用者-${displayName}成功！用戶資訊：`,
+          googleUserData
+        );
+
+        if (!boardId)
+          localStorage.setItem(`${userAuth.uid}/boardId`, boardDocId);
+        return googleUserData;
       } catch (error) {
         console.log(`${error.message}: 建立Google使用者失敗`);
       }
     }
   }
+
+  console.log(userSnapshot.data());
 
   // return userDocRef;
   return userSnapshot.data();
@@ -480,11 +507,18 @@ export async function uploadTemplate(template) {
   }
 }
 
-export async function getTemplate(templateId) {
-  //Todo: 記得換成活的id
-  const templatesRef = doc(db, 'templates', templateId);
-  const docSnap = await getDoc(templatesRef);
+// export async function getTemplate(templateId) {
+//   //Todo: 記得換成活的id
+//   const templatesRef = doc(db, 'templates', templateId);
+//   const docSnap = await getDoc(templatesRef);
 
+//   return docSnap.data();
+// }
+
+export async function getTemplate() {
+  const TEMPLATE_ID = 'eDuLEGPS3NCJsyeIYzXl';
+  const templatesRef = doc(db, 'templates', TEMPLATE_ID);
+  const docSnap = await getDoc(templatesRef);
   return docSnap.data();
 }
 
@@ -492,7 +526,7 @@ export async function getBoard(userId, boardId) {
   const templatesRef = doc(db, 'users', userId, 'visionBoards', boardId);
   const docSnap = await getDoc(templatesRef);
 
-  console.log(docSnap.data());
+  // console.log(docSnap.data());
 
   return docSnap.data();
 }
@@ -509,6 +543,25 @@ export async function setNewBoard(userId, boardData) {
     return docRef.id;
   } catch (e) {
     console.error('Error uploading article: ', e);
+  }
+  return null;
+}
+
+export async function setFirstBoard(userId) {
+  try {
+    const templateData = await getTemplate();
+
+    const userBoardRef = collection(db, 'users', userId, 'visionBoards');
+
+    const docRef = await addDoc(userBoardRef, {
+      data: templateData,
+      lastUpdated: serverTimestamp(),
+      isEdited: false,
+    });
+
+    return docRef.id;
+  } catch (e) {
+    console.error('設置初次的夢想版失敗: ', e);
   }
   return null;
 }
