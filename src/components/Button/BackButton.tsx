@@ -18,11 +18,12 @@ const StyledButton = styled.button<{ isVisible: boolean }>`
   position: fixed;
   right: 30px;
   bottom: 30px;
-  background-color: rgba(223, 223, 223, 0.5);
+  display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
   width: 80px;
   height: 80px;
-  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
+  /* opacity: ${({ isVisible }) => (isVisible ? 1 : 0)}; */
   border-radius: 50%;
+  background-color: rgba(223, 223, 223, 0.5);
   animation: ${bounce} 1s infinite;
   cursor: pointer;
 `;

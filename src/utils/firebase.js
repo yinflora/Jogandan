@@ -23,6 +23,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -36,11 +38,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const storage = getStorage(app);
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({
   prompt: 'select_account',
 });
+
 export const auth = getAuth();
 
 export async function signin() {
@@ -63,6 +67,32 @@ export function signout() {
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 
 export const db = getFirestore(app);
+
+export async function nativeSignup(form) {
+  try {
+    const { userName, email, password } = form;
+    console.log(userName, email, password);
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    console.log(user);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function nativeLogin(form) {
+  try {
+    const { email, password } = form;
+    const { user } = await signInWithEmailAndPassword(auth, email, password);
+
+    console.log(user);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function createUser(userAuth) {
   // 建立一個 document 實例
@@ -94,6 +124,37 @@ async function createUser(userAuth) {
   // 如果使用者存在直接回傳 userDocRef
   return userDocRef;
 }
+
+// async function createUser(userAuth) {
+//   // 建立一個 document 實例
+//   const userDocRef = doc(db, 'users', userAuth.uid);
+
+//   // 將 document 實例的資料取出來
+//   const userSnapshot = await getDoc(userDocRef);
+
+//   // 如果使用者不存在
+//   if (!userSnapshot.exists()) {
+//     const { displayName, email, photoURL } = userAuth;
+//     const createdAt = new Date();
+//     // 就把資料寫進 Firestore
+//     try {
+//       await setDoc(userDocRef, {
+//         name: displayName,
+//         email,
+//         image: photoURL,
+//         createdAt,
+//         // period: { start: null, end: null },
+//         // processedItems: null,
+//       });
+//       console.log(`建立使用者-${displayName}成功`);
+//     } catch (error) {
+//       console.log(`${error.message}: 建立使用者失敗`);
+//     }
+//   }
+
+//   // 如果使用者存在直接回傳 userDocRef
+//   return userDocRef;
+// }
 
 export async function uploadItems(userId, form) {
   try {

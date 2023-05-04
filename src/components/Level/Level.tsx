@@ -7,6 +7,7 @@ const Container = styled.div`
   display: flex;
   height: 75vh;
   gap: 20px;
+  cursor: default;
 `;
 
 const Bar = styled.div`
