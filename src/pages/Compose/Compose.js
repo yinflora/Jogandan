@@ -268,7 +268,8 @@ const VisionBoard = styled.div`
 export default function Compose() {
   const { uid, isPopout, setIsPopout } = useContext(AuthContext);
 
-  const [images, setImages] = useState(null);
+  // const [images, setImages] = useState(null);
+  const [images, setImages] = useState([]);
   const [isUploaded, setIsUploaded] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState(null);
 
@@ -281,15 +282,21 @@ export default function Compose() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [buttonAction, setButtonAction] = useState(null);
-  console.log(buttonAction);
+  const [isBottom, setIsBottom] = useState(false);
+
   const boardIdRef = useRef(null);
+  const imageContainerRef = useRef(null);
+  const startIndexRef = useRef(null);
+  const imagesRef = useRef(null);
 
   const navigate = useNavigate();
 
   const storageRef = ref(storage, `/${uid}/images/`);
   const LAYOUT_1_ID = 'eDuLEGPS3NCJsyeIYzXl';
+  const MAX_IMAGES = 14;
 
   useEffect(() => {
+    if (!uid) return;
     const fetchImages = async () => {
       try {
         const res = await listAll(storageRef);
@@ -309,14 +316,76 @@ export default function Compose() {
         newData.sort((a, b) => new Date(b.updated) - new Date(a.updated));
 
         const newUrls = newData.map((data) => data.url);
-        setImages(newUrls);
+        imagesRef.current = newUrls;
+
+        console.log('newUrls', newUrls);
+
+        const startIndex = startIndexRef.current;
+        const endIndex = startIndexRef.current + MAX_IMAGES;
+
+        const slicedItems = newUrls.slice(startIndex, endIndex);
+        const newImages = [...images, ...slicedItems];
+
+        // setImages(newUrls);
+        setImages(newImages);
+
+        startIndexRef.current = endIndex;
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchImages();
-  }, [uid, isUploaded]);
+
+    // }, [uid, isUploaded]);
+  }, [uid]);
+
+  useEffect(() => {
+    if (!imageContainerRef.current) return;
+
+    function onScroll() {
+      const { scrollTop, clientHeight, scrollHeight } =
+        imageContainerRef.current;
+      const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
+
+      if (distanceFromBottom < 10) {
+        console.log('User has scrolled to the bottom of the div!');
+        setIsBottom(true);
+      }
+    }
+
+    imageContainerRef.current.addEventListener('scroll', onScroll);
+
+    return () =>
+      imageContainerRef.current.removeEventListener('scroll', onScroll);
+  }, [imageContainerRef.current]);
+
+  useEffect(() => {
+    async function setNewImages() {
+      if (
+        !isBottom ||
+        !imagesRef.current ||
+        images.length === 0 ||
+        images.length >= imagesRef.current.length
+      )
+        return;
+
+      const startIndex = startIndexRef.current;
+      const endIndex = startIndexRef.current + MAX_IMAGES;
+      console.log('start:', startIndex, 'end:', endIndex);
+
+      const slicedItems = imagesRef.current.slice(startIndex, endIndex);
+      const newImages = [...images, slicedItems];
+
+      console.log('slicedItems', slicedItems);
+
+      setImages(newImages);
+
+      startIndexRef.current = endIndex;
+      setIsBottom(false);
+    }
+    setNewImages();
+  }, [isBottom]);
 
   useEffect(() => {
     if (!uid) return;
@@ -357,7 +426,8 @@ export default function Compose() {
     }
 
     function dropImage(e) {
-      if (draggingIndex === null || images === null) return;
+      // if (draggingIndex === null || images === null) return;
+      if (draggingIndex === null || images.length === 0) return;
 
       const target = e.target;
       let clipPath;
@@ -570,8 +640,8 @@ export default function Compose() {
             <CiCircleInfo className="info" />
             <Remind>請拖拉照片至格子調整</Remind>
           </RemindWrapper>
-          {uid && images ? (
-            <ImageWrapper>
+          {uid && images.length > 0 ? (
+            <ImageWrapper ref={imageContainerRef}>
               {images.map((item, index) => (
                 <Image
                   key={index}

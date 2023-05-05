@@ -334,6 +334,19 @@ export async function updateItem(userId, itemId, itemRef) {
   return null;
 }
 
+export async function updateUser(userId, url) {
+  try {
+    const userDocRef = doc(db, 'users', userId);
+
+    await updateDoc(userDocRef, {
+      image: url,
+    });
+  } catch (e) {
+    console.error('Error uploading head photo: ', e);
+  }
+  return null;
+}
+
 export async function getFilteredItems(field, value) {
   const itemsRef = collection(
     db,
