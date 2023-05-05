@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components/macro';
+import { useNavigate } from 'react-router-dom';
 
 import background from './background.jpeg';
 import feature1 from './feature1.png';
@@ -239,6 +240,8 @@ export default function Home() {
   const [isEntering, setIsEntering] = useState(false);
   const introRef = useRef<HTMLDivElement | null>(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     function handleScroll() {
       if (!introRef.current) return;
@@ -323,7 +326,11 @@ export default function Home() {
           <Login>
             <LoginTitle>Join Jogandan</LoginTitle>
             <LoginSubTitle>立即開始您的簡單生活</LoginSubTitle>
-            <Button width="30%" buttonType="normal">
+            <Button
+              width="30%"
+              buttonType="normal"
+              onClick={() => navigate('/signup')}
+            >
               START YOUR JOURNEY
             </Button>
           </Login>

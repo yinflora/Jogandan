@@ -37,6 +37,7 @@ const PageTitle = styled.h1`
   font-weight: 500;
   letter-spacing: 0.4rem;
   text-transform: uppercase;
+  cursor: default;
 `;
 
 const SearchField = styled.div`
@@ -95,6 +96,7 @@ const SearchBtn = styled.button`
 
 const SearchText = styled.p`
   font-size: 1rem;
+  cursor: default;
 `;
 
 const ItemContainer = styled.div`
@@ -117,6 +119,7 @@ const FilterTitle = styled.p`
   font-size: 1.25rem;
   letter-spacing: 0.2rem;
   color: #000;
+  cursor: default;
 
   &:first-of-type {
     position: relative;
@@ -246,6 +249,7 @@ const Name = styled.p`
   white-space: nowrap;
   letter-spacing: 0.1rem;
   color: #707070;
+  cursor: default;
 `;
 
 const SUBCATEGORY: string[] = [
