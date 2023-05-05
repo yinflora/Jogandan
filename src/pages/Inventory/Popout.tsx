@@ -108,9 +108,9 @@ const SubImageWrapper = styled.div`
     cursor: pointer;
   }
 
-  &::-webkit-scrollbar {
+  /* &::-webkit-scrollbar {
     display: none;
-  }
+  } */
 `;
 
 const SubImage = styled.img`

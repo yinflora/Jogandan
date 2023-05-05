@@ -267,9 +267,9 @@ const SubImageContainer = styled.div`
   flex-direction: column;
   overflow-y: scroll;
 
-  &::-webkit-scrollbar {
+  /* &::-webkit-scrollbar {
     display: none;
-  }
+  } */
 `;
 
 const CancelBtn = styled.button`
@@ -435,6 +435,10 @@ const SelectInput = styled.select`
   border-bottom: 1px solid #fff;
   color: #fff;
   cursor: pointer;
+`;
+
+const SelectOption = styled.option`
+  color: #000;
 `;
 
 const BulkSelectInput = styled(SelectInput)`
@@ -1112,13 +1116,13 @@ export default function Upload({
                   }
                 >
                   {CATEGORY_OPTIONS.map((option) => (
-                    <option
+                    <SelectOption
                       key={option}
                       value={option}
                       selected={option === singleForm.category}
                     >
                       {option}
-                    </option>
+                    </SelectOption>
                   ))}
                 </SelectInput>
               </HalfFieldWrapper>
@@ -1130,13 +1134,13 @@ export default function Upload({
                   }
                 >
                   {STATUS_OPTIONS.map((option) => (
-                    <option
+                    <SelectOption
                       key={option}
                       value={option}
                       selected={option === singleForm.status}
                     >
                       {option}
-                    </option>
+                    </SelectOption>
                   ))}
                 </SelectInput>
               </HalfFieldWrapper>
