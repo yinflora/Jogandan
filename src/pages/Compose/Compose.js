@@ -4,7 +4,7 @@ import styled, { keyframes } from 'styled-components/macro';
 import AuthContext from '../../context/authContext';
 import {
   storage,
-  setNewBoard,
+  // setNewBoard,
   saveBoard,
   getBoard,
   getTemplate,
@@ -23,7 +23,7 @@ import { CiCircleInfo, CiTrash, CiUndo } from 'react-icons/ci';
 
 import Button from '../../components/Button/Button';
 import Alert from '../../components/Alert/Alert';
-import Loader from '../../components/Loader/Loader';
+// import Loader from '../../components/Loader/Loader';
 
 const Container = styled.div`
   min-width: 1280px;
@@ -31,6 +31,7 @@ const Container = styled.div`
   /* margin: 150px auto 0; */
   margin: 110px auto 0;
   padding: 0 150px;
+  cursor: default;
 `;
 
 const Background = styled.div`
@@ -92,7 +93,8 @@ const BoardContainer = styled.div`
   position: relative;
   display: flex;
   width: 100%;
-  height: calc(100vh - 198px);
+  height: calc(100vh - 173px);
+  /* height: calc(100vh - 198px); */
   max-height: 650px;
   margin: 0 auto;
   padding-top: 30px;
@@ -269,44 +271,22 @@ export default function Compose() {
   const [images, setImages] = useState(null);
   const [isUploaded, setIsUploaded] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState(null);
+
   const [visionBoard, setVisionBoard] = useState(null);
+  const [activeItem, setActiveItem] = useState(null);
   const [bgColor, setBgColor] = useState('#F4F3EF');
   const [textConfig, setTextConfig] = useState({
     color: '#000',
     fontSize: 16,
   });
-  const [activeItem, setActiveItem] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  const canvasRef = useRef(null);
   const boardIdRef = useRef(null);
-  const storageRef = ref(storage, `/${uid}/images/`);
 
   const navigate = useNavigate();
 
+  const storageRef = ref(storage, `/${uid}/images/`);
   const LAYOUT_1_ID = 'eDuLEGPS3NCJsyeIYzXl';
-
-  console.log(isSaving);
-
-  useEffect(() => {
-    async function renderBoard() {
-      if (canvasRef.current) {
-        const { template } = await getTemplate(LAYOUT_1_ID);
-
-        const canvas = new fabric.Canvas('canvas', {
-          width: 625,
-          height: 475,
-          backgroundColor: bgColor,
-        });
-
-        canvas.loadFromJSON(template);
-        setVisionBoard(canvas);
-        setActiveItem(canvas.getActiveObject());
-      }
-    }
-
-    renderBoard();
-  }, [canvasRef.current]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -338,53 +318,32 @@ export default function Compose() {
   }, [uid, isUploaded]);
 
   useEffect(() => {
-    saveProject();
-  }, [activeItem]);
+    if (!uid) return;
 
-  useEffect(() => {
-    if (!uid || !visionBoard) return;
+    async function setBoard() {
+      const boardId = localStorage.getItem(`${uid}/boardId`);
+      const canvas = new fabric.Canvas('canvas', {
+        width: 625,
+        height: 475,
+        backgroundColor: bgColor,
+      });
 
-    async function createBoard() {
-      // const id = localStorage.getItem('boardId');
-      const id = localStorage.getItem(`${uid}/boardId`);
-      if (id) {
-        boardIdRef.current = id;
-
-        const prevData = await getBoard(uid, id);
-        console.log(prevData);
-        visionBoard.loadFromJSON(prevData.data);
-      } else {
-        const boardId = await setNewBoard(
-          uid,
-          visionBoard.toJSON([
-            'isClipFrame',
-            'selectable',
-            'hasControls',
-            'hoverCursor',
-          ])
-        );
-        // const boardId = await setNewBoard(uid, JSON.stringify(visionBoard));
-        // localStorage.setItem('boardId', boardId);
-        localStorage.setItem(`${uid}/boardId`, boardId);
+      if (boardId) {
         boardIdRef.current = boardId;
+        const prevData = await getBoard(uid, boardId);
+        canvas.loadFromJSON(prevData.data);
 
-        await saveBoard(
-          uid,
-          boardId,
-          // visionBoard.toJSON(['isClipFrame']),
-          visionBoard.toJSON([
-            'isClipFrame',
-            'selectable',
-            'hasControls',
-            'hoverCursor',
-          ]),
-          false
-        );
+        setVisionBoard(canvas);
       }
     }
-    createBoard();
 
-    function findActiveObject() {
+    setBoard();
+  }, [uid]);
+
+  useEffect(() => {
+    if (!visionBoard) return;
+
+    function setActiveObject() {
       const activeObject = visionBoard.getActiveObject();
       setActiveItem(activeObject);
 
@@ -395,32 +354,10 @@ export default function Compose() {
         });
       }
     }
-    visionBoard.on('mouse:down', findActiveObject);
-    return () => visionBoard.off('mouse:down', findActiveObject);
-  }, [uid, visionBoard]);
-
-  useEffect(() => {
-    if (!visionBoard) return;
-
-    visionBoard.setBackgroundColor(bgColor, () => {
-      visionBoard.renderAll();
-    });
-
-    const activeObject = visionBoard.getActiveObject();
-
-    if (activeObject && activeObject.type === 'i-text') {
-      activeObject.set({
-        fill: textConfig.color,
-        fontSize: textConfig.fontSize,
-      });
-      visionBoard.renderAll();
-    }
-  }, [visionBoard, bgColor, textConfig]);
-
-  useEffect(() => {
-    if (!visionBoard || draggingIndex === null || images === null) return;
 
     function dropImage(e) {
+      if (draggingIndex === null || images === null) return;
+
       const target = e.target;
       let clipPath;
 
@@ -457,10 +394,34 @@ export default function Compose() {
       saveProject();
     }
 
+    visionBoard.on('mouse:down', setActiveObject);
     visionBoard.on('drop', dropImage);
 
-    return () => visionBoard.off('drop', dropImage);
+    return () => {
+      visionBoard.off('mouse:down', setActiveObject);
+      visionBoard.off('drop', dropImage);
+    };
   }, [visionBoard, draggingIndex]);
+
+  useEffect(() => {
+    if (!visionBoard) return;
+
+    visionBoard.setBackgroundColor(bgColor, () => {
+      visionBoard.renderAll();
+    });
+
+    const activeObject = visionBoard.getActiveObject();
+
+    if (activeObject && activeObject.type === 'i-text') {
+      activeObject.set({
+        fill: textConfig.color,
+        fontSize: textConfig.fontSize,
+      });
+      visionBoard.renderAll();
+    }
+
+    saveProject();
+  }, [visionBoard, bgColor, textConfig, activeItem]);
 
   function handleFileUpload(e) {
     const files = e.target.files;
@@ -537,142 +498,136 @@ export default function Compose() {
     );
 
     setTimeout(() => setIsSaving(false), 1000);
-
-    console.log('儲存囉');
   }
 
-  if (uid && images) {
-    return (
-      <Container>
-        {isPopout && <Alert action={() => navigate('/profile')} />}
-        <PageTitle>Vision Board</PageTitle>
+  return (
+    <Container>
+      {isPopout && <Alert action={() => navigate('/profile')} />}
+      <PageTitle>Vision Board</PageTitle>
 
-        <BoardContainer>
-          {isSaving ? (
-            <SavePrompt>
-              Saving<SavingDot>.</SavingDot>
-              <SecondSavingDot>.</SecondSavingDot>
-              <ThirdSavingDot>.</ThirdSavingDot>
-            </SavePrompt>
-          ) : (
-            <SavePrompt>Saved</SavePrompt>
-          )}
+      <BoardContainer>
+        {isSaving ? (
+          <SavePrompt>
+            Saving<SavingDot>.</SavingDot>
+            <SecondSavingDot>.</SecondSavingDot>
+            <ThirdSavingDot>.</ThirdSavingDot>
+          </SavePrompt>
+        ) : (
+          <SavePrompt>Saved</SavePrompt>
+        )}
 
-          {uid && images ? (
-            <UploadContainer>
-              <input
-                id="uploadImage"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileUpload(e)}
-                multiple
-                style={{ display: 'none' }}
-              />
-              <label htmlFor="uploadImage">
-                <Button
-                  width="100%"
-                  buttonType="normal"
-                  onClick={handleSelectImage}
-                >
-                  選擇照片
-                </Button>
-              </label>
-              <RemindWrapper>
-                <CiCircleInfo className="info" />
-                <Remind>請拖拉照片至格子調整</Remind>
-              </RemindWrapper>
-              <ImageWrapper>
-                {images &&
-                  images.map((item, index) => (
-                    <Image
-                      key={index}
-                      src={item}
-                      draggable
-                      onDragStart={() => setDraggingIndex(index)}
-                      onDragEnd={() => setDraggingIndex(null)}
-                    />
-                  ))}
-              </ImageWrapper>
-            </UploadContainer>
-          ) : (
-            <></>
-          )}
-
-          <VisionBoardContainer>
-            <SettingWrapper>
-              <ToolWrapper>
-                <ToolBar>
-                  <ToolName>背景</ToolName>
-                  <ColorSelector
-                    type="color"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                  />
-                </ToolBar>
-              </ToolWrapper>
-              {activeItem && activeItem.type === 'i-text' && (
-                <>
-                  <ToolWrapper>
-                    <ToolBar>
-                      <ToolName>文字</ToolName>
-                      <ColorSelector
-                        type="color"
-                        value={textConfig.color}
-                        onChange={(e) =>
-                          setTextConfig({
-                            ...textConfig,
-                            color: e.target.value,
-                          })
-                        }
-                      />
-                    </ToolBar>
-                  </ToolWrapper>
-                  <ToolWrapper>
-                    <ToolBar>
-                      <ToolName>字體大小</ToolName>
-                      <FontSizeRange
-                        type="range"
-                        min="10"
-                        max="40"
-                        defaultValue="16"
-                        value={textConfig.fontSize}
-                        onChange={(e) =>
-                          setTextConfig({
-                            ...textConfig,
-                            fontSize: Number(e.target.value),
-                          })
-                        }
-                      />
-                      <FontSize>{textConfig.fontSize}</FontSize>
-                    </ToolBar>
-                  </ToolWrapper>
-                </>
-              )}
-
-              <ActionWrapper>
-                {activeItem && (
-                  <CiTrash className="trash" onClick={deleteActiveItem} />
-                )}
-                <TfiText className="text" onClick={addText} />
-                <CiUndo className="undo" onClick={clear} />
-                <TfiSaveAlt
-                  className="save"
-                  onClick={() => {
-                    saveProject();
-                    setIsPopout(!isPopout);
-                  }}
+        {uid && images ? (
+          <UploadContainer>
+            <input
+              id="uploadImage"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileUpload(e)}
+              multiple
+              style={{ display: 'none' }}
+            />
+            <label htmlFor="uploadImage">
+              <Button
+                width="100%"
+                buttonType="normal"
+                onClick={handleSelectImage}
+              >
+                選擇照片
+              </Button>
+            </label>
+            <RemindWrapper>
+              <CiCircleInfo className="info" />
+              <Remind>請拖拉照片至格子調整</Remind>
+            </RemindWrapper>
+            <ImageWrapper>
+              {images.map((item, index) => (
+                <Image
+                  key={index}
+                  src={item}
+                  draggable
+                  onDragStart={() => setDraggingIndex(index)}
+                  onDragEnd={() => setDraggingIndex(null)}
                 />
-              </ActionWrapper>
-            </SettingWrapper>
+              ))}
+            </ImageWrapper>
+          </UploadContainer>
+        ) : (
+          <></>
+        )}
 
-            <VisionBoard ref={canvasRef}>
-              <canvas id="canvas" />
-            </VisionBoard>
-          </VisionBoardContainer>
-        </BoardContainer>
-        <Background />
-      </Container>
-    );
-  }
-  return <Loader />;
+        <VisionBoardContainer>
+          <SettingWrapper>
+            <ToolWrapper>
+              <ToolBar>
+                <ToolName>背景</ToolName>
+                <ColorSelector
+                  type="color"
+                  value={bgColor}
+                  onChange={(e) => setBgColor(e.target.value)}
+                />
+              </ToolBar>
+            </ToolWrapper>
+            {activeItem && activeItem.type === 'i-text' && (
+              <>
+                <ToolWrapper>
+                  <ToolBar>
+                    <ToolName>文字</ToolName>
+                    <ColorSelector
+                      type="color"
+                      value={textConfig.color}
+                      onChange={(e) =>
+                        setTextConfig({
+                          ...textConfig,
+                          color: e.target.value,
+                        })
+                      }
+                    />
+                  </ToolBar>
+                </ToolWrapper>
+                <ToolWrapper>
+                  <ToolBar>
+                    <ToolName>字體大小</ToolName>
+                    <FontSizeRange
+                      type="range"
+                      min="10"
+                      max="40"
+                      defaultValue="16"
+                      value={textConfig.fontSize}
+                      onChange={(e) =>
+                        setTextConfig({
+                          ...textConfig,
+                          fontSize: Number(e.target.value),
+                        })
+                      }
+                    />
+                    <FontSize>{textConfig.fontSize}</FontSize>
+                  </ToolBar>
+                </ToolWrapper>
+              </>
+            )}
+
+            <ActionWrapper>
+              {activeItem && (
+                <CiTrash className="trash" onClick={deleteActiveItem} />
+              )}
+              <TfiText className="text" onClick={addText} />
+              <CiUndo className="undo" onClick={clear} />
+              <TfiSaveAlt
+                className="save"
+                onClick={() => {
+                  saveProject();
+                  setIsPopout(!isPopout);
+                }}
+              />
+            </ActionWrapper>
+          </SettingWrapper>
+
+          <VisionBoard>
+            <canvas id="canvas" />
+          </VisionBoard>
+        </VisionBoardContainer>
+      </BoardContainer>
+      <Background />
+    </Container>
+  );
 }
