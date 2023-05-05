@@ -911,23 +911,31 @@ export default function Upload({
       {isEdit
         ? isPopout && (
             <Alert
-              action={() => {
-                isEdit && setIsEdit && setIsEdit(false);
-                navigate(`/inventory/${id}`);
-              }}
+              title="儲存成功！"
+              buttonConfig={[
+                {
+                  buttonType: 'dark',
+                  value: '確認結果',
+                  action: () => {
+                    isEdit && setIsEdit && setIsEdit(false);
+                    navigate(`/inventory/${id}`);
+                  },
+                },
+              ]}
             />
-            // <Alert
-            //   url={`/inventory/${id}`}
-            //   setIsEdit={setIsEdit}
-            //   isEdit={isEdit}
-            // />
           )
-        : // : isPopout && <Alert url="/inventory" />}
-          isPopout && (
+        : isPopout && (
             <Alert
-              action={() => {
-                navigate('/inventory');
-              }}
+              title="上傳成功！"
+              buttonConfig={[
+                {
+                  buttonType: 'dark',
+                  value: '確認結果',
+                  action: () => {
+                    navigate('/inventory');
+                  },
+                },
+              ]}
             />
           )}
 
