@@ -135,9 +135,9 @@ async function createUser(userAuth, name) {
         const boardDocId = await setFirstBoard(userAuth.uid);
         const boardId = localStorage.getItem(`${userAuth.uid}/boardId`);
 
-        console.log('firebase回傳的', boardDocId);
-        console.log('localstorage回傳的', boardId);
-        console.log(`建立本地使用者-${name}成功!用戶資訊：`, userData);
+        // console.log('firebase回傳的', boardDocId);
+        // console.log('localstorage回傳的', boardId);
+        // console.log(`建立本地使用者-${name}成功!用戶資訊：`, userData);
 
         if (!boardId)
           localStorage.setItem(`${userAuth.uid}/boardId`, boardDocId);
@@ -161,12 +161,12 @@ async function createUser(userAuth, name) {
         const boardDocId = await setFirstBoard(userAuth.uid);
         const boardId = localStorage.getItem(`${userAuth.uid}/boardId`);
 
-        console.log('firebase回傳的', boardDocId);
-        console.log('localstorage回傳的', boardId);
-        console.log(
-          `建立Google使用者-${displayName}成功！用戶資訊：`,
-          googleUserData
-        );
+        // console.log('firebase回傳的', boardDocId);
+        // console.log('localstorage回傳的', boardId);
+        // console.log(
+        //   `建立Google使用者-${displayName}成功！用戶資訊：`,
+        //   googleUserData
+        // );
 
         if (!boardId)
           localStorage.setItem(`${userAuth.uid}/boardId`, boardDocId);
@@ -555,7 +555,6 @@ export async function setNewBoard(userId, boardData) {
 export async function setFirstBoard(userId) {
   try {
     const templateData = await getTemplate();
-
     const userBoardRef = collection(db, 'users', userId, 'visionBoards');
 
     const docRef = await addDoc(userBoardRef, {
