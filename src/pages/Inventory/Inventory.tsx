@@ -189,6 +189,28 @@ const Split = styled.div`
   background-color: #000;
 `;
 
+const NoMatchPrompt = styled.div`
+  display: flex;
+  width: 100%;
+  grid-column: 1 / 4;
+  padding-top: 165px;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  letter-spacing: 0.1rem;
+  color: #b5b4b4;
+`;
+
+const NoMatchEmoji = styled.p`
+  font-size: 3rem;
+  letter-spacing: 0.4rem;
+  font-weight: 500;
+`;
+
+const NoMatchText = styled.p`
+  font-size: 1.25rem;
+`;
+
 const ProductWrapper = styled.div`
   display: grid;
   width: 75%;
@@ -273,6 +295,7 @@ export default function Inventory() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [search, setSearch] = useState<string>('');
   const [isBottom, setIsBottom] = useState<boolean>(false);
+  const [noMatchingResult, setNoMatchingResult] = useState<boolean>(false);
 
   const itemsRef = useRef<Items | null>(null);
   const startIndexRef = useRef<number>(0);
@@ -379,7 +402,9 @@ export default function Inventory() {
           item.name.toLowerCase().includes(search.toLowerCase())
         );
       }
-      setItems(filteredItems);
+      filteredItems.length === 0
+        ? setNoMatchingResult(true)
+        : setItems(filteredItems);
     }
     handleFilter();
   }, [filter, isPopout]);
@@ -389,6 +414,7 @@ export default function Inventory() {
       setItems(itemsRef.current);
     }
     setFilter({ ...filter, category: '' });
+    setNoMatchingResult(false);
   }
 
   function handleClearStatus() {
@@ -396,6 +422,7 @@ export default function Inventory() {
       setItems(itemsRef.current);
     }
     setFilter({ ...filter, status: '' });
+    setNoMatchingResult(false);
   }
 
   function handleSearch() {
@@ -403,11 +430,22 @@ export default function Inventory() {
       const filteredItems = itemsRef.current.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
       );
-      setItems(filteredItems);
-      setFilter({
-        category: '',
-        status: '',
-      });
+
+      // setItems(filteredItems);
+      // setFilter({
+      //   category: '',
+      //   status: '',
+      // });
+      if (filteredItems.length === 0) {
+        setNoMatchingResult(true);
+        setItems(filteredItems);
+      } else {
+        setItems(filteredItems);
+        setFilter({
+          category: '',
+          status: '',
+        });
+      }
     }
   }
 
@@ -493,6 +531,7 @@ export default function Inventory() {
               setItems(itemsRef.current);
               setSearch('');
               setFilter({ category: '', status: '' });
+              setNoMatchingResult(false);
             }}
           >
             All
@@ -545,7 +584,29 @@ export default function Inventory() {
             ))}
           </SubFilterWrapper>
         </FilterWrapper>
+
         <ProductWrapper>
+          {noMatchingResult ? (
+            <NoMatchPrompt>
+              <NoMatchEmoji>:(</NoMatchEmoji>
+              <NoMatchText>沒有符合搜尋條件的項目</NoMatchText>
+            </NoMatchPrompt>
+          ) : (
+            items &&
+            items.map((item: any, index: number) => (
+              <Product key={index}>
+                {item.images && (
+                  <Image
+                    src={item.images[0]}
+                    onClick={() => navigate(`/inventory/${item.id}`)}
+                  ></Image>
+                )}
+                <Name>{item.name}</Name>
+              </Product>
+            ))
+          )}
+        </ProductWrapper>
+        {/* <ProductWrapper>
           {items &&
             items.map((item: any, index: number) => (
               <Product key={index}>
@@ -558,7 +619,7 @@ export default function Inventory() {
                 <Name>{item.name}</Name>
               </Product>
             ))}
-        </ProductWrapper>
+        </ProductWrapper> */}
         {isPopout && (
           <Popout
             selectedItem={selectedItem}
