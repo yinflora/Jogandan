@@ -22,6 +22,7 @@ const PageTitle = styled.h1`
   letter-spacing: 0.4rem;
   text-transform: uppercase;
   color: #000;
+  cursor: default;
 `;
 
 const ScrollSection = styled.div`
