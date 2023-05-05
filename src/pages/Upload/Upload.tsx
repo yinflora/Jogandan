@@ -911,6 +911,7 @@ export default function Upload({
       {isEdit
         ? isPopout && (
             <Alert
+              type="success"
               title="儲存成功！"
               buttonConfig={[
                 {
@@ -926,6 +927,7 @@ export default function Upload({
           )
         : isPopout && (
             <Alert
+              type="success"
               title="上傳成功！"
               buttonConfig={[
                 {
