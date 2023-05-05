@@ -1,16 +1,24 @@
-import { useContext, useEffect, useState, useRef, useReducer } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useReducer,
+} from 'react';
 import { AuthContext } from '../../context/authContext';
-import { getItems, getBoard } from '../../utils/firebase';
+import { getItems, getBoard, storage, updateUser } from '../../utils/firebase';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { Timestamp } from 'firebase/firestore';
 import { fabric } from 'fabric';
 import { useNavigate } from 'react-router-dom';
 
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import styled, { css, keyframes } from 'styled-components/macro';
 
 import { TfiArrowRight } from 'react-icons/tfi';
 import { RxCross1 } from 'react-icons/rx';
+import { SlCloudUpload } from 'react-icons/sl';
 
 import Button from '../../components/Button/Button';
 
@@ -44,10 +52,44 @@ const UserInfo = styled.div`
   gap: 40px;
 `;
 
-const UserImage = styled.img`
+const ModifyImage = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* display: flex; */
+  display: none;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  background-color: rgba(141, 156, 164, 0.8);
+
+  & > .upload {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+  }
+`;
+
+const UserImageWrapper = styled.div`
+  position: relative;
   width: 120px;
   height: 120px;
+
+  &:hover ${ModifyImage} {
+    display: flex;
+    cursor: pointer;
+  }
+`;
+
+const UserImage = styled.img`
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
 `;
 
 const InfoWrapper = styled.div`
@@ -528,7 +570,7 @@ type Period = {
 };
 
 export default function Profile() {
-  const { user, uid, lastLoginInTime } = useContext(AuthContext);
+  const { user, setUser, uid, lastLoginInTime } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [items, dispatch] = useReducer(reducer, []);
@@ -755,6 +797,20 @@ export default function Profile() {
     });
   }
 
+  async function handleModifyImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const image = e.target.files && e.target.files[0];
+
+    if (!image) return;
+
+    const storageRef = ref(storage, `/${uid}/userImages/${image.name}`);
+    const snapshot = await uploadBytes(storageRef, image);
+    const url = await getDownloadURL(snapshot.ref);
+
+    await updateUser(uid, url);
+
+    setUser({ ...user, image: url });
+  }
+
   return (
     <>
       <Container>
@@ -764,7 +820,22 @@ export default function Profile() {
           BACK
         </WelcomeMessage>
         <UserInfo>
-          <UserImage src={user.image as string} />
+          <UserImageWrapper>
+            <UserImage src={user.image as string} />
+            <input
+              id="uploadImage"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleModifyImage(e)}
+              style={{ display: 'none' }}
+            />
+            <label htmlFor="uploadImage">
+              <ModifyImage>
+                <SlCloudUpload className="upload" />
+              </ModifyImage>
+            </label>
+          </UserImageWrapper>
+
           <InfoWrapper>
             <UserName>{user.name}</UserName>
             <UserGrade>{items && handleLevel()}</UserGrade>

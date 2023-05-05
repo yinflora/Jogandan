@@ -49,6 +49,7 @@ type AuthContextType = {
   loading: boolean;
   // setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   user: User;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
   uid: string | null;
   items: Items | null;
   lastLoginInTime: string | null | undefined;
@@ -71,6 +72,7 @@ export const AuthContext = createContext<AuthContextType>({
     email: '',
     image: '',
   },
+  setUser: () => {},
   uid: null,
   items: null,
   lastLoginInTime: null,
@@ -293,6 +295,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         loading,
         // setLoading,
         user,
+        setUser,
         uid,
         items,
         lastLoginInTime,
