@@ -23,6 +23,7 @@ import { CiCircleInfo, CiTrash, CiUndo } from 'react-icons/ci';
 
 import Button from '../../components/Button/Button';
 import Alert from '../../components/Alert/Alert';
+import Loader from '../../components/Loader/Loader';
 
 const Container = styled.div`
   min-width: 1280px;
@@ -305,7 +306,7 @@ export default function Compose() {
     }
 
     renderBoard();
-  }, [canvasRef]);
+  }, [canvasRef.current]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -540,128 +541,138 @@ export default function Compose() {
     console.log('儲存囉');
   }
 
-  return (
-    <Container>
-      {isPopout && <Alert action={() => navigate('/profile')} />}
-      <PageTitle>Vision Board</PageTitle>
+  if (uid && images) {
+    return (
+      <Container>
+        {isPopout && <Alert action={() => navigate('/profile')} />}
+        <PageTitle>Vision Board</PageTitle>
 
-      <BoardContainer>
-        {isSaving ? (
-          <SavePrompt>
-            Saving<SavingDot>.</SavingDot>
-            <SecondSavingDot>.</SecondSavingDot>
-            <ThirdSavingDot>.</ThirdSavingDot>
-          </SavePrompt>
-        ) : (
-          <SavePrompt>Saved</SavePrompt>
-        )}
+        <BoardContainer>
+          {isSaving ? (
+            <SavePrompt>
+              Saving<SavingDot>.</SavingDot>
+              <SecondSavingDot>.</SecondSavingDot>
+              <ThirdSavingDot>.</ThirdSavingDot>
+            </SavePrompt>
+          ) : (
+            <SavePrompt>Saved</SavePrompt>
+          )}
 
-        <UploadContainer>
-          <input
-            id="uploadImage"
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleFileUpload(e)}
-            multiple
-            style={{ display: 'none' }}
-          />
-          <label htmlFor="uploadImage">
-            <Button
-              width="100%"
-              buttonType="normal"
-              onClick={handleSelectImage}
-            >
-              選擇照片
-            </Button>
-          </label>
-          <RemindWrapper>
-            <CiCircleInfo className="info" />
-            <Remind>請拖拉照片至格子調整</Remind>
-          </RemindWrapper>
-          <ImageWrapper>
-            {images &&
-              images.map((item, index) => (
-                <Image
-                  key={index}
-                  src={item}
-                  draggable
-                  onDragStart={() => setDraggingIndex(index)}
-                  onDragEnd={() => setDraggingIndex(null)}
-                />
-              ))}
-          </ImageWrapper>
-        </UploadContainer>
-
-        <VisionBoardContainer>
-          <SettingWrapper>
-            <ToolWrapper>
-              <ToolBar>
-                <ToolName>背景</ToolName>
-                <ColorSelector
-                  type="color"
-                  value={bgColor}
-                  onChange={(e) => setBgColor(e.target.value)}
-                />
-              </ToolBar>
-            </ToolWrapper>
-            {activeItem && activeItem.type === 'i-text' && (
-              <>
-                <ToolWrapper>
-                  <ToolBar>
-                    <ToolName>文字</ToolName>
-                    <ColorSelector
-                      type="color"
-                      value={textConfig.color}
-                      onChange={(e) =>
-                        setTextConfig({ ...textConfig, color: e.target.value })
-                      }
-                    />
-                  </ToolBar>
-                </ToolWrapper>
-                <ToolWrapper>
-                  <ToolBar>
-                    <ToolName>字體大小</ToolName>
-                    <FontSizeRange
-                      type="range"
-                      min="10"
-                      max="40"
-                      defaultValue="16"
-                      value={textConfig.fontSize}
-                      onChange={(e) =>
-                        setTextConfig({
-                          ...textConfig,
-                          fontSize: Number(e.target.value),
-                        })
-                      }
-                    />
-                    <FontSize>{textConfig.fontSize}</FontSize>
-                  </ToolBar>
-                </ToolWrapper>
-              </>
-            )}
-
-            <ActionWrapper>
-              {activeItem && (
-                <CiTrash className="trash" onClick={deleteActiveItem} />
-              )}
-              <TfiText className="text" onClick={addText} />
-              <CiUndo className="undo" onClick={clear} />
-              <TfiSaveAlt
-                className="save"
-                onClick={() => {
-                  saveProject();
-                  setIsPopout(!isPopout);
-                }}
+          {uid && images ? (
+            <UploadContainer>
+              <input
+                id="uploadImage"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileUpload(e)}
+                multiple
+                style={{ display: 'none' }}
               />
-            </ActionWrapper>
-          </SettingWrapper>
+              <label htmlFor="uploadImage">
+                <Button
+                  width="100%"
+                  buttonType="normal"
+                  onClick={handleSelectImage}
+                >
+                  選擇照片
+                </Button>
+              </label>
+              <RemindWrapper>
+                <CiCircleInfo className="info" />
+                <Remind>請拖拉照片至格子調整</Remind>
+              </RemindWrapper>
+              <ImageWrapper>
+                {images &&
+                  images.map((item, index) => (
+                    <Image
+                      key={index}
+                      src={item}
+                      draggable
+                      onDragStart={() => setDraggingIndex(index)}
+                      onDragEnd={() => setDraggingIndex(null)}
+                    />
+                  ))}
+              </ImageWrapper>
+            </UploadContainer>
+          ) : (
+            <></>
+          )}
 
-          <VisionBoard ref={canvasRef}>
-            <canvas id="canvas" />
-          </VisionBoard>
-        </VisionBoardContainer>
-      </BoardContainer>
-      <Background />
-    </Container>
-  );
+          <VisionBoardContainer>
+            <SettingWrapper>
+              <ToolWrapper>
+                <ToolBar>
+                  <ToolName>背景</ToolName>
+                  <ColorSelector
+                    type="color"
+                    value={bgColor}
+                    onChange={(e) => setBgColor(e.target.value)}
+                  />
+                </ToolBar>
+              </ToolWrapper>
+              {activeItem && activeItem.type === 'i-text' && (
+                <>
+                  <ToolWrapper>
+                    <ToolBar>
+                      <ToolName>文字</ToolName>
+                      <ColorSelector
+                        type="color"
+                        value={textConfig.color}
+                        onChange={(e) =>
+                          setTextConfig({
+                            ...textConfig,
+                            color: e.target.value,
+                          })
+                        }
+                      />
+                    </ToolBar>
+                  </ToolWrapper>
+                  <ToolWrapper>
+                    <ToolBar>
+                      <ToolName>字體大小</ToolName>
+                      <FontSizeRange
+                        type="range"
+                        min="10"
+                        max="40"
+                        defaultValue="16"
+                        value={textConfig.fontSize}
+                        onChange={(e) =>
+                          setTextConfig({
+                            ...textConfig,
+                            fontSize: Number(e.target.value),
+                          })
+                        }
+                      />
+                      <FontSize>{textConfig.fontSize}</FontSize>
+                    </ToolBar>
+                  </ToolWrapper>
+                </>
+              )}
+
+              <ActionWrapper>
+                {activeItem && (
+                  <CiTrash className="trash" onClick={deleteActiveItem} />
+                )}
+                <TfiText className="text" onClick={addText} />
+                <CiUndo className="undo" onClick={clear} />
+                <TfiSaveAlt
+                  className="save"
+                  onClick={() => {
+                    saveProject();
+                    setIsPopout(!isPopout);
+                  }}
+                />
+              </ActionWrapper>
+            </SettingWrapper>
+
+            <VisionBoard ref={canvasRef}>
+              <canvas id="canvas" />
+            </VisionBoard>
+          </VisionBoardContainer>
+        </BoardContainer>
+        <Background />
+      </Container>
+    );
+  }
+  return <Loader />;
 }

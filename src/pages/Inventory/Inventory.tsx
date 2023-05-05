@@ -354,8 +354,11 @@ export default function Inventory() {
   }, [isBottom]);
 
   useEffect(() => {
-    function handleFilter() {
+    async function handleFilter() {
       if (!itemsRef.current) return;
+
+      const itemList = await getItems(uid);
+      itemsRef.current = itemList;
 
       let filteredItems = itemsRef.current;
       if (filter.category !== '' && filter.status !== '') {
