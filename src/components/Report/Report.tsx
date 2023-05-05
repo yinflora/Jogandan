@@ -97,13 +97,19 @@ export default function Report({ items }: ReportProps) {
     return acc;
   }, Array(CATEGORIES.length).fill(0));
   const sumTotal = qtyList.reduce((acc, curr) => acc + curr, 0);
+  const isOver50perCategory = qtyList.every((value) => value >= 50);
 
   let quantityLine;
   let qtyHeight: number;
 
   if (sumTotal > 50) {
-    quantityLine = TEN_QUANTITY_LINE;
-    qtyHeight = 5;
+    if (isOver50perCategory) {
+      quantityLine = TEN_QUANTITY_LINE;
+      qtyHeight = 5;
+    } else {
+      quantityLine = FIVE_QUANTITY_LINE;
+      qtyHeight = 10;
+    }
   } else if (sumTotal >= 10 && sumTotal <= 50) {
     quantityLine = FIVE_QUANTITY_LINE;
     qtyHeight = 10;

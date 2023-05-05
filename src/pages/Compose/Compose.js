@@ -516,29 +516,29 @@ export default function Compose() {
           <SavePrompt>Saved</SavePrompt>
         )}
 
-        {uid && images ? (
-          <UploadContainer>
-            <input
-              id="uploadImage"
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileUpload(e)}
-              multiple
-              style={{ display: 'none' }}
-            />
-            <label htmlFor="uploadImage">
-              <Button
-                width="100%"
-                buttonType="normal"
-                onClick={handleSelectImage}
-              >
-                選擇照片
-              </Button>
-            </label>
-            <RemindWrapper>
-              <CiCircleInfo className="info" />
-              <Remind>請拖拉照片至格子調整</Remind>
-            </RemindWrapper>
+        <UploadContainer>
+          <input
+            id="uploadImage"
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileUpload(e)}
+            multiple
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="uploadImage">
+            <Button
+              width="100%"
+              buttonType="normal"
+              onClick={handleSelectImage}
+            >
+              選擇照片
+            </Button>
+          </label>
+          <RemindWrapper>
+            <CiCircleInfo className="info" />
+            <Remind>請拖拉照片至格子調整</Remind>
+          </RemindWrapper>
+          {uid && images ? (
             <ImageWrapper>
               {images.map((item, index) => (
                 <Image
@@ -550,10 +550,10 @@ export default function Compose() {
                 />
               ))}
             </ImageWrapper>
-          </UploadContainer>
-        ) : (
-          <></>
-        )}
+          ) : (
+            <></>
+          )}
+        </UploadContainer>
 
         <VisionBoardContainer>
           <SettingWrapper>
