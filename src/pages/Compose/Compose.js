@@ -235,7 +235,7 @@ const ActionWrapper = styled.div`
   }
 
   & > .trash,
-  .undo {
+  .clear {
     width: 25px;
     height: 25px;
     color: #fff;
@@ -280,7 +280,8 @@ export default function Compose() {
     fontSize: 16,
   });
   const [isSaving, setIsSaving] = useState(false);
-
+  const [buttonAction, setButtonAction] = useState(null);
+  console.log(buttonAction);
   const boardIdRef = useRef(null);
 
   const navigate = useNavigate();
@@ -502,7 +503,36 @@ export default function Compose() {
 
   return (
     <Container>
-      {isPopout && <Alert action={() => navigate('/profile')} />}
+      {isPopout && buttonAction === 'clear' && (
+        <Alert
+          title="確定要重置嗎？"
+          buttonConfig={[
+            {
+              buttonType: 'light',
+              value: '取消重置',
+              action: () => navigate('/compose'),
+            },
+            {
+              buttonType: 'dark',
+              value: '確認重置',
+              action: () => clear(),
+            },
+          ]}
+        />
+      )}
+      {isPopout && buttonAction === 'save' && (
+        <Alert
+          title="儲存成功！"
+          buttonConfig={[
+            {
+              buttonType: 'dark',
+              value: '確認結果',
+              action: () => navigate('/profile'),
+            },
+          ]}
+        />
+      )}
+
       <PageTitle>Vision Board</PageTitle>
 
       <BoardContainer>
@@ -611,11 +641,26 @@ export default function Compose() {
                 <CiTrash className="trash" onClick={deleteActiveItem} />
               )}
               <TfiText className="text" onClick={addText} />
-              <CiUndo className="undo" onClick={clear} />
+              {/* <CiUndo className="clear" onClick={clear} />
               <TfiSaveAlt
                 className="save"
                 onClick={() => {
                   saveProject();
+                  !isSaving && setIsPopout(!isPopout);
+                }}
+              /> */}
+              <CiUndo
+                className="clear"
+                onClick={() => {
+                  setButtonAction('clear');
+                  setIsPopout(!isPopout);
+                }}
+              />
+              <TfiSaveAlt
+                className="save"
+                onClick={() => {
+                  saveProject();
+                  setButtonAction('save');
                   setIsPopout(!isPopout);
                 }}
               />

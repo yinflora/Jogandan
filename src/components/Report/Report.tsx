@@ -96,21 +96,17 @@ export default function Report({ items }: ReportProps) {
     }
     return acc;
   }, Array(CATEGORIES.length).fill(0));
-  const sumTotal = qtyList.reduce((acc, curr) => acc + curr, 0);
-  const isOver50perCategory = qtyList.every((value) => value >= 50);
+
+  const isOver50perCategory = qtyList.some((value) => value >= 50);
+  const isOver10perCategory = qtyList.some((value) => value >= 10);
 
   let quantityLine;
   let qtyHeight: number;
 
-  if (sumTotal > 50) {
-    if (isOver50perCategory) {
-      quantityLine = TEN_QUANTITY_LINE;
-      qtyHeight = 5;
-    } else {
-      quantityLine = FIVE_QUANTITY_LINE;
-      qtyHeight = 10;
-    }
-  } else if (sumTotal >= 10 && sumTotal <= 50) {
+  if (isOver50perCategory) {
+    quantityLine = TEN_QUANTITY_LINE;
+    qtyHeight = 5;
+  } else if (isOver10perCategory) {
     quantityLine = FIVE_QUANTITY_LINE;
     qtyHeight = 10;
   } else {
