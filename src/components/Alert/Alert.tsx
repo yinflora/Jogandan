@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 
 import AuthContext from '../../context/authContext';
-// import Success from './Success';
+import Success from './Success';
 import Sad from './Sad';
 import Button from '../Button/Button';
 
@@ -82,13 +82,13 @@ type ButtonConfig = {
 };
 
 type AlertProps = {
-  type?: string;
+  type: string;
   title: string;
-  action?: () => void | {};
+  // action?: () => void | {};
   buttonConfig: ButtonConfig[];
 };
 
-export default function Alert({ title, buttonConfig }: AlertProps) {
+export default function Alert({ type, title, buttonConfig }: AlertProps) {
   const { isPopout, setIsPopout } = useContext(AuthContext);
 
   return (
@@ -102,8 +102,7 @@ export default function Alert({ title, buttonConfig }: AlertProps) {
           }}
         />
         <SuccessWrapper>
-          {/* <Success /> */}
-          <Sad />
+          {type === 'success' ? <Success /> : <Sad />}
         </SuccessWrapper>
         <Message>{title}</Message>
         {/* <Button

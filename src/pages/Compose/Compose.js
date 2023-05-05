@@ -505,6 +505,7 @@ export default function Compose() {
     <Container>
       {isPopout && buttonAction === 'clear' && (
         <Alert
+          type="sad"
           title="確定要重置嗎？"
           buttonConfig={[
             {
@@ -522,6 +523,7 @@ export default function Compose() {
       )}
       {isPopout && buttonAction === 'save' && (
         <Alert
+          type="success"
           title="儲存成功！"
           buttonConfig={[
             {
