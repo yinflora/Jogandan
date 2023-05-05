@@ -19,7 +19,8 @@ const Container = styled.div`
   display: flex;
   width: 350px;
   height: 100vh;
-  justify-content: center;
+  /* justify-content: center; */
+  margin-top: 10%;
   flex-direction: column;
 `;
 
@@ -41,7 +42,7 @@ const SocialLogin = styled.button`
   position: relative;
   width: 100%;
   height: 45px;
-  margin-bottom: 60px;
+  margin-bottom: 50px;
   font-size: 1rem;
   letter-spacing: 0.1rem;
   border: 1px solid #000;
@@ -131,6 +132,7 @@ const PromptMessage = styled.p`
   text-align: end;
   font-size: 0.75rem;
   color: #8d9ca4;
+  cursor: default;
 `;
 
 const SignUpPrompt = styled.div`
@@ -358,7 +360,22 @@ export default function Login() {
         >
           SUBMIT
         </Button>
-        {!isSignUp && (
+        {isSignUp ? (
+          <SignUpPrompt>
+            <SignUpMessage>已經有帳號了？</SignUpMessage>
+            <StartButton>
+              <SignUpLink
+                onClick={() => {
+                  navigate('/login');
+                  setIsSignUp(false);
+                }}
+              >
+                返回登入
+              </SignUpLink>
+              <TfiArrowRight className="arrow" />
+            </StartButton>
+          </SignUpPrompt>
+        ) : (
           <SignUpPrompt>
             <SignUpMessage>還沒有帳號？</SignUpMessage>
             <StartButton>
