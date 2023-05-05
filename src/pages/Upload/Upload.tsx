@@ -27,6 +27,7 @@ const Container = styled.div<{ isEdit: boolean }>`
   margin: ${({ isEdit }) => (isEdit ? 0 : '150px auto 0')};
   /* padding: ${({ isEdit }) => (isEdit ? 0 : '0 250px')}; */
   color: #fff;
+  cursor: default;
 `;
 
 const TitleWrapper = styled.div<{ isBulkMode: boolean }>`
@@ -417,6 +418,7 @@ const TextInput = styled.input`
 
 const BulkTextInput = styled(TextInput)`
   width: calc(100% - 45px);
+  padding-left: 15px;
   border: none;
 `;
 
@@ -438,6 +440,7 @@ const SelectInput = styled.select`
 const BulkSelectInput = styled(SelectInput)`
   width: calc(100% - 45px);
   height: 30px;
+  padding-left: 10px;
   letter-spacing: 0.1rem;
   border: none;
   color: #fff;
@@ -810,7 +813,7 @@ export default function Upload({
       newForm.images.map(async (image: any, index: number) => {
         if (image === '') {
           newForm.images[index] = '';
-        } else {
+        } else if (!image.includes('https://')) {
           const res = await fetch(image);
           const blobImage = await res.blob();
 
