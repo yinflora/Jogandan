@@ -174,6 +174,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
     setIsLogin(false);
     setLoading(false);
+    navigate('/login');
   };
 
   const signUp = async (form: Form) => {
