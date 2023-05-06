@@ -14,7 +14,7 @@ import { fabric } from 'fabric';
 import { useNavigate } from 'react-router-dom';
 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import styled, { css, keyframes } from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
 
 import { TfiArrowRight } from 'react-icons/tfi';
 import { RxCross1 } from 'react-icons/rx';
@@ -22,12 +22,8 @@ import { SlCloudUpload } from 'react-icons/sl';
 
 import Button from '../../components/Button/Button';
 
-import sparkJoy from './sparkJoy.png';
-
 const Container = styled.div`
   width: 1000px;
-  /* margin: 150px auto 0; */
-  /* padding: 0 0 100px 150px; */
   margin: 150px auto 60px;
   cursor: default;
 `;
@@ -60,14 +56,12 @@ const ModifyImage = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  /* display: flex; */
   display: none;
   width: 100%;
   height: 100%;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  /* background-color: rgba(0, 0, 0, 0.5); */
   background-color: rgba(141, 156, 164, 0.8);
 
   & > .upload {
@@ -105,7 +99,6 @@ const InfoWrapper = styled.div`
 
 const UserName = styled.p`
   max-width: 700px;
-  /* overflow: hidden; */
   font-size: 2rem;
   font-weight: 500;
   letter-spacing: 0.2rem;
@@ -194,42 +187,6 @@ const VisionBoardOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-// const EditButton = styled.button<{ canShow: boolean }>`
-//   position: relative;
-//   display: flex;
-//   height: 35px;
-//   margin: 10px 0 100px auto;
-//   padding: 5px 0;
-//   color: #fff;
-//   align-items: center;
-//   gap: 10px;
-//   opacity: ${({ canShow }) => (canShow ? 1 : 0)};
-
-//   &:hover {
-//     margin-bottom: 99px;
-//     cursor: pointer;
-//   }
-
-//   &::before {
-//     content: '';
-//     position: absolute;
-//     top: 0;
-//     bottom: 0;
-//     right: 100%;
-//     left: 0;
-//     border-bottom: 1px solid #fff;
-//     opacity: 0;
-//     z-index: -1;
-//     transition: all 0.5s;
-//   }
-
-//   &:hover::before {
-//     left: 0;
-//     right: 0;
-//     opacity: 1;
-//   }
-// `;
-
 const LinkToEdit = styled(LinkToGame)`
   color: #fff;
 `;
@@ -238,7 +195,6 @@ const EditButton = styled.button<{ canShow: boolean }>`
   position: relative;
   display: flex;
   width: fit-content;
-  /* height: 35px; */
   margin: 15px 0 100px auto;
   padding: 0;
   color: #fff;
@@ -262,9 +218,6 @@ const EditButton = styled.button<{ canShow: boolean }>`
     width: 100%;
   }
 
-  /* &:hover ${LinkToEdit} {
-    color: #fff;
-  } */
   &:hover .arrow {
     transform: translateX(4px);
     color: #fff;
@@ -442,8 +395,6 @@ const FilterBtn = styled.button`
 
 const ReportWrapper = styled.div`
   position: relative;
-  /* display: flex;
-  margin-right: auto; */
 `;
 
 const QtyWrapper = styled.div`
@@ -471,155 +422,6 @@ const QtyTitle = styled.p`
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.2rem;
-`;
-
-const ToastContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 900;
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Overlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-`;
-
-const Toast = styled.div`
-  position: relative;
-  display: flex;
-  z-index: 991;
-  width: 600px;
-  height: 600px;
-  flex-direction: column;
-  justify-content: end;
-  background-color: rgba(141, 156, 164, 0.9);
-
-  & > .close {
-    position: absolute;
-    top: -30px;
-    right: 0;
-    width: 20px;
-    height: 20px;
-    color: #fff;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-`;
-
-const SloganWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  padding: 0 10px 0 30px;
-  flex-direction: column;
-`;
-
-const fadeIn = keyframes`
-   from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-`;
-
-const MainSlogan = styled.p`
-  font-size: 2.5rem;
-  font-weight: 600;
-  line-height: 3.25rem;
-  letter-spacing: 0.1rem;
-  opacity: 0;
-  animation: ${fadeIn} 1s forwards;
-  animation-delay: 0.3s;
-`;
-
-const SubSlogan = styled.p`
-  margin-top: 15px;
-  letter-spacing: 0.1rem;
-  color: #b5b4b4;
-  opacity: 0;
-  animation: ${fadeIn} 1s forwards;
-  animation-delay: 0.6s;
-`;
-
-const Start = styled.p`
-  position: relative;
-  margin: 0;
-  font-size: 2rem;
-  color: #000;
-
-  &::before {
-    position: absolute;
-    content: 'START';
-    width: 0%;
-    inset: 0;
-    color: #8d9ca4;
-    overflow: hidden;
-    transition: 0.3s ease-out;
-  }
-`;
-
-const StartButton = styled.button`
-  margin: 30px 10px 30px 0;
-  align-self: flex-end;
-  width: fit-content;
-  padding: 0;
-  border: none;
-  background: none;
-  position: relative;
-  display: flex;
-  font-weight: 600;
-  font-size: 2rem;
-  gap: 0.5rem;
-  align-items: center;
-  cursor: pointer;
-
-  opacity: 0;
-  animation: ${fadeIn} 1s forwards;
-  animation-delay: 1.2s;
-
-  &::after {
-    position: absolute;
-    content: '';
-    width: 0;
-    left: 0;
-    bottom: -7px;
-    background: #8d9ca4;
-    height: 2px;
-    transition: 0.3s ease-out;
-  }
-  &:hover::after {
-    width: 100%;
-  }
-  &:hover ${Start}::before {
-    width: 100%;
-  }
-  &:hover .startArrow {
-    transform: translateX(4px);
-    color: #8d9ca4;
-  }
-
-  & .startArrow {
-    z-index: 992;
-    width: 20px;
-    height: 20px;
-    stroke-width: 1px;
-    transition: 0.2s;
-    transition-delay: 0.2s;
-  }
 `;
 
 type Action =
@@ -679,32 +481,26 @@ type Period = {
 };
 
 export default function Profile() {
-  const { user, setUser, uid, lastLoginInTime } = useContext(AuthContext);
+  const { user, setUser, uid } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [items, dispatch] = useReducer(reducer, []);
   const [existingItems, setExistingItems] = useState<Items | []>([]);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
-  const [canPlay, setCanPlay] = useState<boolean>(false);
   const [isDeclutteredMode, setIsDeclutteredMode] = useState<boolean>(false);
 
   const [isFirst, setIsFirst] = useState<boolean>(false);
 
   const itemRef = useRef<Items | null>(null);
-  // const existingItemsRef = useRef<Items | []>([]);
-  // console.log(uid);
+
   useEffect(() => {
-    // console.log(uid);
     async function fetchData() {
       const data = await getItems(uid);
       dispatch({ type: 'FETCH_DATA', payload: { data } });
       itemRef.current = data;
 
-      // const boardId = localStorage.getItem('boardId');
       const boardId = localStorage.getItem(`${uid}/boardId`);
-      // console.log('boardId', boardId);
       const board = await getBoard(uid, boardId);
-      // console.log(board.data);
 
       if (board) {
         if (!board.isEdited) setIsFirst(true);
@@ -727,43 +523,12 @@ export default function Profile() {
         });
       }
 
-      // existingItemsRef.current = data.filter(
-      //   (item) => item.status !== '已處理'
-      // );
-
       const existing = data.filter((item) => item.status !== '已處理');
       setExistingItems(existing);
     }
 
-    // function compareTime() {
-    //   if (!lastLoginInTime) return;
-
-    //   const today = new Date();
-    //   const date = new Date(lastLoginInTime);
-
-    //   const isToday =
-    //     date.getDate() === today.getDate() &&
-    //     date.getMonth() === today.getMonth() &&
-    //     date.getFullYear() === today.getFullYear();
-    //   const isYesterday =
-    //     date.getDate() === today.getDate() - 1 &&
-    //     date.getMonth() === today.getMonth() &&
-    //     date.getFullYear() === today.getFullYear();
-
-    //   //Todo: 修正跳出時間
-    //   if (isToday) {
-    //     // console.log('是今天');
-    //     setCanPlay(false);
-    //   } else if (isYesterday || date < today) {
-    //     // console.log('是昨天以前');
-    //     setCanPlay(true);
-    //   }
-    // }
-
     fetchData();
-    // compareTime();
-    setCanPlay(true);
-  }, [uid, lastLoginInTime]);
+  }, [uid]);
 
   useEffect(() => {
     if (isDeclutteredMode) countItems();
@@ -920,9 +685,6 @@ export default function Profile() {
     setUser({ ...user, image: url });
   }
 
-  console.log(items && items.length);
-  console.log(items.length < 10);
-
   return (
     <>
       <Container>
@@ -985,10 +747,6 @@ export default function Profile() {
               </VisionBoardOverlay>
             )}
           </VisionBoard>
-          {/* <EditButton canShow={!isFirst} onClick={() => navigate(`/compose`)}>
-            <span>編輯夢想板</span>
-            <TfiArrowRight />
-          </EditButton> */}
           <EditButton canShow={!isFirst} onClick={() => navigate(`/compose`)}>
             <LinkToEdit>編輯夢想板</LinkToEdit>
             <TfiArrowRight className="arrow" />
@@ -1051,10 +809,7 @@ export default function Profile() {
         </PeriodFilter>
 
         <ReportWrapper>
-          <Report
-            // items={isDeclutteredMode ? items : existingItemsRef.current}
-            items={isDeclutteredMode ? items : existingItems}
-          />
+          <Report items={isDeclutteredMode ? items : existingItems} />
 
           <QtyWrapper>
             <Qty>{isDeclutteredMode ? items.length : existingItems.length}</Qty>
@@ -1067,31 +822,6 @@ export default function Profile() {
         </ReportWrapper>
       </Container>
       <Background />
-
-      {canPlay && (
-        <ToastContainer>
-          <Overlay />
-
-          <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
-            <RxCross1 className="close" onClick={() => setCanPlay(false)} />
-
-            <SloganWrapper>
-              <MainSlogan>
-                您是否有太多物品，
-                <br />
-                卻難以抉擇去留？
-              </MainSlogan>
-              <SubSlogan>
-                現在馬上通過簡單的二選一小遊戲提升整理動力！
-              </SubSlogan>
-              <StartButton onClick={() => navigate('/sparkJoy')}>
-                <Start>START</Start>
-                <TfiArrowRight className="startArrow" />
-              </StartButton>
-            </SloganWrapper>
-          </Toast>
-        </ToastContainer>
-      )}
     </>
   );
 }

@@ -34,7 +34,7 @@ const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
     min-height: 100vh;
     /* padding-top: 150px; */
     position: relative;
-    overflow: hidden;
+    overflow: scroll;
   }
 `;
 

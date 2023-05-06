@@ -1,31 +1,28 @@
 import styled, { keyframes } from 'styled-components';
 
-const sad = keyframes`
+const happy = keyframes`
   0% {
     transform: translate(0px, 0px);
   }
-  15% {
+  10% {
+    transform: translate(10px, 10px);
+  }
+  20% {
+    transform: translate(10px, 5px);
+  }
+  30% {
     transform: translate(0px, 0px);
   }
-  25% {
-    transform: translate(0px, -25px);
-  }
-  35% {
-    transform: translate(0px, -25px);
-  }
-  45% {
-    transform: translate(0px, 0px);
+  60% {
+    transform: translate(-20px, -10px);
   }
   70% {
-    transform: translate(0px, 0px);
+    transform: translate(-10px, -15px);
   }
   80% {
-    transform: translate(-15px, -25px);
+    transform: translate(-10px, -15px);
   }
   90% {
-    transform: translate(-15px, -25px);
-  }
-  100% {
     transform: translate(0px, 0px);
   }
 `;
@@ -65,48 +62,48 @@ const blink = keyframes`
 
 const Head = styled.div`
   position: relative;
-  width: 100px;
-  height: 100px;
-  border: 4px solid #fff;
+  /* width: 200px; */
+  /* height: 200px; */
+  width: 150px;
+  height: 150px;
+  border: 4px solid #8d9ca4;
   border-radius: 50%;
 `;
 
 const Face = styled.div`
-  animation: ${sad} 6s infinite;
+  animation: ${happy} 8s infinite;
 `;
 
 const Eye = styled.div`
   position: absolute;
-  top: calc(105px / 2);
-  width: calc(25px / 2);
-  height: calc(25px / 2);
-  background-color: #fff;
+  top: calc(55px * 0.75);
+  width: calc(25px * 0.75);
+  height: calc(25px * 0.75);
+  background-color: #8d9ca4;
   border-radius: 50%;
   animation: ${blink} 5s infinite;
   animation-delay: 3.4s;
 `;
 
 const LeftEye = styled(Eye)`
-  left: calc(45px / 2);
+  left: calc(45px * 0.75);
 `;
 
 const RightEye = styled(Eye)`
-  right: calc(45px / 2);
+  right: calc(45px * 0.75);
 `;
 
 const Mouth = styled.div`
   position: absolute;
-  top: calc(130px / 2);
-  left: calc(43px / 2);
+  top: 65px;
+  left: 45px;
   width: 50px;
   height: 25px;
-  border-style: solid;
-  border-radius: 50%;
-  border-width: 4px;
-  border-color: #fff transparent transparent transparent;
+  border: 4px solid #8d9ca4;
+  border-radius: 0 0 50px 50px;
 `;
 
-export default function Sad() {
+export default function Happy() {
   return (
     <Head>
       <Face>

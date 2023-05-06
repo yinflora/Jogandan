@@ -270,7 +270,7 @@ export default function Compose() {
 
   // const [images, setImages] = useState(null);
   const [images, setImages] = useState([]);
-  const [isUploaded, setIsUploaded] = useState(false);
+  // const [isUploaded, setIsUploaded] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState(null);
 
   const [visionBoard, setVisionBoard] = useState(null);
@@ -349,15 +349,15 @@ export default function Compose() {
       const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
 
       if (distanceFromBottom < 10) {
-        console.log('User has scrolled to the bottom of the div!');
+        // console.log('User has scrolled to the bottom of the div!');
         setIsBottom(true);
       }
     }
 
     imageContainerRef.current.addEventListener('scroll', onScroll);
 
-    return () =>
-      imageContainerRef.current.removeEventListener('scroll', onScroll);
+    // return () =>
+    //   imageContainerRef.current.removeEventListener('scroll', onScroll);
   }, [imageContainerRef.current]);
 
   useEffect(() => {
@@ -375,7 +375,7 @@ export default function Compose() {
       console.log('start:', startIndex, 'end:', endIndex);
 
       const slicedItems = imagesRef.current.slice(startIndex, endIndex);
-      const newImages = [...images, slicedItems];
+      const newImages = [...images, ...slicedItems];
 
       console.log('slicedItems', slicedItems);
 
@@ -494,16 +494,23 @@ export default function Compose() {
     saveProject();
   }, [visionBoard, bgColor, textConfig, activeItem]);
 
-  function handleFileUpload(e) {
+  async function handleFileUpload(e) {
     const files = e.target.files;
+
+    const uploadedFiles = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const imageRef = ref(storageRef, `${file.name}`);
 
-      uploadBytes(imageRef, file).then(() => setIsUploaded(!isUploaded));
+      // uploadBytes(imageRef, file).then(() => setIsUploaded(!isUploaded));
+      const snapshot = await uploadBytes(imageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      uploadedFiles.push(url);
     }
-    return null;
+
+    setImages([...uploadedFiles, ...images]);
+    // return null;
   }
 
   function handleSelectImage() {
