@@ -43,6 +43,7 @@ const SocialLogin = styled.button`
   width: 100%;
   height: 45px;
   margin-bottom: 50px;
+  flex-shrink: 0;
   font-size: 1rem;
   letter-spacing: 0.1rem;
   border: 1px solid #000;
@@ -271,8 +272,8 @@ export default function Login() {
         <Title>{isSignUp ? 'SIGN UP' : 'LOGIN'}</Title>
         {/* <SubTitle>請先登入後再開始使用</SubTitle> */}
         <SocialLogin
-          onClick={() => {
-            login();
+          onClick={async () => {
+            await login();
             previousPath && navigate(previousPath);
           }}
         >
