@@ -25,8 +25,11 @@ import Button from '../../components/Button/Button';
 import sparkJoy from './sparkJoy.png';
 
 const Container = styled.div`
-  margin: 150px auto 0;
-  padding: 0 0 100px 150px;
+  width: 1000px;
+  /* margin: 150px auto 0; */
+  /* padding: 0 0 100px 150px; */
+  margin: 150px auto 60px;
+  cursor: default;
 `;
 
 const Background = styled.div`
@@ -34,12 +37,13 @@ const Background = styled.div`
   top: 0;
   z-index: -1;
   width: 100vw;
-  height: 120vh;
+  height: 1000px;
   background-color: #fff;
 `;
 
 const WelcomeMessage = styled.p`
-  width: 980px;
+  /* width: 980px; */
+  margin-right: 20px;
   letter-spacing: 0.2rem;
   line-height: 1.5rem;
   text-transform: uppercase;
@@ -94,11 +98,14 @@ const UserImage = styled.img`
 
 const InfoWrapper = styled.div`
   display: flex;
+  margin-bottom: 10px;
   flex-direction: column;
   gap: 20px;
 `;
 
 const UserName = styled.p`
+  max-width: 700px;
+  /* overflow: hidden; */
   font-size: 2rem;
   font-weight: 500;
   letter-spacing: 0.2rem;
@@ -111,6 +118,55 @@ const UserGrade = styled.p`
   color: #8d9ca4;
 `;
 
+const LinkToGame = styled.p`
+  position: relative;
+  margin: 0;
+  color: #000;
+`;
+
+const GameEntry = styled.button<{ canShow: boolean }>`
+  position: relative;
+  display: flex;
+  width: fit-content;
+  margin: 20px 20px 0 auto;
+  padding: 0;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  cursor: ${({ canShow }) => (canShow ? 'pointer' : 'default')};
+  opacity: ${({ canShow }) => (canShow ? 1 : 0)};
+
+  &::after {
+    position: absolute;
+    content: '';
+    width: 0;
+    left: 0;
+    bottom: -5px;
+    background: #8d9ca4;
+    height: 1px;
+    transition: 0.3s ease-out;
+  }
+  &:hover::after {
+    width: 100%;
+  }
+
+  &:hover ${LinkToGame} {
+    color: #8d9ca4;
+  }
+  &:hover .arrow {
+    transform: translateX(4px);
+    color: #8d9ca4;
+  }
+
+  & .arrow {
+    width: 15px;
+    height: 15px;
+    stroke-width: 0.5px;
+    transition: 0.2s;
+    transition-delay: 0.2s;
+  }
+`;
+
 const VisionBoardWrapper = styled.div`
   display: flex;
   width: 980px;
@@ -120,7 +176,7 @@ const VisionBoardWrapper = styled.div`
 const VisionBoard = styled.div`
   position: relative;
   width: 980px;
-  margin-top: 100px;
+  margin-top: 80px;
   aspect-ratio: 625/475;
   background-color: #f4f3ef;
 `;
@@ -138,39 +194,88 @@ const VisionBoardOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
+// const EditButton = styled.button<{ canShow: boolean }>`
+//   position: relative;
+//   display: flex;
+//   height: 35px;
+//   margin: 10px 0 100px auto;
+//   padding: 5px 0;
+//   color: #fff;
+//   align-items: center;
+//   gap: 10px;
+//   opacity: ${({ canShow }) => (canShow ? 1 : 0)};
+
+//   &:hover {
+//     margin-bottom: 99px;
+//     cursor: pointer;
+//   }
+
+//   &::before {
+//     content: '';
+//     position: absolute;
+//     top: 0;
+//     bottom: 0;
+//     right: 100%;
+//     left: 0;
+//     border-bottom: 1px solid #fff;
+//     opacity: 0;
+//     z-index: -1;
+//     transition: all 0.5s;
+//   }
+
+//   &:hover::before {
+//     left: 0;
+//     right: 0;
+//     opacity: 1;
+//   }
+// `;
+
+const LinkToEdit = styled(LinkToGame)`
+  color: #fff;
+`;
+
 const EditButton = styled.button<{ canShow: boolean }>`
   position: relative;
   display: flex;
-  height: 35px;
-  margin: 10px 0 100px auto;
-  padding: 5px 0;
+  width: fit-content;
+  /* height: 35px; */
+  margin: 15px 0 100px auto;
+  padding: 0;
   color: #fff;
   align-items: center;
   gap: 10px;
+  font-size: 1rem;
+  cursor: pointer;
   opacity: ${({ canShow }) => (canShow ? 1 : 0)};
 
-  &:hover {
-    margin-bottom: 99px;
-    cursor: pointer;
-  }
-
-  &::before {
-    content: '';
+  &::after {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 100%;
+    content: '';
+    width: 0;
     left: 0;
-    border-bottom: 1px solid #fff;
-    opacity: 0;
-    z-index: -1;
-    transition: all 0.5s;
+    bottom: -5px;
+    background: #fff;
+    height: 1px;
+    transition: 0.3s ease-out;
+  }
+  &:hover::after {
+    width: 100%;
   }
 
-  &:hover::before {
-    left: 0;
-    right: 0;
-    opacity: 1;
+  /* &:hover ${LinkToEdit} {
+    color: #fff;
+  } */
+  &:hover .arrow {
+    transform: translateX(4px);
+    color: #fff;
+  }
+
+  & .arrow {
+    width: 15px;
+    height: 15px;
+    stroke-width: 0.5px;
+    transition: 0.2s;
+    transition-delay: 0.2s;
   }
 `;
 
@@ -336,11 +441,15 @@ const FilterBtn = styled.button`
 `;
 
 const ReportWrapper = styled.div`
-  display: flex;
-  margin-right: auto;
+  position: relative;
+  /* display: flex;
+  margin-right: auto; */
 `;
 
 const QtyWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: -120px;
   display: flex;
   width: 120px;
   height: 120px;
@@ -603,7 +712,6 @@ export default function Profile() {
         const canvas = new fabric.Canvas('canvas', {
           width: 980,
           height: 748,
-          hoverCursor: 'default',
         });
 
         canvas.loadFromJSON(board.data, () => {
@@ -614,6 +722,7 @@ export default function Profile() {
           canvas.selection = false;
           canvas.forEachObject((obj) => {
             obj.selectable = false;
+            obj.hoverCursor = 'default';
           });
         });
       }
@@ -811,6 +920,9 @@ export default function Profile() {
     setUser({ ...user, image: url });
   }
 
+  console.log(items && items.length);
+  console.log(items.length < 10);
+
   return (
     <>
       <Container>
@@ -850,6 +962,14 @@ export default function Profile() {
               : 0
           }
         />
+        <GameEntry canShow={items.length >= 10}>
+          <LinkToGame
+            onClick={() => items.length >= 10 && navigate('/sparkJoy')}
+          >
+            每日小遊戲
+          </LinkToGame>
+          <TfiArrowRight className="arrow" />
+        </GameEntry>
 
         <VisionBoardWrapper>
           <VisionBoard>
@@ -858,16 +978,20 @@ export default function Profile() {
               <VisionBoardOverlay>
                 <Button
                   buttonType="normal"
-                  onClick={() => navigate(`/compose`)}
+                  onClick={() => navigate('/compose')}
                 >
                   立即開始編輯夢想板
                 </Button>
               </VisionBoardOverlay>
             )}
           </VisionBoard>
-          <EditButton canShow={!isFirst} onClick={() => navigate(`/compose`)}>
+          {/* <EditButton canShow={!isFirst} onClick={() => navigate(`/compose`)}>
             <span>編輯夢想板</span>
             <TfiArrowRight />
+          </EditButton> */}
+          <EditButton canShow={!isFirst} onClick={() => navigate(`/compose`)}>
+            <LinkToEdit>編輯夢想板</LinkToEdit>
+            <TfiArrowRight className="arrow" />
           </EditButton>
         </VisionBoardWrapper>
 
@@ -933,12 +1057,7 @@ export default function Profile() {
           />
 
           <QtyWrapper>
-            <Qty>
-              {/* {isDeclutteredMode
-                ? items.length
-                : existingItemsRef.current.length} */}
-              {isDeclutteredMode ? items.length : existingItems.length}
-            </Qty>
+            <Qty>{isDeclutteredMode ? items.length : existingItems.length}</Qty>
             <QtyTitle>
               {items.length <= 1 || existingItems.length <= 1
                 ? 'ITEM'

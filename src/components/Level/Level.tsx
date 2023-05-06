@@ -6,6 +6,7 @@ const Container = styled.div`
   right: 60px;
   display: flex;
   height: 75vh;
+  max-height: 650px;
   gap: 20px;
   cursor: default;
 `;
