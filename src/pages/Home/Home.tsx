@@ -8,6 +8,7 @@ import singleUpload from './singleUpload.png';
 import inventory from './inventory.png';
 import visionBoard from './visionBoard.png';
 import achievement from './achievement.png';
+import sparkJoy from './sparkJoy.png';
 
 import Chevron from '../../components/Icon/Chevron';
 import Button from '../../components/Button/Button';
@@ -16,10 +17,15 @@ const Container = styled.div`
   position: relative;
   width: 100vw;
   height: 100vh;
+  cursor: default;
 `;
 
-const SmallContainer = styled(Container)`
+const ContainerM = styled(Container)`
   height: 80vh;
+`;
+
+const ContainerS = styled(Container)`
+  height: 50vh;
 `;
 
 const Main = styled.div`
@@ -215,6 +221,24 @@ const Feature = styled.div<{ entering: string | null }>`
           }
         }
       `;
+    } else if (entering === 'feature3') {
+      return css`
+        & .sparkJoy {
+          & > img {
+            opacity: 0;
+            animation: ${fadeIn} 1s ease-in-out forwards;
+            /* animation-delay: 1.5s; */
+            animation-delay: 0.5s;
+          }
+
+          & > div {
+            opacity: 0;
+            animation: ${fadeIn} 1s ease-in-out forwards;
+            /* animation-delay: 2s; */
+            animation-delay: 1s;
+          }
+        }
+      `;
     }
   }};
 `;
@@ -233,6 +257,10 @@ const FeatureWrapperL = styled(FeatureWrapper)`
 
 const FeatureWrapperR = styled(FeatureWrapper)`
   justify-content: end;
+`;
+
+const FeatureWrapperRSmall = styled(FeatureWrapperR)`
+  height: 100%;
 `;
 
 const FeatureImage = styled.img`
@@ -309,6 +337,7 @@ export default function Home() {
   const introRef = useRef<HTMLDivElement | null>(null);
   const feature1Ref = useRef<HTMLDivElement | null>(null);
   const feature2Ref = useRef<HTMLDivElement | null>(null);
+  const feature3Ref = useRef<HTMLDivElement | null>(null);
   const loginRef = useRef<HTMLDivElement | null>(null);
 
   const navigate = useNavigate();
@@ -319,6 +348,7 @@ export default function Home() {
         !introRef.current ||
         !feature1Ref.current ||
         !feature2Ref.current ||
+        !feature3Ref.current ||
         !loginRef.current
       )
         return;
@@ -326,14 +356,16 @@ export default function Home() {
       const introPosition = introRef.current.getBoundingClientRect();
       const feature1Position = feature1Ref.current.getBoundingClientRect();
       const feature2Position = feature2Ref.current.getBoundingClientRect();
-      const loginPosition = loginRef.current.getBoundingClientRect();
+      const feature3Position = feature3Ref.current.getBoundingClientRect();
+      // const loginPosition = loginRef.current.getBoundingClientRect();
 
       const windowHeight = window.innerHeight;
 
       if (introPosition.top < windowHeight) setEntering('intro');
       if (feature1Position.top < windowHeight) setEntering('feature1');
       if (feature2Position.top < windowHeight) setEntering('feature2');
-      if (loginPosition.top < windowHeight) setEntering('login');
+      if (feature3Position.top < windowHeight) setEntering('feature3');
+      // if (loginPosition.top < windowHeight) setEntering('login');
     }
 
     window.addEventListener('scroll', handleScroll);
@@ -367,7 +399,7 @@ export default function Home() {
         </Main>
       </Container>
 
-      <SmallContainer ref={introRef}>
+      <ContainerM ref={introRef}>
         <Introduction entering={entering}>
           <IntroTitle>
             「春至陋室中，
@@ -379,7 +411,7 @@ export default function Home() {
             希望可以簡化用戶在管理自己物品遇到的困難，提供一個平台讓您可以輕鬆管理物品，並且可以設立目標檢視自己的成果，量化自己在斷捨離的成長，藉由對物品進行減法來為自己的生活加分。
           </IntroDescription>
         </Introduction>
-      </SmallContainer>
+      </ContainerM>
 
       <Container ref={feature1Ref}>
         <Feature entering={entering}>
@@ -453,7 +485,27 @@ export default function Home() {
         </Feature>
       </Container>
 
-      <SmallContainer ref={loginRef}>
+      <ContainerS ref={feature3Ref}>
+        <Feature entering={entering}>
+          <FeatureWrapperRSmall className="sparkJoy">
+            <FeatureTextR>
+              <FeatureTitle>
+                每日小遊戲
+                <br />
+                提升對物品的敏銳度
+              </FeatureTitle>
+              <FeatureDescription>
+                再次檢視對物品的喜愛度
+                <br />
+                左右滑動更改物品狀態
+              </FeatureDescription>
+            </FeatureTextR>
+            <FeatureImage src={sparkJoy} />
+          </FeatureWrapperRSmall>
+        </Feature>
+      </ContainerS>
+
+      <ContainerM ref={loginRef}>
         <Login>
           <LoginTitle>Join Jogandan</LoginTitle>
           <LoginSubTitle>立即開始您的簡單生活</LoginSubTitle>
@@ -465,7 +517,7 @@ export default function Home() {
             START YOUR JOURNEY
           </Button>
         </Login>
-      </SmallContainer>
+      </ContainerM>
     </>
   );
 }
