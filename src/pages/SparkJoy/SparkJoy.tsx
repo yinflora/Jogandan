@@ -121,6 +121,7 @@ const TinderCardWrapper = styled(TinderCard)`
   padding: 30px;
   border-radius: 10px;
   background-color: #fff;
+  cursor: grab;
 `;
 
 const Card = styled.div`
@@ -143,8 +144,13 @@ const Category = styled.p`
 `;
 
 const Name = styled.p`
+  width: 100%;
+  height: 1.5rem;
   font-size: 1.5rem;
   letter-spacing: 0.1rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const StatusWrapper = styled.div`
