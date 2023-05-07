@@ -121,7 +121,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         getUserItems(userData.uid);
         setUid(userData.uid);
         // setLoading(false);
-        setIsLoading(false);
+        // setIsLoading(false);
+        setTimeout(() => setIsLoading(false), 1500);
 
         if (
           location.pathname !== '/' &&
@@ -140,7 +141,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setIsLogin(false);
         setUid(null);
         // setLoading(false);
-        setIsLoading(false);
+        // setIsLoading(false);
+        setTimeout(() => setIsLoading(false), 1500);
 
         if (
           location.pathname !== '/' &&
@@ -166,7 +168,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       image: userInfo.image,
     });
     setIsLogin(true);
-    setIsLoading(false);
+    // setIsLoading(false);
+    setTimeout(() => setIsLoading(false), 1500);
     // setLoading(false);
   };
 
@@ -179,7 +182,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       image: '',
     });
     setIsLogin(false);
-    setIsLoading(false);
+    // setIsLoading(false);
+    setTimeout(() => setIsLoading(false), 1500);
     // setLoading(false);
     navigate('/login');
   };
@@ -199,7 +203,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
     setUid(userData.uid);
     setIsLogin(true);
-    setIsLoading(false);
+    // setIsLoading(false);
+    setTimeout(() => setIsLoading(false), 1500);
     // setLoading(false);
   };
 

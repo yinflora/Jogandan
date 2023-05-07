@@ -223,6 +223,7 @@ const PhotoIcon = styled.img`
   right: 20px;
   width: 50px;
   height: 50px;
+  cursor: pointer;
 `;
 
 const CancelIcon = styled.button`
@@ -326,6 +327,10 @@ const SubImage = styled.div<{ imageUrl: string }>`
   border: 1px solid #fff;
   background: ${({ imageUrl }) =>
     imageUrl === '' ? 'none' : `center / cover no-repeat url(${imageUrl})`};
+
+  &:hover {
+    cursor: ${({ imageUrl }) => (imageUrl === '' ? 'default' : 'grab')};
+  }
 `;
 
 const InfoWrapper = styled.form`
