@@ -4,6 +4,9 @@ import { createGlobalStyle } from 'styled-components';
 import { AuthContextProvider } from './context/authContext';
 import Header from './components/Header/Header';
 import BackButton from './components/Button/BackButton';
+// import { useContext } from 'react';
+// import { LoadingContext } from './context/loadingContext';
+// import Loader from './components/Loader/Loader';
 
 const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
   * {
@@ -39,6 +42,7 @@ const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
 `;
 
 function App() {
+  // const { isLoading } = useContext(LoadingContext);
   const location = useLocation();
 
   const backgroundColor =
@@ -49,6 +53,10 @@ function App() {
 
   return (
     <>
+      {/* {isLoading ? (
+        <Loader />
+      ) : (
+        <> */}
       <Reset />
       <GlobalStyle backgroundColor={backgroundColor} />
       <AuthContextProvider>
@@ -56,6 +64,8 @@ function App() {
         <Outlet />
         <BackButton />
       </AuthContextProvider>
+      {/* </>
+      )} */}
     </>
   );
 }

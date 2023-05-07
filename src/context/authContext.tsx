@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect } from 'react';
+import React, { useState, createContext, useEffect, useContext } from 'react';
 import {
   signin,
   signout,
@@ -10,6 +10,7 @@ import {
 import { onAuthStateChanged } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { LoadingContext } from './loadingContext';
 
 type User = {
   uid: string;
@@ -39,7 +40,7 @@ type Form = {
 
 type AuthContextType = {
   isLogin: boolean;
-  loading: boolean;
+  // loading: boolean;
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
   uid: string | null;
@@ -55,7 +56,7 @@ type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType>({
   isLogin: false,
-  loading: false,
+  // loading: false,
   user: {
     uid: '',
     name: '',
@@ -79,8 +80,10 @@ type AuthContextProviderProps = {
 };
 
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
+  const { setIsLoading } = useContext(LoadingContext);
+
   const [isLogin, setIsLogin] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User>({
     uid: '',
     name: '',
@@ -117,7 +120,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setIsLogin(true);
         getUserItems(userData.uid);
         setUid(userData.uid);
-        setLoading(false);
+        // setLoading(false);
+        setIsLoading(false);
 
         if (
           location.pathname !== '/' &&
@@ -135,7 +139,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         });
         setIsLogin(false);
         setUid(null);
-        setLoading(false);
+        // setLoading(false);
+        setIsLoading(false);
 
         if (
           location.pathname !== '/' &&
@@ -161,7 +166,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       image: userInfo.image,
     });
     setIsLogin(true);
-    setLoading(false);
+    setIsLoading(false);
+    // setLoading(false);
   };
 
   const logout = () => {
@@ -173,7 +179,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       image: '',
     });
     setIsLogin(false);
-    setLoading(false);
+    setIsLoading(false);
+    // setLoading(false);
     navigate('/login');
   };
 
@@ -192,14 +199,15 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
     setUid(userData.uid);
     setIsLogin(true);
-    setLoading(false);
+    setIsLoading(false);
+    // setLoading(false);
   };
 
   return (
     <AuthContext.Provider
       value={{
         isLogin,
-        loading,
+        // loading,
         user,
         setUser,
         uid,
