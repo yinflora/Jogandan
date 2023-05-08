@@ -444,6 +444,7 @@ export default function Inventory() {
         setNoMatchingResult(true);
         setItems(filteredItems);
       } else {
+        setNoMatchingResult(false);
         setItems(filteredItems);
         setFilter({
           category: '',
@@ -548,6 +549,7 @@ export default function Inventory() {
                 <SubTitle
                   key={category}
                   onClick={() => {
+                    setNoMatchingResult(false);
                     setFilter({ ...filter, category });
                     setSearch('');
                   }}
@@ -572,6 +574,7 @@ export default function Inventory() {
                 <SubTitle
                   key={status}
                   onClick={() => {
+                    setNoMatchingResult(false);
                     setFilter({ ...filter, status });
                     setSearch('');
                   }}

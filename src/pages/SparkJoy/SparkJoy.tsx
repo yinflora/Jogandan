@@ -31,14 +31,42 @@ const Container = styled.div`
   cursor: default;
 `;
 
-const Background = styled.div`
-  position: absolute;
-  z-index: -1;
+const BackgroundContainer = styled.div`
+  position: fixed;
   bottom: 0;
-  width: 100vw;
-  height: 250px;
-  background-color: #8d9ca4;
+  left: 0;
+  width: 100%;
+  height: 45vh;
+  z-index: -1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 90%;
+    background-color: #8d9ca4;
+  }
 `;
+
+const ChoiceContainer = styled.div`
+  display: flex;
+  height: 10%;
+  justify-content: space-between;
+  align-items: end;
+  padding: 0 10%;
+`;
+
+// const Background = styled.div`
+//   position: absolute;
+//   z-index: -1;
+//   bottom: 0;
+//   width: 100vw;
+//   /* height: 250px; */
+//   height: 30vh;
+//   background-color: #8d9ca4;
+// `;
 
 const Choice = styled.p`
   font-size: 4rem;
@@ -49,19 +77,21 @@ const Choice = styled.p`
   color: #8d9ca4;
 `;
 
-const Yes = styled(Choice)`
-  position: absolute;
-  z-index: -1;
-  right: 10%;
-  bottom: 250px;
-`;
+// const Yes = styled(Choice)`
+//   position: absolute;
+//   z-index: -1;
+//   right: 10%;
+//   /* bottom: 250px; */
+//   bottom: 30vh;
+// `;
 
-const No = styled(Choice)`
-  position: absolute;
-  z-index: -1;
-  left: 10%;
-  bottom: 250px;
-`;
+// const No = styled(Choice)`
+//   position: absolute;
+//   z-index: -1;
+//   left: 10%;
+//   /* bottom: 250px; */
+//   bottom: 30vh;
+// `;
 
 const QuestionText = styled.p`
   position: relative;
@@ -606,9 +636,15 @@ export default function SparkJoy() {
             <Check />
           </ChooseButton>
         </div>
-        <Background />
-        <Yes>YES</Yes>
-        <No>NO</No>
+        {/* <Background></Background> */}
+        <BackgroundContainer>
+          <ChoiceContainer>
+            <Choice>NO</Choice>
+            <Choice>YES</Choice>
+          </ChoiceContainer>
+        </BackgroundContainer>
+        {/* <Yes>YES</Yes>
+        <No>NO</No> */}
       </Container>
 
       {gamePopout && (
