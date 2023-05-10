@@ -5,8 +5,8 @@ import { AuthContext } from '../../context/authContext';
 
 import styled, { css } from 'styled-components';
 
-import Login from '../Login/Login';
 import Home from '../../components/Icon/Home';
+import Login from '../Button/Login';
 
 const Container = styled.section`
   position: absolute;
