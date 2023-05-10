@@ -174,6 +174,23 @@ async function updateUser(url) {
   return null;
 }
 
+async function updateVisionBoard(boardData) {
+  try {
+    const userRef = doc(db, 'users', auth.lastNotifiedUid);
+
+    await updateDoc(userRef, {
+      visionBoard: {
+        data: boardData,
+        isEdited: true,
+        lastModified: serverTimestamp(),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+  return null;
+}
+
 async function uploadItems(form) {
   try {
     const { name, category, status, description, images } = form;
@@ -367,4 +384,5 @@ export {
   setNewBoard,
   setFirstBoard,
   saveBoard,
+  updateVisionBoard,
 };

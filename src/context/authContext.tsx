@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from 'firebase/auth';
-// import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Item } from '../types/types';
@@ -18,20 +18,9 @@ type User = {
   name: string;
   email: string;
   image: string;
+  level: string;
+  visionBoard: VisionBoard;
 };
-
-// type Item = {
-//   id: string;
-//   name: string;
-//   status: string;
-//   category: string;
-//   created: Timestamp;
-//   processedDate: string;
-//   description: string;
-//   images: string[];
-// };
-
-// type Items = Item[];
 
 type Form = {
   name: string;
@@ -39,12 +28,18 @@ type Form = {
   password: string;
 };
 
+type VisionBoard = {
+  data: object;
+  isEdited: boolean;
+  lastModified: Timestamp | null;
+};
+
 type AuthContextType = {
   isLogin: boolean;
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
   uid: string | null;
-  items: Item[] | null;
+  items: Item[];
   login: () => Promise<void>;
   logout: () => void;
   isPopout: boolean;
@@ -61,10 +56,12 @@ export const AuthContext = createContext<AuthContextType>({
     name: '',
     email: '',
     image: '',
+    level: '',
+    visionBoard: { data: {}, isEdited: false, lastModified: null },
   },
   setUser: () => {},
   uid: null,
-  items: null,
+  items: [],
   login: async () => {},
   logout: () => {},
   isPopout: false,
@@ -87,9 +84,11 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     name: '',
     email: '',
     image: '',
+    level: '',
+    visionBoard: { data: {}, isEdited: false, lastModified: null },
   });
   const [uid, setUid] = useState<string | null>(null);
-  const [items, setItems] = useState<Item[] | null>(null);
+  const [items, setItems] = useState<Item[]>([]);
   const [isPopout, setIsPopout] = useState<boolean>(false);
   const [previousPath, setPreviousPath] = useState<string | null>(null);
 
@@ -99,6 +98,21 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   async function getUserItems(id: string) {
     const itemList = await getItems(id);
     setItems(itemList);
+  }
+
+  function handleLevel() {
+    const declutteredItems = items.filter(
+      (item: Item) => item.status === '已處理'
+    ).length;
+
+    if (declutteredItems >= 100) {
+      return 'Master';
+    } else if (declutteredItems < 100 && declutteredItems >= 50) {
+      return 'Veteran';
+    } else if (declutteredItems < 50 && declutteredItems >= 30) {
+      return 'Seasoned';
+    }
+    return 'Rookie';
   }
 
   useEffect(() => {
@@ -113,6 +127,12 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           name: userData.name,
           email: userData.email,
           image: userData.image,
+          level: handleLevel(),
+          visionBoard: {
+            data: userData.visionBoard.data,
+            isEdited: userData.visionBoard.isEdited,
+            lastModified: userData.visionBoard.lastModified,
+          },
         });
         setIsLogin(true);
         getUserItems(userData.uid);
@@ -132,6 +152,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           name: '',
           email: '',
           image: '',
+          level: '',
+          visionBoard: { data: {}, isEdited: false, lastModified: null },
         });
         setIsLogin(false);
         setUid(null);
@@ -159,6 +181,12 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       name: userInfo.name,
       email: userInfo.email,
       image: userInfo.image,
+      level: handleLevel(),
+      visionBoard: {
+        data: userInfo.visionBoard.data,
+        isEdited: userInfo.visionBoard.isEdited,
+        lastModified: userInfo.visionBoard.lastModified,
+      },
     });
     setIsLogin(true);
     setTimeout(() => setIsLoading(false), 1500);
@@ -171,6 +199,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       name: '',
       email: '',
       image: '',
+      level: '',
+      visionBoard: { data: {}, isEdited: false, lastModified: null },
     });
     setIsLogin(false);
     setTimeout(() => setIsLoading(false), 1500);
@@ -189,6 +219,12 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       name: userData.name,
       email: userData.email,
       image: userData.image,
+      level: handleLevel(),
+      visionBoard: {
+        data: userData.visionBoard.data,
+        isEdited: userData.visionBoard.isEdited,
+        lastModified: userData.visionBoard.lastModified,
+      },
     });
     setUid(userData.uid);
     setIsLogin(true);
