@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 
-import { getItems, getItemById } from '../../utils/firebase';
-import { AuthContext } from '../../context/authContext';
-import Popout from './Popout';
-import Search from '../../components/Icon/Search';
 import { RxCross1 } from 'react-icons/rx';
+import Search from '../../components/Icon/Search';
+import { AuthContext } from '../../context/authContext';
+import { getItemById, getItems } from '../../utils/firebase';
+import Popout from './Popout';
 
 const Container = styled.div`
   width: 1000px;
@@ -324,7 +324,7 @@ export default function Inventory() {
     }
 
     async function fetchSelectedData() {
-      const item: any = await getItemById(uid, id); //!記得改any
+      const item: any = await getItemById(uid, id);
       setSelectedItem(item[0]);
     }
 
@@ -435,11 +435,6 @@ export default function Inventory() {
         item.name.toLowerCase().includes(search.toLowerCase())
       );
 
-      // setItems(filteredItems);
-      // setFilter({
-      //   category: '',
-      //   status: '',
-      // });
       if (filteredItems.length === 0) {
         setNoMatchingResult(true);
         setItems(filteredItems);
@@ -472,54 +467,33 @@ export default function Inventory() {
           </SearchWrapper>
           <SearchText>
             FILTER：
-            {/* {(() => {
-              if (filter.category === '' && filter.status === '') {
-                return 'All';
-              } else if (filter.category !== '' && filter.status !== '') {
-                return `${filter.category}｜${filter.status} (${
-                  items &&
-                  items.filter(
-                    (item) =>
-                      item.category === filter.category &&
-                      item.status === filter.status
-                  ).length
-                })`;
-              } else if (filter.category !== '') {
-                return `${filter.category} (${
-                  items &&
-                  items.filter((item) => item.category === filter.category)
-                    .length
-                })`;
-              }
-              return `${filter.status} (${
-                items &&
-                items.filter((item) => item.status === filter.status).length
-              })`;
-            })()} */}
             {(() => {
               if (filter.category === '' && filter.status === '') {
                 return 'All';
-              } else if (filter.category !== '' && filter.status !== '') {
+              }
+              if (filter.category !== '' && filter.status !== '') {
                 return `${filter.category}｜${filter.status} (${
-                  itemsRef.current &&
-                  itemsRef.current.filter(
+                  // itemsRef.current &&
+                  itemsRef.current?.filter(
                     (item) =>
                       item.category === filter.category &&
                       item.status === filter.status
                   ).length
                 })`;
-              } else if (filter.category !== '') {
+              }
+              if (filter.category !== '') {
                 return `${filter.category} (${
-                  itemsRef.current &&
-                  itemsRef.current.filter(
+                  // itemsRef.current &&
+                  itemsRef.current?.filter(
                     (item) => item.category === filter.category
                   ).length
                 })`;
               }
               return `${filter.status} (${
-                itemsRef.current &&
-                itemsRef.current.filter((item) => item.status === filter.status)
-                  .length
+                // itemsRef.current &&
+                itemsRef.current?.filter(
+                  (item) => item.status === filter.status
+                ).length
               })`;
             })()}
           </SearchText>

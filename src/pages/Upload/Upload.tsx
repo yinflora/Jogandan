@@ -1,23 +1,22 @@
-import React, { useRef } from 'react';
-import { useEffect, useState, useContext } from 'react';
-import {
-  storage,
-  uploadItems,
-  getItemById,
-  updateItem,
-} from '../../utils/firebase';
-import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { Timestamp } from 'firebase/firestore';
-import { AuthContext } from '../../context/authContext';
-import { useParams, useNavigate } from 'react-router-dom';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
-import photo from './photo.png';
-import image from './image.png';
 import Button from '../../components/Button/Button';
+import { AuthContext } from '../../context/authContext';
+import {
+  getItemById,
+  storage,
+  updateItem,
+  uploadItems,
+} from '../../utils/firebase';
+import image from './image.png';
+import photo from './photo.png';
 // import Cross from '../../components/Icon/Cross';
-import { v4 as uuidv4 } from 'uuid';
 import { CiCircleInfo } from 'react-icons/ci';
 import { RxCross1 } from 'react-icons/rx';
+import { v4 as uuidv4 } from 'uuid';
 
 import Alert from '../../components/Alert/Alert';
 
@@ -802,7 +801,7 @@ export default function Upload({
       })
     );
 
-    const itemId = await uploadItems(uid, newForm);
+    const itemId = await uploadItems(newForm);
 
     !isBulkMode &&
       itemId &&
