@@ -1,15 +1,15 @@
-import React, { useState, createContext, useEffect, useContext } from 'react';
-import {
-  signin,
-  signout,
-  auth,
-  getUser,
-  getItems,
-  nativeSignup,
-} from '../utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  auth,
+  getItems,
+  getUser,
+  nativeSignup,
+  signin,
+  signout,
+} from '../utils/firebase';
 import { LoadingContext } from './loadingContext';
 
 type User = {
@@ -107,7 +107,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   useEffect(() => {
     onAuthStateChanged(auth, async (userInfo) => {
       if (userInfo) {
-        const userData = await getUser(userInfo.uid);
+        const userData = await getUser();
 
         if (!userData) return;
 

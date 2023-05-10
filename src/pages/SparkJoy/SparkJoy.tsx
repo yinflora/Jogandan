@@ -1,20 +1,21 @@
-import React, { useState, useMemo, useRef, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import TinderCard from 'react-tinder-card';
-import AuthContext from '../../context/authContext';
+
 import { Timestamp } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
+import AuthContext from '../../context/authContext';
 import { updateItem } from '../../utils/firebase';
 import circle from './circle-blue.png';
 import cross from './cross-blue.png';
 import undo from './undo.png';
-import { useNavigate } from 'react-router-dom';
 
-import Check from '../../components/Icon/Check';
-import Cancel from '../../components/Icon/Cancel';
 import Button from '../../components/Button/Button';
+import Cancel from '../../components/Icon/Cancel';
+import Check from '../../components/Icon/Check';
 
-import { TfiArrowRight } from 'react-icons/tfi';
 import { RxCross1 } from 'react-icons/rx';
+import { TfiArrowRight } from 'react-icons/tfi';
 
 import sparkJoy from './sparkJoy.png';
 import swipeIcon from './swipe.png';
@@ -445,7 +446,14 @@ type Item = {
 };
 
 type Items = Item[];
-type API = any; //!Fixme
+
+type Direction = 'left' | 'right' | 'up' | 'down';
+
+type API = {
+  // eslint-disable-next-line no-unused-vars
+  swipe(direction?: Direction): Promise<void>;
+  restoreCard(): Promise<void>;
+};
 
 export default function SparkJoy() {
   const { uid, items } = useContext(AuthContext);
@@ -505,22 +513,23 @@ export default function SparkJoy() {
     currentIndexRef.current = val;
   };
 
-  const swiped = (direction: string, idToDelete: string, index: number) => {
+  const swiped = (direction: Direction, idToDelete: string, index: number) => {
     updateCurrentIndex(index - 1);
   };
 
   const outOfFrame = (id: string, index: number) => {
-    currentIndexRef.current! >= index && childRefs[index].current.restoreCard();
+    currentIndexRef.current! >= index &&
+      childRefs[index].current?.restoreCard();
   };
 
-  const swipe = async (direction: string) => {
+  const swipeCard = async (direction?: Direction) => {
     const canSwipe =
       currentIndex !== null &&
       currentIndex >= 0 &&
       currentIndex < randomItems!.length;
     if (!canSwipe) return;
 
-    await childRefs[currentIndex].current.swipe(direction);
+    await childRefs[currentIndex].current?.swipe(direction);
   };
 
   const goBack = async () => {
@@ -530,7 +539,7 @@ export default function SparkJoy() {
     if (!canGoBack) return;
     const newIndex = currentIndex + 1;
     updateCurrentIndex(newIndex);
-    await childRefs[newIndex].current.restoreCard();
+    await childRefs[newIndex].current?.restoreCard();
   };
 
   async function handleLike(index: number) {
@@ -600,7 +609,7 @@ export default function SparkJoy() {
                 ref={childRefs[index]}
                 preventSwipe={['up', 'down']}
                 flickOnSwipe={true}
-                onSwipe={(direction) => {
+                onSwipe={(direction: Direction) => {
                   swiped(direction, item.id, index);
                   if (direction === 'right') {
                     handleLike(index);
@@ -624,13 +633,13 @@ export default function SparkJoy() {
         </CardContainer>
         <div>
           <ChooseButton
-            onClick={() => swipe('left')}
+            onClick={() => swipeCard('left')}
             disabled={guide || currentIndex === -1}
           >
             <Cancel />
           </ChooseButton>
           <ChooseButton
-            onClick={() => swipe('right')}
+            onClick={() => swipeCard('right')}
             disabled={guide || currentIndex === -1}
           >
             <Check />

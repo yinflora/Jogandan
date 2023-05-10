@@ -1,24 +1,24 @@
+import { fabric } from 'fabric';
+import { Timestamp } from 'firebase/firestore';
 import React, {
   useContext,
   useEffect,
-  useState,
-  useRef,
   useReducer,
+  useRef,
+  useState,
 } from 'react';
-import { AuthContext } from '../../context/authContext';
-import { getItems, getBoard, storage, updateUser } from '../../utils/firebase';
+import { useNavigate } from 'react-router-dom';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
-import { Timestamp } from 'firebase/firestore';
-import { fabric } from 'fabric';
-import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/authContext';
+import { getBoard, getItems, storage, updateUser } from '../../utils/firebase';
 
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import styled, { css } from 'styled-components/macro';
 
-import { TfiArrowRight } from 'react-icons/tfi';
 import { RxCross1 } from 'react-icons/rx';
 import { SlCloudUpload } from 'react-icons/sl';
+import { TfiArrowRight } from 'react-icons/tfi';
 
 import Button from '../../components/Button/Button';
 
@@ -680,7 +680,7 @@ export default function Profile() {
     const snapshot = await uploadBytes(storageRef, image);
     const url = await getDownloadURL(snapshot.ref);
 
-    await updateUser(uid, url);
+    await updateUser(url);
 
     setUser({ ...user, image: url });
   }
