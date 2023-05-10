@@ -1,7 +1,8 @@
 import { onAuthStateChanged } from 'firebase/auth';
-import { Timestamp } from 'firebase/firestore';
+// import { Timestamp } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Item } from '../types/types';
 import {
   auth,
   getItems,
@@ -19,18 +20,18 @@ type User = {
   image: string;
 };
 
-type Item = {
-  id: string;
-  name: string;
-  status: string;
-  category: string;
-  created: Timestamp;
-  processedDate: string;
-  description: string;
-  images: string[];
-};
+// type Item = {
+//   id: string;
+//   name: string;
+//   status: string;
+//   category: string;
+//   created: Timestamp;
+//   processedDate: string;
+//   description: string;
+//   images: string[];
+// };
 
-type Items = Item[];
+// type Items = Item[];
 
 type Form = {
   name: string;
@@ -43,7 +44,7 @@ type AuthContextType = {
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
   uid: string | null;
-  items: Items | null;
+  items: Item[] | null;
   login: () => Promise<void>;
   logout: () => void;
   isPopout: boolean;
@@ -88,7 +89,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     image: '',
   });
   const [uid, setUid] = useState<string | null>(null);
-  const [items, setItems] = useState<Items | null>(null);
+  const [items, setItems] = useState<Item[] | null>(null);
   const [isPopout, setIsPopout] = useState<boolean>(false);
   const [previousPath, setPreviousPath] = useState<string | null>(null);
 

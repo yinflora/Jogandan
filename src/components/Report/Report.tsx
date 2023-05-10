@@ -1,5 +1,6 @@
+import { Fragment } from 'react';
 import styled from 'styled-components';
-import { Timestamp } from 'firebase/firestore';
+import { Category, Item } from '../../types/types';
 
 const Svg = styled.svg`
   width: 1000px;
@@ -33,12 +34,9 @@ const Qty = styled(Text)`
   text-anchor: middle;
 `;
 
-type month = string;
-type quantity = number;
-type Row = string[];
-type Column = number[];
+type Quantities = number[];
 
-const CATEGORIES: Row = [
+const CATEGORIES: Category[] = [
   '居家生活',
   '服飾配件',
   '美妝保養',
@@ -53,9 +51,15 @@ const CATEGORIES: Row = [
   '其他',
 ];
 
-const TEN_QUANTITY_LINE: Column = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-const FIVE_QUANTITY_LINE: Column = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
-const ONE_QUANTITY_LINE: Column = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const SPACING_UNIT_1: Quantities = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const SPACING_UNIT_5: Quantities = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+const SPACING_UNIT_10: Quantities = [
+  0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+];
+
+const SPACING_UNIT_1_HEIGHT = 50;
+const SPACING_UNIT_5_HEIGHT = 10;
+const SPACING_UNIT_10_HEIGHT = 5;
 
 const X_START_AXIS: number = 50;
 const X_END_AXIS: number = 1000;
@@ -67,29 +71,16 @@ const XTAG_Y_AXIS: number = 570;
 const YTAG_START_AXIS: number = 550;
 const YTAG_SPACE: number = 50;
 const YTAG_X_AXIS: number = 30;
-// const HEIGHT_PER_QTY: number = 5;
+
 const TEXT_SPACING: number = 12.5;
 const TEXT_TO_RECT: number = 10;
 
-type Item = {
-  id: string;
-  name: string;
-  status: string;
-  category: string;
-  created: Timestamp;
-  processedDate: string;
-  description: string;
-  images: string[];
-};
-
-type Items = Item[];
-
 type ReportProps = {
-  items: Items;
+  items: Item[];
 };
 
 export default function Report({ items }: ReportProps) {
-  const qtyList = items.reduce((acc, item) => {
+  const itemQty = items.reduce((acc, item) => {
     const index = CATEGORIES.indexOf(item.category);
     if (index !== -1) {
       acc[index]++;
@@ -97,27 +88,27 @@ export default function Report({ items }: ReportProps) {
     return acc;
   }, Array(CATEGORIES.length).fill(0));
 
-  const isOver50perCategory = qtyList.some((value) => value >= 50);
-  const isOver10perCategory = qtyList.some((value) => value >= 10);
+  const isOver50perCategory = itemQty.some((value) => value >= 50);
+  const isOver10perCategory = itemQty.some((value) => value >= 10);
 
-  let quantityLine;
-  let qtyHeight: number;
+  let qtyLine;
+  let qtyHeight: 5 | 10 | 50;
 
   if (isOver50perCategory) {
-    quantityLine = TEN_QUANTITY_LINE;
-    qtyHeight = 5;
+    qtyLine = SPACING_UNIT_10;
+    qtyHeight = SPACING_UNIT_10_HEIGHT;
   } else if (isOver10perCategory) {
-    quantityLine = FIVE_QUANTITY_LINE;
-    qtyHeight = 10;
+    qtyLine = SPACING_UNIT_5;
+    qtyHeight = SPACING_UNIT_5_HEIGHT;
   } else {
-    quantityLine = ONE_QUANTITY_LINE;
-    qtyHeight = 50;
+    qtyLine = SPACING_UNIT_1;
+    qtyHeight = SPACING_UNIT_1_HEIGHT;
   }
 
   return (
     <Svg preserveAspectRatio="xMinYMin meet">
       <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
-      {CATEGORIES.map((item: month, index: number) => (
+      {CATEGORIES.map((item: Category, index: number) => (
         <XTag
           key={item}
           x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}
@@ -134,7 +125,7 @@ export default function Report({ items }: ReportProps) {
         x2={X_END_AXIS}
         y2={Y_START_AXIS}
       />
-      {quantityLine.map((item: quantity, index: number) => (
+      {qtyLine.map((item: number, index: number) => (
         <YTag
           key={item}
           x={YTAG_X_AXIS}
@@ -150,8 +141,8 @@ export default function Report({ items }: ReportProps) {
         y2={Y_END_AXIS}
       />
 
-      {qtyList.map((item: quantity, index: number) => (
-        <>
+      {itemQty.map((item: number, index: number) => (
+        <Fragment key={index}>
           <Rect
             x={XTAG_START_AXIS + index * XTAG_SPACE}
             y={YTAG_START_AXIS - item * qtyHeight}
@@ -165,7 +156,7 @@ export default function Report({ items }: ReportProps) {
               {item}
             </Qty>
           )}
-        </>
+        </Fragment>
       ))}
     </Svg>
   );

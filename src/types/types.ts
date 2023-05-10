@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-type Status =
+type Category =
   | '居家生活'
   | '服飾配件'
   | '美妝保養'
@@ -14,7 +14,7 @@ type Status =
   | '紀念意義'
   | '其他';
 
-type Category = '保留' | '待處理' | '已處理';
+type Status = '保留' | '待處理' | '已處理';
 
 type Item = {
   id: string;
@@ -27,4 +27,4 @@ type Item = {
   images: string[];
 };
 
-export type { Item };
+export type { Category, Item };
