@@ -40,7 +40,6 @@ type Form = {
 
 type AuthContextType = {
   isLogin: boolean;
-  // loading: boolean;
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
   uid: string | null;
@@ -56,7 +55,6 @@ type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType>({
   isLogin: false,
-  // loading: false,
   user: {
     uid: '',
     name: '',
@@ -83,7 +81,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const { setIsLoading } = useContext(LoadingContext);
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
-  // const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User>({
     uid: '',
     name: '',
@@ -94,7 +91,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [items, setItems] = useState<Items | null>(null);
   const [isPopout, setIsPopout] = useState<boolean>(false);
   const [previousPath, setPreviousPath] = useState<string | null>(null);
-  // const [errorMessage, setErrorMessage] =useState<string | null>('');
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -120,8 +116,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         setIsLogin(true);
         getUserItems(userData.uid);
         setUid(userData.uid);
-        // setLoading(false);
-        // setIsLoading(false);
         setTimeout(() => setIsLoading(false), 1500);
 
         if (
@@ -140,8 +134,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         });
         setIsLogin(false);
         setUid(null);
-        // setLoading(false);
-        // setIsLoading(false);
         setTimeout(() => setIsLoading(false), 1500);
 
         if (
@@ -168,9 +160,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       image: userInfo.image,
     });
     setIsLogin(true);
-    // setIsLoading(false);
     setTimeout(() => setIsLoading(false), 1500);
-    // setLoading(false);
   };
 
   const logout = () => {
@@ -182,9 +172,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       image: '',
     });
     setIsLogin(false);
-    // setIsLoading(false);
     setTimeout(() => setIsLoading(false), 1500);
-    // setLoading(false);
     navigate('/login');
   };
 
@@ -203,16 +191,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
     setUid(userData.uid);
     setIsLogin(true);
-    // setIsLoading(false);
     setTimeout(() => setIsLoading(false), 1500);
-    // setLoading(false);
   };
 
   return (
     <AuthContext.Provider
       value={{
         isLogin,
-        // loading,
         user,
         setUser,
         uid,

@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import styled from 'styled-components';
 
 import AuthContext from '../../context/authContext';
-import Success from './Success';
-import Sad from './Sad';
 import Button from '../Button/Button';
+import Sad from '../Icon/Sad';
+import Success from '../Icon/Success';
 
 import { RxCross1 } from 'react-icons/rx';
 

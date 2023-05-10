@@ -84,7 +84,6 @@ async function nativeSignup(form) {
 async function nativeLogin(form) {
   try {
     const { email, password } = form;
-    // const { user } = await signInWithEmailAndPassword(auth, email, password);
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
     console.error(error);

@@ -20,7 +20,7 @@ import { TfiArrowRight } from 'react-icons/tfi';
 import sparkJoy from './sparkJoy.png';
 import swipeIcon from './swipe.png';
 
-import Happy from '../../components/Alert/Happy';
+import Happy from '../../components/Icon/Happy';
 
 const Container = styled.div`
   display: flex;
