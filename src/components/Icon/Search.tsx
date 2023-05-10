@@ -2,7 +2,6 @@ export default function Search() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      // class="icon icon-tabler icon-tabler-search"
       width={30}
       height={30}
       viewBox="0 0 24 24"
