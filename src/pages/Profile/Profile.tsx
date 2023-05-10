@@ -1,26 +1,24 @@
 import { fabric } from 'fabric';
-import { Timestamp } from 'firebase/firestore';
-import React, {
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from 'react';
-import { useNavigate } from 'react-router-dom';
-import Level from '../../components/Level/Level';
-import Report from '../../components/Report/Report';
-import { AuthContext } from '../../context/authContext';
-import { getBoard, getItems, storage, updateUser } from '../../utils/firebase';
-
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import styled, { css } from 'styled-components/macro';
-
+import React, { useContext, useEffect, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { SlCloudUpload } from 'react-icons/sl';
 import { TfiArrowRight } from 'react-icons/tfi';
-
+import { useNavigate } from 'react-router-dom';
+import styled, { css } from 'styled-components/macro';
 import Button from '../../components/Button/Button';
+import Level from '../../components/Level/Level';
+import Report from '../../components/Report/Report';
+import { AuthContext } from '../../context/authContext';
+import { Item } from '../../types/types';
+import { storage, updateUser } from '../../utils/firebase';
+import {
+  getLastMonth,
+  getLastYear,
+  getThisMonth,
+  getThisWeek,
+  getThisYear,
+} from '../../utils/timeHelper';
 
 const Container = styled.div`
   width: 1000px;
@@ -38,7 +36,6 @@ const Background = styled.div`
 `;
 
 const WelcomeMessage = styled.p`
-  /* width: 980px; */
   margin-right: 20px;
   letter-spacing: 0.2rem;
   line-height: 1.5rem;
@@ -88,6 +85,10 @@ const UserImage = styled.img`
   border-radius: 50%;
   object-fit: cover;
   object-position: center;
+`;
+
+const InvisibleInput = styled.input`
+  display: none;
 `;
 
 const InfoWrapper = styled.div`
@@ -237,7 +238,7 @@ const ModeFilter = styled.div`
   align-items: center;
 `;
 
-const ModeToggler = styled.div`
+const ModeToggler = styled.div<{ isSelected: boolean }>`
   position: relative;
   display: flex;
   width: 100px;
@@ -248,6 +249,7 @@ const ModeToggler = styled.div`
   border: 1px solid #fff;
   color: #fff;
   font-size: 0.85rem;
+  cursor: pointer;
 
   &:hover {
     color: #8d9ca4;
@@ -271,32 +273,13 @@ const ModeToggler = styled.div`
     right: 0;
     opacity: 1;
   }
-`;
 
-const CurrentMode = styled(ModeToggler)<{ isDeclutteredMode: boolean }>`
-  ${({ isDeclutteredMode }) =>
-    !isDeclutteredMode &&
+  ${({ isSelected }) =>
+    isSelected &&
     css`
       background-color: #fff;
       color: #8d9ca4;
     `}
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const DeclutterMode = styled(ModeToggler)<{ isDeclutteredMode: boolean }>`
-  ${({ isDeclutteredMode }) =>
-    isDeclutteredMode &&
-    css`
-      background-color: #fff;
-      color: #8d9ca4;
-    `}
-
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 const PeriodFilter = styled.div<{ disabled: boolean }>`
@@ -424,255 +407,105 @@ const QtyTitle = styled.p`
   letter-spacing: 0.2rem;
 `;
 
-type Action =
-  | { type: 'FETCH_DATA'; payload: { data: Items } }
-  | {
-      type: 'FILTER_PERIOD';
-      payload: {
-        data: Items;
-        periodStart: number;
-        periodEnd: number;
-      };
-    };
-
-function reducer(items: Items, action: Action): Items {
-  const { type, payload } = action;
-  switch (type) {
-    case 'FETCH_DATA': {
-      return payload.data;
-    }
-    case 'FILTER_PERIOD':
-      if (isNaN(payload.periodStart) || isNaN(payload.periodEnd)) {
-        return payload.data ?? [];
-      }
-      return (
-        payload.data.filter((item: Item) => {
-          const createdTime = new Date(
-            item.created.seconds * 1000 + item.created.nanoseconds / 1000000
-          ).getTime();
-          return (
-            createdTime >= payload.periodStart &&
-            createdTime <= payload.periodEnd
-          );
-        }) ?? []
-      );
-    default: {
-      throw Error('err');
-    }
-  }
-}
-
-type Item = {
-  id: string;
-  name: string;
-  status: string;
-  category: string;
-  created: Timestamp;
-  processedDate: string;
-  description: string;
-  images: string[];
-};
-
-type Items = Item[];
-
 type Period = {
   start: string;
   end: string;
 };
+type ReportStatus = '目前持有' | '已處理';
+
+const STATUS: ReportStatus[] = ['目前持有', '已處理'];
+
+const FILTER: object[] = [
+  { value: '過去 7 天', action: getThisWeek },
+  { value: '本月', action: getThisMonth },
+  { value: '上個月', action: getLastMonth },
+  { value: '今年', action: getThisYear },
+  { value: '去年', action: getLastYear },
+];
+
+const GAME_MIN_NUMBER = 10;
+const BOARD_WIDTH = 980;
+const BOARD_HEIGHT = 748;
+const BOARD_ORIGIN_WIDTH = 625;
+const BOARD_ORIGIN_HEIGHT = 475;
+
+function useReportItems(items: Item[]) {
+  const [reportItems, setReportItems] = useState<Item[] | []>([]);
+  const [period, setPeriod] = useState<Period>({ start: '', end: '' });
+  const [status, setStatus] = useState<ReportStatus>('目前持有');
+
+  useEffect(() => {
+    if (!items) return;
+
+    if (status === '已處理') {
+      const declutteredItems = items.filter(
+        (item: Item) => item.status === '已處理'
+      );
+      const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
+      const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
+
+      if (isNaN(periodStart) || isNaN(periodEnd)) {
+        setReportItems(declutteredItems);
+      } else {
+        const filteredItems = declutteredItems.filter((item: Item) => {
+          const createdTime = new Date(
+            item.created.seconds * 1000 + item.created.nanoseconds / 1000000
+          ).getTime();
+          return createdTime >= periodStart && createdTime <= periodEnd;
+        });
+        setReportItems(filteredItems);
+      }
+    } else {
+      const existingItems = items.filter(
+        (item: Item) => item.status !== '已處理'
+      );
+      setReportItems(existingItems);
+    }
+  }, [items, period, status]);
+
+  return {
+    reportItems,
+    period,
+    setPeriod,
+    status,
+    setStatus,
+  };
+}
 
 export default function Profile() {
-  const { user, setUser, uid } = useContext(AuthContext);
+  const { user, setUser, uid, items } = useContext(AuthContext);
+  const { reportItems, period, setPeriod, status, setStatus } =
+    useReportItems(items);
+  const [isFirst, setIsFirst] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const [items, dispatch] = useReducer(reducer, []);
-  const [existingItems, setExistingItems] = useState<Items | []>([]);
-  const [period, setPeriod] = useState<Period>({ start: '', end: '' });
-  const [isDeclutteredMode, setIsDeclutteredMode] = useState<boolean>(false);
-
-  const [isFirst, setIsFirst] = useState<boolean>(false);
-
-  const itemRef = useRef<Items | null>(null);
-
   useEffect(() => {
-    async function fetchData() {
-      const data = await getItems(uid);
-      dispatch({ type: 'FETCH_DATA', payload: { data } });
-      itemRef.current = data;
+    if (!user) return;
 
-      const boardId = localStorage.getItem(`${uid}/boardId`);
-      const board = await getBoard(uid, boardId);
+    const { data, isEdited } = user.visionBoard;
 
-      if (board) {
-        if (!board.isEdited) setIsFirst(true);
+    if (!isEdited) setIsFirst(true);
 
-        const canvas = new fabric.Canvas('canvas', {
-          width: 980,
-          height: 748,
-        });
-
-        canvas.loadFromJSON(board.data, () => {
-          const scaleX = canvas.getWidth() / 625;
-          const scaleY = canvas.getHeight() / 475;
-          const zoom = Math.max(scaleX, scaleY);
-          canvas.setZoom(zoom);
-          canvas.selection = false;
-          canvas.forEachObject((obj) => {
-            obj.selectable = false;
-            obj.hoverCursor = 'default';
-          });
-        });
-      }
-
-      const existing = data.filter((item) => item.status !== '已處理');
-      setExistingItems(existing);
-    }
-
-    fetchData();
-  }, [uid]);
-
-  useEffect(() => {
-    if (isDeclutteredMode) countItems();
-  }, [period, isDeclutteredMode]);
-
-  function countItems() {
-    if (!itemRef.current) return;
-
-    const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
-    const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
-
-    const declutteredItems = itemRef.current.filter(
-      (item) => item.status === '已處理'
-    );
-
-    dispatch({
-      type: 'FILTER_PERIOD',
-      payload: { data: declutteredItems, periodStart, periodEnd },
+    const canvas = new fabric.Canvas('canvas', {
+      width: BOARD_WIDTH,
+      height: BOARD_HEIGHT,
     });
-  }
 
-  function handleLevel() {
-    const disposedItems: number | undefined = itemRef.current?.filter(
-      (item) => item.status === '已處理'
-    ).length;
-
-    if (disposedItems) {
-      if (disposedItems >= 100) {
-        return 'Master';
-      } else if (disposedItems < 100 && disposedItems >= 50) {
-        return 'Veteran';
-      } else if (disposedItems < 50 && disposedItems >= 30) {
-        return 'Seasoned';
-      }
-    }
-    return 'Rookie';
-  }
-
-  function getLastWeek() {
-    const today = new Date();
-    const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const formattedSevenDaysAgo = `${sevenDaysAgo.getFullYear()}-${String(
-      sevenDaysAgo.getMonth() + 1
-    ).padStart(2, '0')}-${String(sevenDaysAgo.getDate()).padStart(2, '0')}`;
-    return formattedSevenDaysAgo;
-  }
-
-  function getToday() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-
-    return formattedDate;
-  }
-
-  function setThisMonth() {
-    const today = new Date();
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDayOfMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      0
-    );
-    const formattedFirstDayOfMonth = `${firstDayOfMonth.getFullYear()}-${String(
-      firstDayOfMonth.getMonth() + 1
-    ).padStart(2, '0')}-${String(firstDayOfMonth.getDate()).padStart(2, '0')}`;
-    const formattedLastDayOfMonth = `${lastDayOfMonth.getFullYear()}-${String(
-      lastDayOfMonth.getMonth() + 1
-    ).padStart(2, '0')}-${String(lastDayOfMonth.getDate()).padStart(2, '0')}`;
-    setPeriod({
-      start: formattedFirstDayOfMonth,
-      end: formattedLastDayOfMonth,
+    canvas.loadFromJSON(data, () => {
+      const scaleX = canvas.getWidth() / BOARD_ORIGIN_WIDTH;
+      const scaleY = canvas.getHeight() / BOARD_ORIGIN_HEIGHT;
+      const zoom = Math.max(scaleX, scaleY);
+      canvas.setZoom(zoom);
+      canvas.selection = false;
+      canvas.forEachObject((obj) => {
+        obj.selectable = false;
+        obj.hoverCursor = 'default';
+      });
     });
-  }
-
-  function setLastMonth() {
-    const today = new Date();
-    const firstDayOfLastMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() - 1,
-      1
-    );
-    const lastDayOfLastMonth = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      0
-    );
-    const formattedFirstDayOfLastMonth = `${firstDayOfLastMonth.getFullYear()}-${String(
-      firstDayOfLastMonth.getMonth() + 1
-    ).padStart(2, '0')}-${String(firstDayOfLastMonth.getDate()).padStart(
-      2,
-      '0'
-    )}`;
-    const formattedLastDayOfLastMonth = `${lastDayOfLastMonth.getFullYear()}-${String(
-      lastDayOfLastMonth.getMonth() + 1
-    ).padStart(2, '0')}-${String(lastDayOfLastMonth.getDate()).padStart(
-      2,
-      '0'
-    )}`;
-    setPeriod({
-      start: formattedFirstDayOfLastMonth,
-      end: formattedLastDayOfLastMonth,
-    });
-  }
-
-  function setThisYear() {
-    const today = new Date();
-    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-    const lastDayOfYear = new Date(today.getFullYear(), 11, 31);
-    const formattedFirstDayOfYear = `${firstDayOfYear.getFullYear()}-${String(
-      firstDayOfYear.getMonth() + 1
-    ).padStart(2, '0')}-${String(firstDayOfYear.getDate()).padStart(2, '0')}`;
-    const formattedLastDayOfYear = `${lastDayOfYear.getFullYear()}-${String(
-      lastDayOfYear.getMonth() + 1
-    ).padStart(2, '0')}-${String(lastDayOfYear.getDate()).padStart(2, '0')}`;
-    setPeriod({
-      start: formattedFirstDayOfYear,
-      end: formattedLastDayOfYear,
-    });
-  }
-
-  function setLastYear() {
-    const today = new Date();
-    const lastYearStartDate = new Date(today.getFullYear() - 1, 0, 1);
-    const lastYearEndDate = new Date(today.getFullYear() - 1, 11, 31);
-    const formattedLastYearStartDate = `${lastYearStartDate.getFullYear()}-${String(
-      lastYearStartDate.getMonth() + 1
-    ).padStart(2, '0')}-${String(lastYearStartDate.getDate()).padStart(
-      2,
-      '0'
-    )}`;
-    const formattedLastYearEndDate = `${lastYearEndDate.getFullYear()}-${String(
-      lastYearEndDate.getMonth() + 1
-    ).padStart(2, '0')}-${String(lastYearEndDate.getDate()).padStart(2, '0')}`;
-    setPeriod({
-      start: formattedLastYearStartDate,
-      end: formattedLastYearEndDate,
-    });
-  }
+  }, [user]);
 
   async function handleModifyImage(e: React.ChangeEvent<HTMLInputElement>) {
-    const image = e.target.files && e.target.files[0];
+    const image = e.target.files?.[0];
 
     if (!image) return;
 
@@ -693,15 +526,15 @@ export default function Profile() {
           <br />
           BACK
         </WelcomeMessage>
+
         <UserInfo>
           <UserImageWrapper>
-            <UserImage src={user.image as string} />
-            <input
+            <UserImage src={user.image} />
+            <InvisibleInput
               id="uploadImage"
               type="file"
               accept="image/*"
               onChange={(e) => handleModifyImage(e)}
-              style={{ display: 'none' }}
             />
             <label htmlFor="uploadImage">
               <ModifyImage>
@@ -712,21 +545,20 @@ export default function Profile() {
 
           <InfoWrapper>
             <UserName>{user.name}</UserName>
-            <UserGrade>{items && handleLevel()}</UserGrade>
+            <UserGrade>{user.level}</UserGrade>
           </InfoWrapper>
         </UserInfo>
 
         <Level
           percent={
-            itemRef.current
-              ? itemRef.current.filter((item) => item.status === '已處理')
-                  .length / 100
-              : 0
+            items.filter((item: Item) => item.status === '已處理').length / 100
           }
         />
-        <GameEntry canShow={items.length >= 10}>
+        <GameEntry canShow={items.length >= GAME_MIN_NUMBER}>
           <LinkToGame
-            onClick={() => items.length >= 10 && navigate('/sparkJoy')}
+            onClick={() =>
+              items.length >= GAME_MIN_NUMBER && navigate('/sparkJoy')
+            }
           >
             每日小遊戲
           </LinkToGame>
@@ -755,20 +587,18 @@ export default function Profile() {
 
         <ModeFilter>
           <Label>FILTER</Label>
-          <CurrentMode
-            isDeclutteredMode={isDeclutteredMode}
-            onClick={() => setIsDeclutteredMode(false)}
-          >
-            目前持有
-          </CurrentMode>
-          <DeclutterMode
-            isDeclutteredMode={isDeclutteredMode}
-            onClick={() => setIsDeclutteredMode(true)}
-          >
-            已處理
-          </DeclutterMode>
+          {STATUS.map((item: ReportStatus) => (
+            <ModeToggler
+              key={item}
+              isSelected={item === status}
+              onClick={() => setStatus(item)}
+            >
+              {item}
+            </ModeToggler>
+          ))}
         </ModeFilter>
-        <PeriodFilter disabled={!isDeclutteredMode}>
+
+        <PeriodFilter disabled={status === '目前持有'}>
           <PeriodWrapper>
             <Label htmlFor="date">PERIOD</Label>
             <InputWrapper>
@@ -794,30 +624,25 @@ export default function Profile() {
           </PeriodWrapper>
 
           <FilterWrapper>
-            <FilterBtn
-              onClick={() =>
-                setPeriod({ start: getLastWeek(), end: getToday() })
-              }
-            >
-              過去 7 天
-            </FilterBtn>
-            <FilterBtn onClick={setThisMonth}>本月</FilterBtn>
-            <FilterBtn onClick={setLastMonth}>上個月</FilterBtn>
-            <FilterBtn onClick={setThisYear}>今年</FilterBtn>
-            <FilterBtn onClick={setLastYear}>去年</FilterBtn>
+            {FILTER.map((filter) => (
+              <FilterBtn
+                key={filter.value}
+                onClick={() => {
+                  const { startDate, endDate } = filter.action();
+                  setPeriod({ start: startDate, end: endDate });
+                }}
+              >
+                {filter.value}
+              </FilterBtn>
+            ))}
           </FilterWrapper>
         </PeriodFilter>
 
         <ReportWrapper>
-          <Report items={isDeclutteredMode ? items : existingItems} />
-
+          <Report items={reportItems} />
           <QtyWrapper>
-            <Qty>{isDeclutteredMode ? items.length : existingItems.length}</Qty>
-            <QtyTitle>
-              {items.length <= 1 || existingItems.length <= 1
-                ? 'ITEM'
-                : 'ITEMS'}
-            </QtyTitle>
+            <Qty>{reportItems.length}</Qty>
+            <QtyTitle>{reportItems.length <= 1 ? 'ITEM' : 'ITEMS'}</QtyTitle>
           </QtyWrapper>
         </ReportWrapper>
       </Container>
