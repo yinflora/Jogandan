@@ -9,6 +9,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import {
+  DocumentData,
   addDoc,
   collection,
   doc,
@@ -127,7 +128,7 @@ async function getUser() {
   try {
     const user = auth.currentUser;
     if (!user) return;
-    const userRef = doc(db, 'users', auth.currentUser.uid);
+    const userRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userRef);
     return userDoc.data();
   } catch (error) {
@@ -140,7 +141,7 @@ async function updateUser(url: string) {
   try {
     const user = auth.currentUser;
     if (!user) return;
-    const userRef = doc(db, 'users', auth.currentUser.uid);
+    const userRef = doc(db, 'users', user.uid);
 
     await updateDoc(userRef, {
       image: url,
@@ -148,7 +149,6 @@ async function updateUser(url: string) {
   } catch (error) {
     console.error(error);
   }
-  return null;
 }
 
 async function uploadItems(form: ItemForm) {
@@ -156,7 +156,7 @@ async function uploadItems(form: ItemForm) {
     const user = auth.currentUser;
     if (!user) return;
     const { name, category, status, description, images } = form;
-    const itemsRef = collection(db, 'users', auth.currentUser.uid, 'items');
+    const itemsRef = collection(db, 'users', user.uid, 'items');
     const { id } = await addDoc(itemsRef, {
       name,
       category,
@@ -167,7 +167,7 @@ async function uploadItems(form: ItemForm) {
       processedDate: status === '已處理' ? serverTimestamp() : '',
     });
 
-    const uploadedItemRef = doc(db, 'users', auth.currentUser.uid, 'items', id);
+    const uploadedItemRef = doc(db, 'users', user.uid, 'items', id);
 
     await updateDoc(uploadedItemRef, {
       id,
@@ -180,33 +180,15 @@ async function uploadItems(form: ItemForm) {
   return null;
 }
 
-async function getProcessedItems(userId) {
-  const itemsRef = collection(
-    db,
-    'users',
-    // 'q1khIAOnt2ewvY4SQw1z65roVPD2',
-    userId,
-    'items'
-  );
-  const itemsQuery = query(itemsRef, where('status', '==', '已處理'));
-  const items = [];
-
-  const querySnapshot = await getDocs(itemsQuery);
-  querySnapshot.forEach((document) => {
-    items.push(document.data());
-  });
-  return items;
-}
-
-async function getItems(userId) {
-  const itemsRef = collection(db, 'users', userId, 'items');
+async function getItems() {
+  const user = auth.currentUser;
+  if (!user) return;
+  const itemsRef = collection(db, 'users', user.uid, 'items');
   const itemsQuery = query(itemsRef, orderBy('created', 'desc'));
-  const items = [];
+  const items: DocumentData[] = [];
 
   const querySnapshot = await getDocs(itemsQuery);
-  querySnapshot.forEach((document) => {
-    items.push(document.data());
-  });
+  querySnapshot.forEach((document) => items.push(document.data()));
 
   return items;
 }
@@ -224,9 +206,11 @@ async function getItemById(userId, itemId) {
   return items;
 }
 
-async function updateItem(userId, itemId, itemRef) {
+async function updateItem(itemId, itemRef) {
   try {
-    const itemDocRef = doc(db, 'users', userId, 'items', itemId);
+    const user = auth.currentUser;
+    if (!user) return;
+    const itemDocRef = doc(db, 'users', user.uid, 'items', itemId);
     const { images, name, category, status, description } = itemRef;
     await updateDoc(itemDocRef, {
       name,
@@ -236,11 +220,9 @@ async function updateItem(userId, itemId, itemRef) {
       images,
       processedDate: status === '已處理' ? serverTimestamp() : '',
     });
-    // alert('更新成功！'); //!記得在upload加回來
-  } catch (e) {
-    console.error('Error uploading item: ', e);
+  } catch (error) {
+    console.error(error);
   }
-  return null;
 }
 
 async function getTemplate() {
@@ -258,7 +240,7 @@ async function saveBoard(boardData: object, isEdited: boolean) {
   try {
     const user = auth.currentUser;
     if (!user) return;
-    const userRef = doc(db, 'users', auth.currentUser.uid);
+    const userRef = doc(db, 'users', user.uid);
 
     await updateDoc(userRef, {
       visionBoard: {
@@ -282,7 +264,6 @@ export {
   getUser,
   updateUser,
   uploadItems,
-  getProcessedItems,
   getItems,
   getItemById,
   updateItem,
