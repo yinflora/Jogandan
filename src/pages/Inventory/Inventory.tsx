@@ -309,6 +309,8 @@ export default function Inventory() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  let newItems;
+
   useEffect(() => {
     if (!uid) return;
 
@@ -574,7 +576,7 @@ export default function Inventory() {
             </NoMatchPrompt>
           ) : (
             items &&
-            items.map((item: any, index: number) => (
+            newitems.map((item: any, index: number) => (
               <Product key={index}>
                 {item.images && (
                   <Image
