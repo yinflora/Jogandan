@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProcessedItems } from '../../utils/firebase';
 import styled, { css } from 'styled-components/macro';
+import { v4 as uuidv4 } from 'uuid';
 import AuthContext from '../../context/authContext';
 
 const NUM_OF_STYLES = 8;
@@ -117,31 +117,19 @@ const Image = styled.img<{ index: number }>`
 `;
 
 export default function Achievement() {
-  const { uid } = useContext(AuthContext);
-  const [items, setItems] = useState<Array<any> | null>(null);
+  const { items } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!uid) return;
-    async function fetchData() {
-      const processedItems = await getProcessedItems(uid);
-      const sortedItems = processedItems.sort(
-        (a, b) => a.processedDate.seconds - b.processedDate.seconds
-      );
-      setItems(sortedItems);
-    }
-    fetchData();
-  }, [uid]);
 
   if (items) {
     return (
       <>
         <PageTitle>Achievement</PageTitle>
         <ScrollSection>
-          {items &&
-            items.map((item, index) => (
+          {items
+            .filter((item) => item.status === '已處理')
+            .map((item, index) => (
               <Image
-                key={index}
+                key={uuidv4()}
                 src={item.images[0]}
                 index={index}
                 onClick={() => navigate(`/inventory/${item.id}`)}
