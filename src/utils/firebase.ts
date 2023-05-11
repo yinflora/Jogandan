@@ -21,7 +21,6 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
-  where,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { ItemForm, SignupForm } from '../types/types';
@@ -193,19 +192,6 @@ async function getItems() {
   return items;
 }
 
-async function getItemById(userId, itemId) {
-  const itemsRef = collection(db, 'users', userId, 'items');
-  const itemsQuery = query(itemsRef, where('id', '==', itemId));
-  const items = [];
-
-  const querySnapshot = await getDocs(itemsQuery);
-
-  querySnapshot.forEach((document) => {
-    items.push(document.data());
-  });
-  return items;
-}
-
 async function updateItem(itemId, itemRef) {
   try {
     const user = auth.currentUser;
@@ -265,7 +251,6 @@ export {
   updateUser,
   uploadItems,
   getItems,
-  getItemById,
   updateItem,
   getTemplate,
   saveBoard,

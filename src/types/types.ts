@@ -36,7 +36,7 @@ type Item = {
   status: Status;
   category: Category;
   created: Timestamp;
-  processedDate: Timestamp;
+  processedDate: Timestamp | '';
   description: string;
   images: string[];
 };

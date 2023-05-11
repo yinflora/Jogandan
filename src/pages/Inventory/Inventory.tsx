@@ -1,11 +1,11 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import { v4 as uuidv4 } from 'uuid';
 import Search from '../../components/Icon/Search';
 import { AuthContext } from '../../context/authContext';
 import { Category, Item, Status } from '../../types/types';
-import { getItemById } from '../../utils/firebase';
 import Popout from './Popout';
 
 const Container = styled.div`
@@ -274,20 +274,14 @@ const SUBCATEGORY: Category[] = [
 const SUBSTATUS: Status[] = ['保留', '待處理', '已處理'];
 
 export default function Inventory() {
-  const { uid, items } = useContext(AuthContext);
+  const { items } = useContext(AuthContext);
 
   const [filter, setFilter] = useState<Filter>({
     category: '',
     status: '',
   });
-  const [isPopout, setIsPopout] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [search, setSearch] = useState<string>('');
-  const [isBottom, setIsBottom] = useState<boolean>(false);
-
-  const startIndexRef = useRef<number>(0);
-  const MAX_ITEMS = 24;
-  const BOTTOM_HEIGHT = 150;
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -333,75 +327,13 @@ export default function Inventory() {
   }
 
   useEffect(() => {
-    if (!uid) return;
-
-    // async function fetchData() {
-    //   if (filter.category !== '' || filter.status !== '') return;
-
-    //   const itemList = await getItems(uid);
-    //   itemsRef.current = itemList;
-
-    //   const slicedItems = itemList.slice(0, MAX_ITEMS);
-    //   setItems(slicedItems);
-    //   startIndexRef.current = MAX_ITEMS;
-    // }
-
-    async function fetchSelectedData() {
-      const item: any = await getItemById(uid, id);
-      setSelectedItem(item[0]);
-    }
-
     if (id) {
-      fetchSelectedData();
-      setIsPopout(true);
+      const selectedUserItems = items.find((item) => item.id === id);
+      selectedUserItems && setSelectedItem(selectedUserItems);
     } else {
-      // fetchData();
       setSelectedItem(null);
-      setIsPopout(false);
     }
-  }, [uid, id]);
-
-  useEffect(() => {
-    function handleScroll() {
-      const scrollY =
-        window.scrollY ||
-        window.pageYOffset ||
-        document.documentElement.scrollTop;
-      const pageHeight = document.documentElement.scrollHeight;
-      const windowHeight = window.innerHeight;
-      const distanceFromBottom = pageHeight - (scrollY + windowHeight);
-
-      setIsBottom(distanceFromBottom < BOTTOM_HEIGHT);
-    }
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (
-      !isBottom ||
-      !itemsRef.current ||
-      !items ||
-      items.length === itemsRef.current.length ||
-      filter.category !== '' ||
-      filter.status !== ''
-    )
-      return;
-
-    const startIndex = startIndexRef.current;
-    const endIndex = startIndexRef.current + MAX_ITEMS;
-
-    const slicedItems = itemsRef.current.slice(startIndex, endIndex);
-    const newItems = [...items, ...slicedItems];
-
-    setItems(newItems);
-
-    startIndexRef.current = endIndex;
-  }, [isBottom]);
+  }, [id, items]);
 
   return (
     <Container>
@@ -504,9 +436,8 @@ export default function Inventory() {
               <NoMatchText>沒有符合搜尋條件的項目</NoMatchText>
             </NoMatchPrompt>
           ) : (
-            items &&
-            userItems.map((item: any, index: number) => (
-              <Product key={index}>
+            userItems.map((item: Item) => (
+              <Product key={uuidv4()}>
                 {item.images && (
                   <Image
                     src={item.images[0]}
@@ -518,7 +449,7 @@ export default function Inventory() {
             ))
           )}
         </ProductWrapper>
-        {isPopout && (
+        {id && selectedItem && (
           <Popout
             selectedItem={selectedItem}
             setSelectedItem={setSelectedItem}
