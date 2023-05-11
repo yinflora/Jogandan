@@ -4,6 +4,7 @@ import { TfiArrowRight } from 'react-icons/tfi';
 import { useNavigate } from 'react-router-dom';
 import TinderCard from 'react-tinder-card';
 import styled, { keyframes } from 'styled-components/macro';
+import { v4 as uuidv4 } from 'uuid';
 import Button from '../../components/Button/Button';
 import Cancel from '../../components/Icon/Cancel';
 import Check from '../../components/Icon/Check';
@@ -548,6 +549,7 @@ export default function SparkJoy() {
           {randomItems &&
             randomItems.map((item, index) => (
               <TinderCardWrapper
+                key={uuidv4()}
                 ref={childRefs[index]}
                 preventSwipe={['up', 'down']}
                 flickOnSwipe

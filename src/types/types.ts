@@ -6,6 +6,11 @@ type SignupForm = {
   password: string;
 };
 
+type LoginForm = {
+  email: string;
+  password: string;
+};
+
 type ItemForm = {
   name: string;
   category: Category;
@@ -63,6 +68,7 @@ type VisionBoard = {
 
 export type {
   SignupForm,
+  LoginForm,
   ItemForm,
   Category,
   Status,
