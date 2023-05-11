@@ -62,8 +62,6 @@ const blink = keyframes`
 
 const Head = styled.div`
   position: relative;
-  /* width: 200px; */
-  /* height: 200px; */
   width: 150px;
   height: 150px;
   border: 4px solid #8d9ca4;

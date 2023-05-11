@@ -1,12 +1,12 @@
-import { Outlet, useLocation } from 'react-router-dom';
-import { Reset } from 'styled-reset';
-import { createGlobalStyle } from 'styled-components';
-import { AuthContextProvider } from './context/authContext';
-import Header from './components/Header/Header';
-import BackButton from './components/Button/BackButton';
 import { useContext } from 'react';
-import { LoadingContext } from './context/loadingContext';
+import { Outlet, useLocation } from 'react-router-dom';
+import { createGlobalStyle } from 'styled-components';
+import { Reset } from 'styled-reset';
+import BackButton from './components/Button/BackButton';
+import Header from './components/Header/Header';
 import Loader from './components/Loader/Loader';
+import { AuthContextProvider } from './context/authContext';
+import { LoadingContext } from './context/loadingContext';
 
 const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
   * {
@@ -35,7 +35,6 @@ const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
 
   #root {
     min-height: 100vh;
-    /* padding-top: 150px; */
     position: relative;
     overflow-x: hidden;
     overflow-y: scroll;
