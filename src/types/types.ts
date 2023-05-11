@@ -41,4 +41,19 @@ type Item = {
   images: string[];
 };
 
-export type { SignupForm, ItemForm, Category, Item };
+type User = {
+  uid: string;
+  name: string;
+  email: string;
+  image: string;
+  level: string;
+  visionBoard: VisionBoard;
+};
+
+type VisionBoard = {
+  data: object;
+  isEdited: boolean;
+  lastModified: Timestamp | null;
+};
+
+export type { SignupForm, ItemForm, Category, Status, Item, User };
