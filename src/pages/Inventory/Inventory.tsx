@@ -1,12 +1,11 @@
-import { Timestamp } from 'firebase/firestore';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { RxCross1 } from 'react-icons/rx';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
-
-import { RxCross1 } from 'react-icons/rx';
 import Search from '../../components/Icon/Search';
 import { AuthContext } from '../../context/authContext';
-import { getItemById, getItems } from '../../utils/firebase';
+import { Category, Item, Status } from '../../types/types';
+import { getItemById } from '../../utils/firebase';
 import Popout from './Popout';
 
 const Container = styled.div`
@@ -90,6 +89,7 @@ const SearchBar = styled.input`
 `;
 
 const SearchBtn = styled.button`
+  z-index: 1;
   border: none;
   cursor: pointer;
 `;
@@ -252,7 +252,12 @@ const Name = styled.p`
   cursor: default;
 `;
 
-const SUBCATEGORY: string[] = [
+type Filter = {
+  category: Category | '';
+  status: Status | '';
+};
+
+const SUBCATEGORY: Category[] = [
   '居家生活',
   '服飾配件',
   '美妝保養',
@@ -266,31 +271,11 @@ const SUBCATEGORY: string[] = [
   '紀念意義',
   '其他',
 ];
-
-const SUBSTATUS: string[] = ['保留', '待處理', '已處理'];
-
-type Item = {
-  id?: string;
-  name: string;
-  status: string;
-  category: string;
-  created?: Timestamp;
-  processedDate?: string;
-  description: string;
-  images: string[];
-};
-
-type Items = Item[];
-
-type Filter = {
-  category: string;
-  status: string;
-};
+const SUBSTATUS: Status[] = ['保留', '待處理', '已處理'];
 
 export default function Inventory() {
-  const { uid } = useContext(AuthContext);
+  const { uid, items } = useContext(AuthContext);
 
-  const [items, setItems] = useState<Items | null>(null);
   const [filter, setFilter] = useState<Filter>({
     category: '',
     status: '',
@@ -299,9 +284,7 @@ export default function Inventory() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [search, setSearch] = useState<string>('');
   const [isBottom, setIsBottom] = useState<boolean>(false);
-  const [noMatchingResult, setNoMatchingResult] = useState<boolean>(false);
 
-  const itemsRef = useRef<Items | null>(null);
   const startIndexRef = useRef<number>(0);
   const MAX_ITEMS = 24;
   const BOTTOM_HEIGHT = 150;
@@ -309,21 +292,59 @@ export default function Inventory() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  let newItems;
+  let userItems: Item[] = items;
+
+  if (filter.category !== '' && filter.status !== '') {
+    if (search === '') {
+      userItems = items.filter(
+        (item: Item) =>
+          item.category === filter.category && item.status === filter.status
+      );
+    } else {
+      userItems = items.filter(
+        (item: Item) =>
+          item.category === filter.category &&
+          item.status === filter.status &&
+          item.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+  } else if (filter.category !== '') {
+    if (search === '') {
+      userItems = items.filter(
+        (item: Item) => item.category === filter.category
+      );
+    } else {
+      userItems = items.filter(
+        (item: Item) =>
+          item.category === filter.category &&
+          item.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+  } else if (filter.status !== '') {
+    if (search === '') {
+      userItems = items.filter((item: Item) => item.status === filter.status);
+    } else {
+      userItems = items.filter(
+        (item: Item) =>
+          item.status === filter.status &&
+          item.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+  }
 
   useEffect(() => {
     if (!uid) return;
 
-    async function fetchData() {
-      if (filter.category !== '' || filter.status !== '') return;
+    // async function fetchData() {
+    //   if (filter.category !== '' || filter.status !== '') return;
 
-      const itemList = await getItems(uid);
-      itemsRef.current = itemList;
+    //   const itemList = await getItems(uid);
+    //   itemsRef.current = itemList;
 
-      const slicedItems = itemList.slice(0, MAX_ITEMS);
-      setItems(slicedItems);
-      startIndexRef.current = MAX_ITEMS;
-    }
+    //   const slicedItems = itemList.slice(0, MAX_ITEMS);
+    //   setItems(slicedItems);
+    //   startIndexRef.current = MAX_ITEMS;
+    // }
 
     async function fetchSelectedData() {
       const item: any = await getItemById(uid, id);
@@ -334,7 +355,7 @@ export default function Inventory() {
       fetchSelectedData();
       setIsPopout(true);
     } else {
-      fetchData();
+      // fetchData();
       setSelectedItem(null);
       setIsPopout(false);
     }
@@ -382,75 +403,6 @@ export default function Inventory() {
     startIndexRef.current = endIndex;
   }, [isBottom]);
 
-  useEffect(() => {
-    async function handleFilter() {
-      if (!itemsRef.current) return;
-
-      const itemList = await getItems(uid);
-      itemsRef.current = itemList;
-
-      let filteredItems = itemsRef.current;
-      if (filter.category !== '' && filter.status !== '') {
-        filteredItems = itemsRef.current.filter(
-          (item: Item) =>
-            item.category === filter.category && item.status === filter.status
-        );
-      } else if (filter.category !== '') {
-        filteredItems = itemsRef.current.filter(
-          (item: Item) => item.category === filter.category
-        );
-      } else if (filter.status !== '') {
-        filteredItems = itemsRef.current.filter(
-          (item: Item) => item.status === filter.status
-        );
-      } else if (search !== '') {
-        filteredItems = itemsRef.current.filter((item) =>
-          item.name.toLowerCase().includes(search.toLowerCase())
-        );
-      }
-      filteredItems.length === 0
-        ? setNoMatchingResult(true)
-        : setItems(filteredItems);
-    }
-    handleFilter();
-  }, [filter, isPopout]);
-
-  function handleClearCategory() {
-    if (filter.status === '') {
-      setItems(itemsRef.current);
-    }
-    setFilter({ ...filter, category: '' });
-    setNoMatchingResult(false);
-  }
-
-  function handleClearStatus() {
-    if (filter.category === '') {
-      setItems(itemsRef.current);
-    }
-    setFilter({ ...filter, status: '' });
-    setNoMatchingResult(false);
-  }
-
-  function handleSearch() {
-    if (itemsRef.current) {
-      const filteredItems = itemsRef.current.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
-      );
-
-      if (filteredItems.length === 0) {
-        setNoMatchingResult(true);
-        setItems(filteredItems);
-      } else {
-        setNoMatchingResult(false);
-        setItems(filteredItems);
-        setFilter({
-          category: '',
-          status: '',
-        });
-      }
-    }
-  }
-
   return (
     <Container>
       <TopWrapper>
@@ -461,9 +413,8 @@ export default function Inventory() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <SearchBtn onClick={handleSearch}>
+            <SearchBtn>
               <Search />
             </SearchBtn>
           </SearchWrapper>
@@ -474,34 +425,15 @@ export default function Inventory() {
                 return 'All';
               }
               if (filter.category !== '' && filter.status !== '') {
-                return `${filter.category}｜${filter.status} (${
-                  // itemsRef.current &&
-                  itemsRef.current?.filter(
-                    (item) =>
-                      item.category === filter.category &&
-                      item.status === filter.status
-                  ).length
-                })`;
+                return `${filter.category}｜${filter.status} (${userItems.length})`;
               }
               if (filter.category !== '') {
-                return `${filter.category} (${
-                  // itemsRef.current &&
-                  itemsRef.current?.filter(
-                    (item) => item.category === filter.category
-                  ).length
-                })`;
+                return `${filter.category} (${userItems.length})`;
               }
-              return `${filter.status} (${
-                // itemsRef.current &&
-                itemsRef.current?.filter(
-                  (item) => item.status === filter.status
-                ).length
-              })`;
+              return `${filter.status} (${userItems.length})`;
             })()}
           </SearchText>
-          <SearchText>
-            TOTAL：{items && itemsRef.current ? itemsRef.current.length : 0}
-          </SearchText>
+          <SearchText>TOTAL：{items.length}</SearchText>
         </SearchField>
       </TopWrapper>
 
@@ -509,15 +441,12 @@ export default function Inventory() {
         <FilterWrapper>
           <FilterTitle
             onClick={() => {
-              setItems(itemsRef.current);
               setSearch('');
               setFilter({ category: '', status: '' });
-              setNoMatchingResult(false);
             }}
           >
             All
           </FilterTitle>
-          {/* <Split /> */}
           <FilterTitle>Category</FilterTitle>
           <SubFilterWrapper>
             {SUBCATEGORY.map((category) => (
@@ -525,16 +454,16 @@ export default function Inventory() {
                 <SubTitle
                   key={category}
                   onClick={() => {
-                    setNoMatchingResult(false);
                     setFilter({ ...filter, category });
-                    setSearch('');
                   }}
                   isSelected={filter.category === category}
                 >
                   {category}
                 </SubTitle>
                 {filter.category === category && (
-                  <FilterButton onClick={handleClearCategory}>
+                  <FilterButton
+                    onClick={() => setFilter({ ...filter, category: '' })}
+                  >
                     <RxCross1 className="cancel" />
                   </FilterButton>
                 )}
@@ -550,16 +479,16 @@ export default function Inventory() {
                 <SubTitle
                   key={status}
                   onClick={() => {
-                    setNoMatchingResult(false);
                     setFilter({ ...filter, status });
-                    setSearch('');
                   }}
                   isSelected={filter.status === status}
                 >
                   {status}
                 </SubTitle>
                 {filter.status === status && (
-                  <FilterButton onClick={handleClearStatus}>
+                  <FilterButton
+                    onClick={() => setFilter({ ...filter, status: '' })}
+                  >
                     <RxCross1 className="cancel" />
                   </FilterButton>
                 )}
@@ -569,14 +498,14 @@ export default function Inventory() {
         </FilterWrapper>
 
         <ProductWrapper>
-          {noMatchingResult ? (
+          {userItems.length === 0 ? (
             <NoMatchPrompt>
               <NoMatchEmoji>:(</NoMatchEmoji>
               <NoMatchText>沒有符合搜尋條件的項目</NoMatchText>
             </NoMatchPrompt>
           ) : (
             items &&
-            newitems.map((item: any, index: number) => (
+            userItems.map((item: any, index: number) => (
               <Product key={index}>
                 {item.images && (
                   <Image
@@ -589,20 +518,6 @@ export default function Inventory() {
             ))
           )}
         </ProductWrapper>
-        {/* <ProductWrapper>
-          {items &&
-            items.map((item: any, index: number) => (
-              <Product key={index}>
-                {item.images && (
-                  <Image
-                    src={item.images[0]}
-                    onClick={() => navigate(`/inventory/${item.id}`)}
-                  ></Image>
-                )}
-                <Name>{item.name}</Name>
-              </Product>
-            ))}
-        </ProductWrapper> */}
         {isPopout && (
           <Popout
             selectedItem={selectedItem}

@@ -91,8 +91,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  async function getUserItems(id: string) {
-    const itemList = await getItems(id);
+  async function getUserItems() {
+    const itemList = (await getItems()) as Item[];
     setItems(itemList);
   }
 
@@ -118,12 +118,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
         if (!userData) return;
 
+        getUserItems();
+
         setUser({
           ...userData,
           level: handleLevel(),
         });
         setIsLogin(true);
-        getUserItems(userData.uid);
         setUid(userData.uid);
         setTimeout(() => setIsLoading(false), 1500);
 
