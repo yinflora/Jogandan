@@ -412,10 +412,14 @@ type Period = {
   end: string;
 };
 type ReportStatus = '目前持有' | '已處理';
+type FilterItem = {
+  value: string;
+  action: () => { startDate: string; endDate: string };
+};
 
 const STATUS: ReportStatus[] = ['目前持有', '已處理'];
 
-const FILTER: object[] = [
+const FILTER: FilterItem[] = [
   { value: '過去 7 天', action: getThisWeek },
   { value: '本月', action: getThisMonth },
   { value: '上個月', action: getLastMonth },

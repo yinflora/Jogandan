@@ -91,63 +91,36 @@ async function nativeLogin(form) {
 }
 
 async function createUser(userAuth, name) {
-  const userDocRef = doc(db, 'users', userAuth.uid);
-  const userSnapshot = await getDoc(userDocRef);
+  const userRef = doc(db, 'users', userAuth.uid);
+  const userDoc = await getDoc(userRef);
 
-  if (!userSnapshot.exists()) {
-    const provider = userAuth.providerData[0].providerId;
-
-    if (provider === 'password') {
-      const { email, uid } = userAuth;
-
-      try {
-        const userData = {
-          name,
-          email,
-          image: USER_DEFAULT_IMAGE,
-          created: serverTimestamp(),
-          uid,
-        };
-        await setDoc(userDocRef, userData);
-
-        const boardDocId = await setFirstBoard(userAuth.uid);
-        const boardId = localStorage.getItem(`${userAuth.uid}/boardId`);
-
-        if (!boardId)
-          localStorage.setItem(`${userAuth.uid}/boardId`, boardDocId);
-        return userData;
-      } catch (error) {
-        console.log(`${error.message}: 建立本地使用者失敗`);
-      }
-    } else if (provider === 'google.com') {
-      const { displayName, email, photoURL, uid } = userAuth;
-
-      try {
-        const googleUserData = {
-          name: displayName,
-          email,
-          image: photoURL,
-          created: serverTimestamp(),
-          uid,
-        };
-        await setDoc(userDocRef, googleUserData);
-
-        const boardDocId = await setFirstBoard(userAuth.uid);
-        const boardId = localStorage.getItem(`${userAuth.uid}/boardId`);
-
-        if (!boardId)
-          localStorage.setItem(`${userAuth.uid}/boardId`, boardDocId);
-        return googleUserData;
-      } catch (error) {
-        console.log(`${error.message}: 建立Google使用者失敗`);
-      }
-    }
+  if (userDoc.exists()) {
+    return userDoc.data();
   }
 
-  console.log(userSnapshot.data());
+  const provider = userAuth.providerData[0].providerId;
+  const { template } = await getTemplate();
+  const { displayName, email, photoURL, uid } = userAuth;
 
-  // return userDocRef;
-  return userSnapshot.data();
+  try {
+    const userData = {
+      name: provider === 'password' ? name : displayName,
+      email,
+      image: provider === 'password' ? USER_DEFAULT_IMAGE : photoURL,
+      created: serverTimestamp(),
+      uid,
+      visionBoard: {
+        data: template,
+        isEdited: false,
+        lastModified: serverTimestamp(),
+      },
+    };
+
+    await setDoc(userRef, userData);
+    return userData;
+  } catch (error) {
+    console.log(`${error.message}: 建立使用者失敗`);
+  }
 }
 
 async function getUser() {
