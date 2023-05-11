@@ -1,17 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import styled, { css, keyframes } from 'styled-components/macro';
 import { useNavigate } from 'react-router-dom';
-
-import background from './background.jpeg';
-import singleUpload from './singleUpload.png';
-// import bulkUpload from './bulkUpload.png';
-import inventory from './inventory.png';
-import visionBoard from './visionBoard.png';
-import achievement from './achievement.png';
-import sparkJoy from './sparkJoy.png';
-
-import Chevron from '../../components/Icon/Chevron';
+import styled, { css, keyframes } from 'styled-components/macro';
 import Button from '../../components/Button/Button';
+import Chevron from '../../components/Icon/Chevron';
+import achievement from './images/achievement.png';
+import background from './images/background.jpeg';
+import inventory from './images/inventory.png';
+import singleUpload from './images/singleUpload.png';
+import sparkJoy from './images/sparkJoy.png';
+import visionBoard from './images/visionBoard.png';
 
 const Container = styled.div`
   position: relative;
@@ -159,14 +156,12 @@ const Feature = styled.div<{ entering: string | null }>`
           & > img {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 1.5s; */
             animation-delay: 0.5s;
           }
 
           & > div {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 2s; */
             animation-delay: 1s;
           }
         }
@@ -175,14 +170,12 @@ const Feature = styled.div<{ entering: string | null }>`
           & > img {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 2.5s; */
             animation-delay: 1.5s;
           }
 
           & > div {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 3s; */
             animation-delay: 2s;
           }
         }
@@ -193,14 +186,12 @@ const Feature = styled.div<{ entering: string | null }>`
           & > img {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 1.5s; */
             animation-delay: 0.5s;
           }
 
           & > div {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 2s; */
             animation-delay: 1s;
           }
         }
@@ -209,14 +200,12 @@ const Feature = styled.div<{ entering: string | null }>`
           & > img {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 2.5s; */
             animation-delay: 1.5s;
           }
 
           & > div {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 3s; */
             animation-delay: 2s;
           }
         }
@@ -227,14 +216,12 @@ const Feature = styled.div<{ entering: string | null }>`
           & > img {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 1.5s; */
             animation-delay: 0.5s;
           }
 
           & > div {
             opacity: 0;
             animation: ${fadeIn} 1s ease-in-out forwards;
-            /* animation-delay: 2s; */
             animation-delay: 1s;
           }
         }
@@ -338,7 +325,6 @@ export default function Home() {
   const feature1Ref = useRef<HTMLDivElement | null>(null);
   const feature2Ref = useRef<HTMLDivElement | null>(null);
   const feature3Ref = useRef<HTMLDivElement | null>(null);
-  const loginRef = useRef<HTMLDivElement | null>(null);
 
   const navigate = useNavigate();
 
@@ -348,8 +334,7 @@ export default function Home() {
         !introRef.current ||
         !feature1Ref.current ||
         !feature2Ref.current ||
-        !feature3Ref.current ||
-        !loginRef.current
+        !feature3Ref.current
       )
         return;
 
@@ -357,7 +342,6 @@ export default function Home() {
       const feature1Position = feature1Ref.current.getBoundingClientRect();
       const feature2Position = feature2Ref.current.getBoundingClientRect();
       const feature3Position = feature3Ref.current.getBoundingClientRect();
-      // const loginPosition = loginRef.current.getBoundingClientRect();
 
       const windowHeight = window.innerHeight;
 
@@ -365,7 +349,6 @@ export default function Home() {
       if (feature1Position.top < windowHeight) setEntering('feature1');
       if (feature2Position.top < windowHeight) setEntering('feature2');
       if (feature3Position.top < windowHeight) setEntering('feature3');
-      // if (loginPosition.top < windowHeight) setEntering('login');
     }
 
     window.addEventListener('scroll', handleScroll);
@@ -505,7 +488,7 @@ export default function Home() {
         </Feature>
       </ContainerS>
 
-      <ContainerM ref={loginRef}>
+      <ContainerM>
         <Login>
           <LoginTitle>Join Jogandan</LoginTitle>
           <LoginSubTitle>立即開始您的簡單生活</LoginSubTitle>

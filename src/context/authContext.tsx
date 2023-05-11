@@ -1,8 +1,7 @@
 import { onAuthStateChanged } from 'firebase/auth';
-import { Timestamp } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Item, SignupForm } from '../types/types';
+import { Item, SignupForm, VisionBoard } from '../types/types';
 import {
   auth,
   getItems,
@@ -20,12 +19,6 @@ type User = {
   image: string;
   level: string;
   visionBoard: VisionBoard;
-};
-
-type VisionBoard = {
-  data: object;
-  isEdited: boolean;
-  lastModified: Timestamp | null;
 };
 
 type AuthContextType = {

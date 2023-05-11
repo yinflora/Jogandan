@@ -50,10 +50,24 @@ type User = {
   visionBoard: VisionBoard;
 };
 
+type BoardTemplate = {
+  id: string;
+  template: object;
+};
+
 type VisionBoard = {
   data: object;
   isEdited: boolean;
   lastModified: Timestamp | null;
 };
 
-export type { SignupForm, ItemForm, Category, Status, Item, User };
+export type {
+  SignupForm,
+  ItemForm,
+  Category,
+  Status,
+  Item,
+  User,
+  BoardTemplate,
+  VisionBoard,
+};
