@@ -1,5 +1,19 @@
 import { Timestamp } from 'firebase/firestore';
 
+type SignupForm = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+type ItemForm = {
+  name: string;
+  category: Category;
+  status: Status;
+  description: string;
+  images: string[];
+};
+
 type Category =
   | '居家生活'
   | '服飾配件'
@@ -27,4 +41,4 @@ type Item = {
   images: string[];
 };
 
-export type { Category, Item };
+export type { SignupForm, ItemForm, Category, Item };

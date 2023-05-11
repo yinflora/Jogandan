@@ -1,34 +1,26 @@
-import { useState, useEffect, useContext, useRef } from 'react';
 import { fabric } from 'fabric';
-import styled, { keyframes } from 'styled-components/macro';
-import AuthContext from '../../context/authContext';
 import {
-  storage,
-  // setNewBoard,
-  saveBoard,
-  getBoard,
-  getTemplate,
-} from '../../utils/firebase';
-import {
-  ref,
-  listAll,
-  uploadBytes,
   getDownloadURL,
   getMetadata,
+  listAll,
+  ref,
+  uploadBytes,
 } from 'firebase/storage';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled, { keyframes } from 'styled-components/macro';
+import AuthContext from '../../context/authContext';
+import { getTemplate, saveBoard, storage } from '../../utils/firebase';
 
-import { TfiText, TfiSaveAlt } from 'react-icons/tfi';
 import { CiCircleInfo, CiTrash, CiUndo } from 'react-icons/ci';
+import { TfiSaveAlt, TfiText } from 'react-icons/tfi';
 
-import Button from '../../components/Button/Button';
 import Alert from '../../components/Alert/Alert';
-// import Loader from '../../components/Loader/Loader';
+import Button from '../../components/Button/Button';
 
 const Container = styled.div`
   min-width: 1280px;
   max-width: 1440px;
-  /* margin: 150px auto 0; */
   margin: 110px auto 0;
   padding: 0 150px;
   cursor: default;
@@ -94,7 +86,6 @@ const BoardContainer = styled.div`
   display: flex;
   width: 100%;
   height: calc(100vh - 173px);
-  /* height: calc(100vh - 198px); */
   max-height: 650px;
   margin: 0 auto;
   padding-top: 30px;
@@ -266,11 +257,9 @@ const VisionBoard = styled.div`
 `;
 
 export default function Compose() {
-  const { uid, isPopout, setIsPopout } = useContext(AuthContext);
+  const { user, isPopout, setIsPopout } = useContext(AuthContext);
 
-  // const [images, setImages] = useState(null);
   const [images, setImages] = useState([]);
-  // const [isUploaded, setIsUploaded] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState(null);
 
   const [visionBoard, setVisionBoard] = useState(null);
@@ -284,19 +273,17 @@ export default function Compose() {
   const [buttonAction, setButtonAction] = useState(null);
   const [isBottom, setIsBottom] = useState(false);
 
-  const boardIdRef = useRef(null);
   const imageContainerRef = useRef(null);
   const startIndexRef = useRef(null);
   const imagesRef = useRef(null);
 
   const navigate = useNavigate();
 
-  const storageRef = ref(storage, `/${uid}/images/`);
-  const LAYOUT_1_ID = 'eDuLEGPS3NCJsyeIYzXl';
+  const storageRef = ref(storage, `/${user.uid}/images/`);
   const MAX_IMAGES = 14;
 
   useEffect(() => {
-    if (!uid) return;
+    if (!user) return;
     const fetchImages = async () => {
       try {
         const res = await listAll(storageRef);
@@ -318,15 +305,12 @@ export default function Compose() {
         const newUrls = newData.map((data) => data.url);
         imagesRef.current = newUrls;
 
-        console.log('newUrls', newUrls);
-
         const startIndex = startIndexRef.current;
         const endIndex = startIndexRef.current + MAX_IMAGES;
 
         const slicedItems = newUrls.slice(startIndex, endIndex);
         const newImages = [...images, ...slicedItems];
 
-        // setImages(newUrls);
         setImages(newImages);
 
         startIndexRef.current = endIndex;
@@ -335,10 +319,26 @@ export default function Compose() {
       }
     };
 
-    fetchImages();
+    async function setBoard() {
+      try {
+        const canvas = new fabric.Canvas('canvas', {
+          width: 625,
+          height: 475,
+          backgroundColor: bgColor,
+        });
 
-    // }, [uid, isUploaded]);
-  }, [uid]);
+        const { data } = user.visionBoard;
+        canvas.loadFromJSON(data);
+
+        setVisionBoard(canvas);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchImages();
+    setBoard();
+  }, [user]);
 
   useEffect(() => {
     if (!imageContainerRef.current) return;
@@ -348,16 +348,10 @@ export default function Compose() {
         imageContainerRef.current;
       const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
 
-      if (distanceFromBottom < 10) {
-        // console.log('User has scrolled to the bottom of the div!');
-        setIsBottom(true);
-      }
+      if (distanceFromBottom < 10) setIsBottom(true);
     }
 
     imageContainerRef.current.addEventListener('scroll', onScroll);
-
-    // return () =>
-    //   imageContainerRef.current.removeEventListener('scroll', onScroll);
   }, [imageContainerRef.current]);
 
   useEffect(() => {
@@ -372,43 +366,16 @@ export default function Compose() {
 
       const startIndex = startIndexRef.current;
       const endIndex = startIndexRef.current + MAX_IMAGES;
-      console.log('start:', startIndex, 'end:', endIndex);
 
       const slicedItems = imagesRef.current.slice(startIndex, endIndex);
       const newImages = [...images, ...slicedItems];
 
-      console.log('slicedItems', slicedItems);
-
       setImages(newImages);
-
       startIndexRef.current = endIndex;
       setIsBottom(false);
     }
     setNewImages();
   }, [isBottom]);
-
-  useEffect(() => {
-    if (!uid) return;
-
-    async function setBoard() {
-      const boardId = localStorage.getItem(`${uid}/boardId`);
-      const canvas = new fabric.Canvas('canvas', {
-        width: 625,
-        height: 475,
-        backgroundColor: bgColor,
-      });
-
-      if (boardId) {
-        boardIdRef.current = boardId;
-        const prevData = await getBoard(uid, boardId);
-        canvas.loadFromJSON(prevData.data);
-
-        setVisionBoard(canvas);
-      }
-    }
-
-    setBoard();
-  }, [uid]);
 
   useEffect(() => {
     if (!visionBoard) return;
@@ -426,7 +393,6 @@ export default function Compose() {
     }
 
     function dropImage(e) {
-      // if (draggingIndex === null || images === null) return;
       if (draggingIndex === null || images.length === 0) return;
 
       const target = e.target;
@@ -503,14 +469,12 @@ export default function Compose() {
       const file = files[i];
       const imageRef = ref(storageRef, `${file.name}`);
 
-      // uploadBytes(imageRef, file).then(() => setIsUploaded(!isUploaded));
       const snapshot = await uploadBytes(imageRef, file);
       const url = await getDownloadURL(snapshot.ref);
       uploadedFiles.push(url);
     }
 
     setImages([...uploadedFiles, ...images]);
-    // return null;
   }
 
   function handleSelectImage() {
@@ -554,7 +518,7 @@ export default function Compose() {
     });
     setActiveItem(null);
 
-    const { template } = await getTemplate(LAYOUT_1_ID);
+    const { template } = await getTemplate();
     visionBoard.loadFromJSON(template);
 
     saveProject();
@@ -563,17 +527,14 @@ export default function Compose() {
   async function saveProject() {
     setIsSaving(true);
 
-    await saveBoard(
-      uid,
-      boardIdRef.current,
-      visionBoard.toJSON([
-        'isClipFrame',
-        'selectable',
-        'hasControls',
-        'hoverCursor',
-      ]),
-      true
-    );
+    const visionBoardData = visionBoard.toJSON([
+      'isClipFrame',
+      'selectable',
+      'hasControls',
+      'hoverCursor',
+    ]);
+
+    await saveBoard(visionBoardData, true);
 
     setTimeout(() => setIsSaving(false), 1000);
   }
@@ -647,7 +608,7 @@ export default function Compose() {
             <CiCircleInfo className="info" />
             <Remind>請拖拉照片至格子調整</Remind>
           </RemindWrapper>
-          {uid && images.length > 0 ? (
+          {user && images.length > 0 ? (
             <ImageWrapper ref={imageContainerRef}>
               {images.map((item, index) => (
                 <Image
@@ -720,14 +681,6 @@ export default function Compose() {
                 <CiTrash className="trash" onClick={deleteActiveItem} />
               )}
               <TfiText className="text" onClick={addText} />
-              {/* <CiUndo className="clear" onClick={clear} />
-              <TfiSaveAlt
-                className="save"
-                onClick={() => {
-                  saveProject();
-                  !isSaving && setIsPopout(!isPopout);
-                }}
-              /> */}
               <CiUndo
                 className="clear"
                 onClick={() => {
