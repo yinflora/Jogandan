@@ -1,13 +1,10 @@
-import React from 'react';
-import styled from 'styled-components/macro';
-import { useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
-
-import EditItem from '../Upload/Upload';
-import { useEffect, useState, useRef } from 'react';
-
-import Chevron from '../../components/Icon/Chevron';
+import React, { useEffect, useRef, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components/macro';
+import Chevron from '../../components/Icon/Chevron';
+import EditItem from '../Upload/Upload';
 
 const StyledContainer = styled.div`
   position: fixed;
@@ -36,12 +33,7 @@ const Container = styled.div<{ isEdit: boolean }>`
   z-index: 999;
   width: 1000px;
   height: 600px;
-
   padding: ${({ isEdit }) => (isEdit ? '40px 80px 0' : '0 80px')};
-
-  /* padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')}; */
-  /* padding: ${({ isEdit }) => (isEdit ? '100px 80px 60px' : '60px 80px')}; */
-  /* gap: 60px; */
   justify-content: center;
   align-items: center;
   background-color: ${({ isEdit }) =>
@@ -65,8 +57,6 @@ const Container = styled.div<{ isEdit: boolean }>`
 const ContentWrapper = styled.div`
   display: flex;
   width: 100%;
-  /* padding: 0 80px; */
-
   justify-content: center;
   align-items: center;
   gap: 30px;
@@ -107,10 +97,6 @@ const SubImageWrapper = styled.div`
   &:hover {
     cursor: pointer;
   }
-
-  /* &::-webkit-scrollbar {
-    display: none;
-  } */
 `;
 
 const SubImage = styled.img`
@@ -120,7 +106,6 @@ const SubImage = styled.img`
   object-fit: cover;
   object-position: center;
   flex-shrink: 0;
-  /* flex-shrink: 0 0 25%; */
 
   &:first-of-type {
     margin-top: 10px;

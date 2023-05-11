@@ -1,26 +1,21 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import TinderCard from 'react-tinder-card';
-
 import { Timestamp } from 'firebase/firestore';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { RxCross1 } from 'react-icons/rx';
+import { TfiArrowRight } from 'react-icons/tfi';
 import { useNavigate } from 'react-router-dom';
+import TinderCard from 'react-tinder-card';
 import styled, { keyframes } from 'styled-components/macro';
-import AuthContext from '../../context/authContext';
-import { updateItem } from '../../utils/firebase';
-import circle from './circle-blue.png';
-import cross from './cross-blue.png';
-import undo from './undo.png';
-
 import Button from '../../components/Button/Button';
 import Cancel from '../../components/Icon/Cancel';
 import Check from '../../components/Icon/Check';
-
-import { RxCross1 } from 'react-icons/rx';
-import { TfiArrowRight } from 'react-icons/tfi';
-
-import sparkJoy from './sparkJoy.png';
-import swipeIcon from './swipe.png';
-
 import Happy from '../../components/Icon/Happy';
+import AuthContext from '../../context/authContext';
+import { updateItem } from '../../utils/firebase';
+import circle from './images/circle-blue.png';
+import cross from './images/cross-blue.png';
+import sparkJoy from './images/sparkJoy.png';
+import swipeIcon from './images/swipe.png';
+import undo from './images/undo.png';
 
 const Container = styled.div`
   display: flex;
@@ -59,16 +54,6 @@ const ChoiceContainer = styled.div`
   padding: 0 10%;
 `;
 
-// const Background = styled.div`
-//   position: absolute;
-//   z-index: -1;
-//   bottom: 0;
-//   width: 100vw;
-//   /* height: 250px; */
-//   height: 30vh;
-//   background-color: #8d9ca4;
-// `;
-
 const Choice = styled.p`
   font-size: 4rem;
   font-weight: 600;
@@ -77,22 +62,6 @@ const Choice = styled.p`
   text-transform: uppercase;
   color: #8d9ca4;
 `;
-
-// const Yes = styled(Choice)`
-//   position: absolute;
-//   z-index: -1;
-//   right: 10%;
-//   /* bottom: 250px; */
-//   bottom: 30vh;
-// `;
-
-// const No = styled(Choice)`
-//   position: absolute;
-//   z-index: -1;
-//   left: 10%;
-//   /* bottom: 250px; */
-//   bottom: 30vh;
-// `;
 
 const QuestionText = styled.p`
   position: relative;
