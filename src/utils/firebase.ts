@@ -23,7 +23,13 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { BoardTemplate, Item, ItemForm, SignupForm } from '../types/types';
+import {
+  BoardTemplate,
+  Item,
+  ItemForm,
+  LoginForm,
+  SignupForm,
+} from '../types/types';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -82,7 +88,7 @@ async function nativeSignup(form: SignupForm) {
   }
 }
 
-async function nativeLogin(form: SignupForm) {
+async function nativeLogin(form: LoginForm) {
   try {
     const { email, password } = form;
     await signInWithEmailAndPassword(auth, email, password);

@@ -1,16 +1,11 @@
+import { useContext, useEffect, useState } from 'react';
+import { TfiArrowRight } from 'react-icons/tfi';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../components/Button/Button';
-import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-
-import background from './background.jpeg';
-import { TfiArrowRight } from 'react-icons/tfi';
-
-import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
-
-// import { nativeLogin, nativeSignup } from '../../utils/firebase';
 import { nativeLogin } from '../../utils/firebase';
+import background from './background.jpeg';
 
 const Container = styled.div`
   position: absolute;
@@ -19,7 +14,6 @@ const Container = styled.div`
   display: flex;
   width: 350px;
   height: 100vh;
-  /* justify-content: center; */
   margin-top: 10%;
   flex-direction: column;
 `;
@@ -31,12 +25,6 @@ const Title = styled.p`
   letter-spacing: 0.4rem;
   cursor: default;
 `;
-
-// const SubTitle = styled.p`
-//   margin-bottom: 60px;
-//   font-size: 1rem;
-//   letter-spacing: 0.1rem;
-// `;
 
 const SocialLogin = styled.button`
   position: relative;
@@ -77,10 +65,10 @@ const FieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
+`;
 
-  /* &:last-of-type {
-    margin-bottom: 60px;
-  } */
+const LastFieldWrapper = styled(FieldWrapper)`
+  margin-bottom: 30px;
 `;
 
 const InputLabel = styled.label`
@@ -154,16 +142,6 @@ const SignUpLink = styled.p`
   position: relative;
   margin: 0;
   color: #000;
-
-  /* &::before {
-    position: absolute;
-    content: '立即註冊';
-    width: 0%;
-    inset: 0;
-    color: #8d9ca4;
-    overflow: hidden;
-    transition: 0.3s ease-out;
-  } */
 `;
 
 const StartButton = styled.button`
@@ -189,10 +167,6 @@ const StartButton = styled.button`
   &:hover::after {
     width: 100%;
   }
-
-  /* &:hover ${SignUpLink}::before {
-    width: 100%;
-  } */
 
   &:hover ${SignUpLink} {
     color: #8d9ca4;
@@ -224,7 +198,7 @@ export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { signUp, login, previousPath, uid } = useContext(AuthContext);
+  const { signUp, login, previousPath } = useContext(AuthContext);
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [signUpForm, setSignUpForm] = useState({
@@ -237,31 +211,17 @@ export default function Login() {
     password: '',
   });
 
-  // function validatePassword(event) {
-  //   const password = event.target.value;
-  //   const regex = /^[a-zA-Z0-9]+$/;
-
-  //   if (password.length < 6 || password.length > 16) {
-  //     alert('Password must be between 6 and 16 characters long.');
-  //   } else if (!regex.test(password)) {
-  //     alert('Password can only contain letters and numbers.');
-  //   }
-  // }
-
   useEffect(() => {
     if (location.pathname === '/signup') setIsSignUp(true);
   }, [location]);
 
   async function onSubmit() {
     if (isSignUp) {
-      console.log('註冊！');
-      // nativeSignup(signUpForm);
       await signUp(signUpForm);
     } else {
-      console.log('登入！');
       nativeLogin(loginForm);
     }
-    !uid && previousPath ? navigate(previousPath) : navigate('/');
+    previousPath ? navigate(previousPath) : navigate('/');
   }
 
   return (
@@ -270,7 +230,6 @@ export default function Login() {
 
       <Container>
         <Title>{isSignUp ? 'SIGN UP' : 'LOGIN'}</Title>
-        {/* <SubTitle>請先登入後再開始使用</SubTitle> */}
         <SocialLogin
           onClick={async () => {
             await login();
@@ -317,14 +276,13 @@ export default function Login() {
           </InputWrapper>
           <PromptMessage />
         </FieldWrapper>
-        <FieldWrapper style={{ marginBottom: 30 }}>
+        <LastFieldWrapper>
           <InputLabel htmlFor="password">密碼</InputLabel>
           <InputWrapper>
             <Input
               type="password"
               id="password"
               minLength={6}
-              maxLength={30}
               pattern="[a-zA-Z0-9]+"
               value={isSignUp ? signUpForm.password : loginForm.password}
               onChange={(e) => {
@@ -333,12 +291,9 @@ export default function Login() {
                   : setLoginForm({ ...loginForm, password: e.target.value });
               }}
             />
-            {/* <input type="password" onBlur={validatePassword} onChange={validatePassword} /> */}
           </InputWrapper>
-          <PromptMessage>
-            請輸入英文或數字做為密碼，最少 6 位最多 30 位
-          </PromptMessage>
-        </FieldWrapper>
+          <PromptMessage>請輸入英文或數字做為密碼，最少 6 位</PromptMessage>
+        </LastFieldWrapper>
         <Button
           buttonType="dark"
           width="100%"
