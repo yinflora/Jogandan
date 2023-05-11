@@ -1,18 +1,17 @@
+import { Timestamp } from 'firebase/firestore';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { LoadingContextProvider } from './context/loadingContext';
-import { Timestamp } from 'firebase/firestore';
-
 import App from './App';
-import Home from './pages/Home/Home';
+import { LoadingContextProvider } from './context/loadingContext';
 import Achievement from './pages/Achievement/Achievement';
 import Compose from './pages/Compose/Compose';
-import Profile from './pages/Profile/Profile';
-import Login from './pages/Login/Login';
-import Upload from './pages/Upload/Upload';
+import Home from './pages/Home/Home';
 import Inventory from './pages/Inventory/Inventory';
+import Login from './pages/Login/Login';
+import Profile from './pages/Profile/Profile';
 import SparkJoy from './pages/SparkJoy/SparkJoy';
+import Upload from './pages/Upload/Upload';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -59,7 +58,6 @@ root.render(
           <Route path="achievement" element={<Achievement />} />
           <Route path="compose" element={<Compose />} />
           <Route path="sparkJoy" element={<SparkJoy />} />
-          {/* <Route path="sparkJoy" element={<Advanced />} /> */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

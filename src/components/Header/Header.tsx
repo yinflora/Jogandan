@@ -1,11 +1,8 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-
 import { useContext } from 'react';
-import { AuthContext } from '../../context/authContext';
-
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-
 import Home from '../../components/Icon/Home';
+import { AuthContext } from '../../context/authContext';
 import Login from '../Button/Login';
 
 const Container = styled.section`
@@ -119,7 +116,6 @@ const routes = [
 ];
 
 export default function Header() {
-  // const { isLogin, login, logout } = useContext(AuthContext);
   const { isLogin, logout } = useContext(AuthContext);
 
   const location = useLocation();
@@ -161,7 +157,6 @@ export default function Header() {
         </Nav>
       ) : (
         !isAtLogin && (
-          // <Login onClick={login} color={fillColor}>
           <Login onClick={() => navigate('/login')} color={fillColor}>
             Login
           </Login>
