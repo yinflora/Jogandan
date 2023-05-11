@@ -23,7 +23,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { ItemForm, SignupForm } from '../types/types';
+import { BoardTemplate, Item, ItemForm, SignupForm } from '../types/types';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -99,15 +99,15 @@ async function createUser(userAuth: User, name: string | null) {
     return userDoc.data();
   }
 
-  const provider = userAuth.providerData[0].providerId;
-  const { template } = await getTemplate();
+  const authProvider = userAuth.providerData[0].providerId;
+  const { template } = (await getTemplate()) as BoardTemplate;
   const { displayName, email, photoURL, uid } = userAuth;
 
   try {
     const userData = {
-      name: provider === 'password' ? name : displayName,
+      name: authProvider === 'password' ? name : displayName,
       email,
-      image: provider === 'password' ? USER_DEFAULT_IMAGE : photoURL,
+      image: authProvider === 'password' ? USER_DEFAULT_IMAGE : photoURL,
       uid,
       visionBoard: {
         data: template,
@@ -192,18 +192,13 @@ async function getItems() {
   return items;
 }
 
-async function updateItem(itemId, itemRef) {
+async function updateItem(itemId: string, itemRef: Item) {
   try {
     const user = auth.currentUser;
     if (!user) return;
     const itemDocRef = doc(db, 'users', user.uid, 'items', itemId);
-    const { images, name, category, status, description } = itemRef;
     await updateDoc(itemDocRef, {
-      name,
-      category,
-      status,
-      description,
-      images,
+      ...itemRef,
       processedDate: status === '已處理' ? serverTimestamp() : '',
     });
   } catch (error) {

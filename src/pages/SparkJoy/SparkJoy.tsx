@@ -1,4 +1,3 @@
-import { Timestamp } from 'firebase/firestore';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { TfiArrowRight } from 'react-icons/tfi';
@@ -10,6 +9,7 @@ import Cancel from '../../components/Icon/Cancel';
 import Check from '../../components/Icon/Check';
 import Happy from '../../components/Icon/Happy';
 import AuthContext from '../../context/authContext';
+import { Item } from '../../types/types';
 import { updateItem } from '../../utils/firebase';
 import circle from './images/circle-blue.png';
 import cross from './images/cross-blue.png';
@@ -124,11 +124,10 @@ const TinderCardWrapper = styled(TinderCard)`
   cursor: grab;
 `;
 
-const Card = styled.div`
+const Card = styled.div<{ url: string }>`
   width: 100%;
   aspect-ratio: 1/1;
-  background-size: cover;
-  background-position: center;
+  background: center / cover url(${({ url }) => url});
 `;
 
 const InfoWrapper = styled.div`
@@ -228,6 +227,7 @@ const Toast = styled.div`
   flex-direction: column;
   justify-content: end;
   background-color: rgba(141, 156, 164, 0.9);
+  background-image: url(${sparkJoy});
 
   & > .close {
     position: absolute;
@@ -403,95 +403,78 @@ const GuideDescription = styled.p`
   text-align: center;
 `;
 
-type Item = {
-  id: string;
-  name: string;
-  status: string;
-  category: string;
-  created: Timestamp;
-  processedDate: string;
-  description: string;
-  images: string[];
-};
-
-type Items = Item[];
-
 type Direction = 'left' | 'right' | 'up' | 'down';
 
 type API = {
   // eslint-disable-next-line no-unused-vars
-  swipe(direction?: Direction): Promise<void>;
+  swipe(direction?: Direction): Promise<void>; //!Fixme
   restoreCard(): Promise<void>;
 };
 
-export default function SparkJoy() {
-  const { uid, items } = useContext(AuthContext);
-  const navigate = useNavigate();
+const CARD_QTY = 10;
 
-  const [randomItems, setRandomItems] = useState<Items | null>(null);
-  const [currentIndex, setCurrentIndex] = useState<number | null>(9);
+export default function SparkJoy() {
+  const { items } = useContext(AuthContext);
+
+  const [randomItems, setRandomItems] = useState<Item[] | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(CARD_QTY - 1);
   const [gamePopout, setGamePopout] = useState<boolean>(true);
   const [guide, setGuide] = useState<boolean>(true);
 
   const currentIndexRef = useRef(currentIndex);
   const childRefs = useMemo<Array<React.RefObject<API>>>(
     () =>
-      Array(10)
+      Array(CARD_QTY)
         .fill(0)
         .map(() => React.createRef<API>()),
     []
   );
 
-  useEffect(() => {
-    if (!items) return;
+  const navigate = useNavigate();
 
-    const filteredItems = items.filter((item) => item.status !== '已處理');
+  useEffect(() => {
+    const declutteredItems = items.filter((item) => item.status !== '已處理');
 
     function getRandomIndexes(n: number) {
-      const indexes = Array.from({ length: filteredItems.length }, (_, i) => i); // 創建包含 0 到 77 的陣列
+      const indexes = Array.from(
+        { length: declutteredItems.length },
+        (_, i) => i
+      );
       for (let i = indexes.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1)); // 生成 0 到 i 之間的隨機整數
-        [indexes[i], indexes[j]] = [indexes[j], indexes[i]]; // 交換 indexes[i] 和 indexes[j] 的位置
+        const j = Math.floor(Math.random() * (i + 1));
+        [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
       }
       return indexes.slice(0, n);
     }
 
     function getRandomElements() {
-      const randomIndexes = getRandomIndexes(10);
+      const randomIndexes = getRandomIndexes(CARD_QTY);
 
       const selectedElements = randomIndexes.map(
-        (index) => filteredItems[index]
+        (index) => declutteredItems[index]
       );
       setRandomItems(selectedElements);
       setCurrentIndex(selectedElements.length - 1);
     }
 
-    if (items) getRandomElements();
-  }, [items]);
+    if (declutteredItems.length > 0) getRandomElements();
+    if (!gamePopout)
+      setTimeout(() => {
+        setGuide(false);
+      }, 5000);
+  }, [items, gamePopout]);
 
-  useEffect(() => {
-    if (gamePopout) return;
-
-    setTimeout(() => {
-      setGuide(false);
-    }, 5000);
-  }, [gamePopout]);
-
-  const updateCurrentIndex = (val: number) => {
-    setCurrentIndex(val);
-    currentIndexRef.current = val;
+  const updateCurrentIndex = (index: number) => {
+    setCurrentIndex(index);
+    currentIndexRef.current = index;
   };
 
-  const swiped = (direction: Direction, idToDelete: string, index: number) => {
-    updateCurrentIndex(index - 1);
-  };
-
-  const outOfFrame = (id: string, index: number) => {
+  const outOfFrame = (index: number) => {
     currentIndexRef.current! >= index &&
       childRefs[index].current?.restoreCard();
   };
 
-  const swipeCard = async (direction?: Direction) => {
+  const swipeCard = async (direction: Direction) => {
     const canSwipe =
       currentIndex !== null &&
       currentIndex >= 0 &&
@@ -504,34 +487,23 @@ export default function SparkJoy() {
   const goBack = async () => {
     const canGoBack =
       currentIndex !== null && currentIndex < randomItems!.length;
-
     if (!canGoBack) return;
+
     const newIndex = currentIndex + 1;
     updateCurrentIndex(newIndex);
+
     await childRefs[newIndex].current?.restoreCard();
   };
 
-  async function handleLike(index: number) {
+  async function handleStatusChange(status: '保留' | '待處理', index: number) {
     if (!randomItems) return;
 
     const updatedItem = randomItems[index];
-    updatedItem.status = '保留';
-    await updateItem(uid, updatedItem.id, updatedItem);
+    updatedItem.status = status;
+    await updateItem(updatedItem.id, updatedItem);
 
     const updatedRandomItems = [...randomItems];
-    updatedRandomItems[index].status = '保留';
-    setRandomItems(updatedRandomItems);
-  }
-
-  async function handleUnlike(index: number) {
-    if (!randomItems) return;
-
-    const updatedItem = randomItems[index];
-    updatedItem.status = '待處理';
-    await updateItem(uid, updatedItem.id, updatedItem);
-
-    const updatedRandomItems = [...randomItems];
-    updatedRandomItems[index].status = '待處理';
+    updatedRandomItems[index].status = status;
     setRandomItems(updatedRandomItems);
   }
 
@@ -567,6 +539,7 @@ export default function SparkJoy() {
               確認結果
             </Button>
           </EndingCard>
+
           {randomItems &&
             currentIndex !== null &&
             currentIndex < randomItems.length - 1 && (
@@ -577,18 +550,15 @@ export default function SparkJoy() {
               <TinderCardWrapper
                 ref={childRefs[index]}
                 preventSwipe={['up', 'down']}
-                flickOnSwipe={true}
+                flickOnSwipe
                 onSwipe={(direction: Direction) => {
-                  swiped(direction, item.id, index);
-                  if (direction === 'right') {
-                    handleLike(index);
-                  } else if (direction === 'left') {
-                    handleUnlike(index);
-                  }
+                  updateCurrentIndex(index - 1);
+                  if (direction === 'right') handleStatusChange('保留', index);
+                  if (direction === 'left') handleStatusChange('待處理', index);
                 }}
-                onCardLeftScreen={() => outOfFrame(item.id, index)}
+                onCardLeftScreen={() => outOfFrame(index)}
               >
-                <Card style={{ backgroundImage: `url(${item.images[0]})` }} />
+                <Card url={item.images[0]} />
                 <InfoWrapper>
                   <Category>{item.category}</Category>
                   <Name>{item.name}</Name>
@@ -600,6 +570,7 @@ export default function SparkJoy() {
               </TinderCardWrapper>
             ))}
         </CardContainer>
+
         <div>
           <ChooseButton
             onClick={() => swipeCard('left')}
@@ -614,22 +585,19 @@ export default function SparkJoy() {
             <Check />
           </ChooseButton>
         </div>
-        {/* <Background></Background> */}
         <BackgroundContainer>
           <ChoiceContainer>
             <Choice>NO</Choice>
             <Choice>YES</Choice>
           </ChoiceContainer>
         </BackgroundContainer>
-        {/* <Yes>YES</Yes>
-        <No>NO</No> */}
       </Container>
 
       {gamePopout && (
         <ToastContainer>
           <Overlay />
 
-          <Toast style={{ backgroundImage: `url(${sparkJoy})` }}>
+          <Toast>
             <RxCross1 className="close" onClick={() => setGamePopout(false)} />
 
             <SloganWrapper>
