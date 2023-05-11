@@ -2,7 +2,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Item } from '../types/types';
+import { Item, SignupForm } from '../types/types';
 import {
   auth,
   getItems,
@@ -20,12 +20,6 @@ type User = {
   image: string;
   level: string;
   visionBoard: VisionBoard;
-};
-
-type Form = {
-  name: string;
-  email: string;
-  password: string;
 };
 
 type VisionBoard = {
@@ -46,7 +40,7 @@ type AuthContextType = {
   setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
   previousPath: string | null;
   // eslint-disable-next-line no-unused-vars
-  signUp: (form: Form) => Promise<void>;
+  signUp: (form: SignupForm) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -68,25 +62,27 @@ export const AuthContext = createContext<AuthContextType>({
   setIsPopout: () => {},
   previousPath: null,
   // eslint-disable-next-line no-unused-vars
-  signUp: async (form: Form) => {},
+  signUp: async (form: SignupForm) => {},
 });
 
 type AuthContextProviderProps = {
   children: React.ReactNode;
 };
 
+const INITIAL_USER_DATA: User = {
+  uid: '',
+  name: '',
+  email: '',
+  image: '',
+  level: '',
+  visionBoard: { data: {}, isEdited: false, lastModified: null },
+};
+
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const { setIsLoading } = useContext(LoadingContext);
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
-  const [user, setUser] = useState<User>({
-    uid: '',
-    name: '',
-    email: '',
-    image: '',
-    level: '',
-    visionBoard: { data: {}, isEdited: false, lastModified: null },
-  });
+  const [user, setUser] = useState<User>(INITIAL_USER_DATA);
   const [uid, setUid] = useState<string | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [isPopout, setIsPopout] = useState<boolean>(false);
@@ -118,21 +114,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   useEffect(() => {
     onAuthStateChanged(auth, async (userInfo) => {
       if (userInfo) {
-        const userData = await getUser();
+        const userData = (await getUser()) as User;
 
         if (!userData) return;
 
         setUser({
-          uid: userData.uid,
-          name: userData.name,
-          email: userData.email,
-          image: userData.image,
+          ...userData,
           level: handleLevel(),
-          visionBoard: {
-            data: userData.visionBoard.data,
-            isEdited: userData.visionBoard.isEdited,
-            lastModified: userData.visionBoard.lastModified,
-          },
         });
         setIsLogin(true);
         getUserItems(userData.uid);
@@ -147,14 +135,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           setPreviousPath(location.pathname);
         }
       } else {
-        setUser({
-          uid: '',
-          name: '',
-          email: '',
-          image: '',
-          level: '',
-          visionBoard: { data: {}, isEdited: false, lastModified: null },
-        });
+        setUser(INITIAL_USER_DATA);
         setIsLogin(false);
         setUid(null);
         setTimeout(() => setIsLoading(false), 1500);
@@ -172,21 +153,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   }, []);
 
   const login = async () => {
-    const userInfo = await signin();
+    const userData = (await signin()) as User;
 
-    if (!userInfo) return;
+    if (!userData) return;
 
     setUser({
-      uid: userInfo.uid,
-      name: userInfo.name,
-      email: userInfo.email,
-      image: userInfo.image,
+      ...userData,
       level: handleLevel(),
-      visionBoard: {
-        data: userInfo.visionBoard.data,
-        isEdited: userInfo.visionBoard.isEdited,
-        lastModified: userInfo.visionBoard.lastModified,
-      },
     });
     setIsLogin(true);
     setTimeout(() => setIsLoading(false), 1500);
@@ -194,37 +167,22 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const logout = () => {
     signout();
-    setUser({
-      uid: '',
-      name: '',
-      email: '',
-      image: '',
-      level: '',
-      visionBoard: { data: {}, isEdited: false, lastModified: null },
-    });
+    setUser(INITIAL_USER_DATA);
     setIsLogin(false);
     setTimeout(() => setIsLoading(false), 1500);
     navigate('/login');
   };
 
-  const signUp = async (form: Form) => {
+  const signUp = async (form: SignupForm) => {
     if (!form) return;
 
-    const userData = await nativeSignup(form);
+    const userData = (await nativeSignup(form)) as User;
 
     if (!userData) return;
 
     setUser({
-      uid: userData.uid,
-      name: userData.name,
-      email: userData.email,
-      image: userData.image,
+      ...userData,
       level: handleLevel(),
-      visionBoard: {
-        data: userData.visionBoard.data,
-        isEdited: userData.visionBoard.isEdited,
-        lastModified: userData.visionBoard.lastModified,
-      },
     });
     setUid(userData.uid);
     setIsLogin(true);

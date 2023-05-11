@@ -10,8 +10,8 @@ import Button from '../../components/Button/Button';
 import Level from '../../components/Level/Level';
 import Report from '../../components/Report/Report';
 import { AuthContext } from '../../context/authContext';
-import { Item } from '../../types/types';
-import { storage, updateUser } from '../../utils/firebase';
+import { Item, User } from '../../types/types';
+import { getUser, storage, updateUser } from '../../utils/firebase';
 import {
   getLastMonth,
   getLastYear,
@@ -482,6 +482,14 @@ export default function Profile() {
     useReportItems(items);
   const [isFirst, setIsFirst] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function getCurrentUser() {
+      const userData = (await getUser()) as User;
+      setUser(userData);
+    }
+    getCurrentUser();
+  }, []);
 
   useEffect(() => {
     if (!user) return;

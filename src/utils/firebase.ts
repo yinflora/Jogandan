@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import {
   GoogleAuthProvider,
+  User,
   createUserWithEmailAndPassword,
   getAuth,
   signInWithEmailAndPassword,
@@ -10,7 +11,6 @@ import {
 import {
   addDoc,
   collection,
-  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -23,6 +23,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { ItemForm, SignupForm } from '../types/types';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -49,7 +50,7 @@ const USER_DEFAULT_IMAGE =
 async function signin() {
   try {
     const { user } = await signInWithPopup(auth, provider);
-    const userInfo = await createUser(user);
+    const userInfo = await createUser(user, null);
     return userInfo;
   } catch (error) {
     console.error(error);
@@ -64,7 +65,7 @@ async function signout() {
   }
 }
 
-async function nativeSignup(form) {
+async function nativeSignup(form: SignupForm) {
   try {
     const { name, email, password } = form;
 
@@ -81,7 +82,7 @@ async function nativeSignup(form) {
   }
 }
 
-async function nativeLogin(form) {
+async function nativeLogin(form: SignupForm) {
   try {
     const { email, password } = form;
     await signInWithEmailAndPassword(auth, email, password);
@@ -90,7 +91,7 @@ async function nativeLogin(form) {
   }
 }
 
-async function createUser(userAuth, name) {
+async function createUser(userAuth: User, name: string | null) {
   const userRef = doc(db, 'users', userAuth.uid);
   const userDoc = await getDoc(userRef);
 
@@ -107,7 +108,6 @@ async function createUser(userAuth, name) {
       name: provider === 'password' ? name : displayName,
       email,
       image: provider === 'password' ? USER_DEFAULT_IMAGE : photoURL,
-      created: serverTimestamp(),
       uid,
       visionBoard: {
         data: template,
@@ -119,13 +119,15 @@ async function createUser(userAuth, name) {
     await setDoc(userRef, userData);
     return userData;
   } catch (error) {
-    console.log(`${error.message}: 建立使用者失敗`);
+    console.log(error);
   }
 }
 
 async function getUser() {
   try {
-    const userRef = doc(db, 'users', auth.lastNotifiedUid);
+    const user = auth.currentUser;
+    if (!user) return;
+    const userRef = doc(db, 'users', auth.currentUser.uid);
     const userDoc = await getDoc(userRef);
     return userDoc.data();
   } catch (error) {
@@ -134,9 +136,11 @@ async function getUser() {
   return null;
 }
 
-async function updateUser(url) {
+async function updateUser(url: string) {
   try {
-    const userRef = doc(db, 'users', auth.lastNotifiedUid);
+    const user = auth.currentUser;
+    if (!user) return;
+    const userRef = doc(db, 'users', auth.currentUser.uid);
 
     await updateDoc(userRef, {
       image: url,
@@ -147,27 +151,12 @@ async function updateUser(url) {
   return null;
 }
 
-async function updateVisionBoard(boardData) {
+async function uploadItems(form: ItemForm) {
   try {
-    const userRef = doc(db, 'users', auth.lastNotifiedUid);
-
-    await updateDoc(userRef, {
-      visionBoard: {
-        data: boardData,
-        isEdited: true,
-        lastModified: serverTimestamp(),
-      },
-    });
-  } catch (error) {
-    console.error(error);
-  }
-  return null;
-}
-
-async function uploadItems(form) {
-  try {
+    const user = auth.currentUser;
+    if (!user) return;
     const { name, category, status, description, images } = form;
-    const itemsRef = collection(db, 'users', auth.lastNotifiedUid, 'items');
+    const itemsRef = collection(db, 'users', auth.currentUser.uid, 'items');
     const { id } = await addDoc(itemsRef, {
       name,
       category,
@@ -178,7 +167,7 @@ async function uploadItems(form) {
       processedDate: status === '已處理' ? serverTimestamp() : '',
     });
 
-    const uploadedItemRef = doc(db, 'users', auth.lastNotifiedUid, 'items', id);
+    const uploadedItemRef = doc(db, 'users', auth.currentUser.uid, 'items', id);
 
     await updateDoc(uploadedItemRef, {
       id,
@@ -254,86 +243,32 @@ async function updateItem(userId, itemId, itemRef) {
   return null;
 }
 
-async function resetBoard(id) {
-  try {
-    const boardDocRef = doc(
-      db,
-      'users',
-      'q1khIAOnt2ewvY4SQw1z65roVPD2',
-      'visionBoards',
-      id
-    );
-    await updateDoc(boardDocRef, {
-      lines: deleteField(),
-      shapes: deleteField(),
-    });
-    console.log('刪除成功');
-  } catch (e) {
-    console.error('Error uploading article: ', e);
-  }
-  return null;
-}
-
 async function getTemplate() {
-  const TEMPLATE_ID = 'eDuLEGPS3NCJsyeIYzXl';
-  const templatesRef = doc(db, 'templates', TEMPLATE_ID);
-  const docSnap = await getDoc(templatesRef);
-  return docSnap.data();
-}
-
-async function getBoard(userId, boardId) {
-  const templatesRef = doc(db, 'users', userId, 'visionBoards', boardId);
-  const docSnap = await getDoc(templatesRef);
-
-  // console.log(docSnap.data());
-
-  return docSnap.data();
-}
-
-async function setNewBoard(userId, boardData) {
   try {
-    const userCollectionRef = collection(db, 'users', userId, 'visionBoards');
-
-    const docRef = await addDoc(userCollectionRef, {
-      data: boardData,
-      lastUpdated: serverTimestamp(),
-    });
-
-    return docRef.id;
-  } catch (e) {
-    console.error('Error uploading article: ', e);
+    const TEMPLATE_ID = 'eDuLEGPS3NCJsyeIYzXl';
+    const templatesRef = doc(db, 'templates', TEMPLATE_ID);
+    const docSnap = await getDoc(templatesRef);
+    return docSnap.data();
+  } catch (error) {
+    console.log(error);
   }
-  return null;
 }
 
-async function setFirstBoard(userId) {
+async function saveBoard(boardData: object, isEdited: boolean) {
   try {
-    const templateData = await getTemplate();
-    const userBoardRef = collection(db, 'users', userId, 'visionBoards');
+    const user = auth.currentUser;
+    if (!user) return;
+    const userRef = doc(db, 'users', auth.currentUser.uid);
 
-    const docRef = await addDoc(userBoardRef, {
-      data: templateData.template,
-      lastUpdated: serverTimestamp(),
-      isEdited: false,
+    await updateDoc(userRef, {
+      visionBoard: {
+        data: boardData,
+        lastUpdated: serverTimestamp(),
+        isEdited,
+      },
     });
-
-    return docRef.id;
-  } catch (e) {
-    console.error('設置初次的夢想版失敗: ', e);
-  }
-  return null;
-}
-
-async function saveBoard(userId, boardId, boardData, isEdited) {
-  try {
-    const boardDocRef = doc(db, 'users', userId, 'visionBoards', boardId);
-    await updateDoc(boardDocRef, {
-      data: boardData,
-      lastUpdated: serverTimestamp(),
-      isEdited,
-    });
-  } catch (e) {
-    console.error('Error uploading items: ', e);
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -351,11 +286,6 @@ export {
   getItems,
   getItemById,
   updateItem,
-  resetBoard,
   getTemplate,
-  getBoard,
-  setNewBoard,
-  setFirstBoard,
   saveBoard,
-  updateVisionBoard,
 };
