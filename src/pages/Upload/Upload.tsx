@@ -1,8 +1,11 @@
 import { Timestamp } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { CiCircleInfo } from 'react-icons/ci';
+import { RxCross1 } from 'react-icons/rx';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import { v4 as uuidv4 } from 'uuid';
 import Button from '../../components/Button/Button';
 import { AuthContext } from '../../context/authContext';
 import {
@@ -13,19 +16,13 @@ import {
 } from '../../utils/firebase';
 import image from './image.png';
 import photo from './photo.png';
-// import Cross from '../../components/Icon/Cross';
-import { CiCircleInfo } from 'react-icons/ci';
-import { RxCross1 } from 'react-icons/rx';
-import { v4 as uuidv4 } from 'uuid';
 
 import Alert from '../../components/Alert/Alert';
-import { BulkForm } from '../../components/Form/BulkForm';
+import { BulkForm } from './BulkForm';
 
 const Container = styled.div<{ isEdit: boolean }>`
   width: 1000px;
-  /* margin: 150px auto 0; */
   margin: ${({ isEdit }) => (isEdit ? 0 : '150px auto 0')};
-  /* padding: ${({ isEdit }) => (isEdit ? 0 : '0 250px')}; */
   color: #fff;
   cursor: default;
 `;
@@ -1244,73 +1241,6 @@ export default function Upload({
           </BulkCountWrapper>
 
           <BulkForm bulkForms={bulkForms} setBulkForms={setBulkForms} />
-          {/* <BulkContainer>
-            {bulkForms.map((form, index) => (
-              <BulkItemWrapper key={index}>
-                <BulkCancelBtn onClick={() => handleBulkDelete(index)}>
-                  <RxCross1 />
-                </BulkCancelBtn>
-                <BulkImage imageUrl={form.images[0]} />
-                <BulkInfoWrapper>
-                  <BulkFieldWrapper>
-                    <BulkFiledLabelMust>名稱</BulkFiledLabelMust>
-                    <BulkTextInput
-                      type="text"
-                      value={form.name}
-                      onChange={(e) => {
-                        const newForm = [...bulkForms];
-                        newForm[index].name = e.target.value;
-                        setBulkForms(newForm);
-                      }}
-                    />
-                  </BulkFieldWrapper>
-                  <BulkFieldWrapper>
-                    <BulkFiledLabelMust>分類</BulkFiledLabelMust>
-                    <BulkSelectInput
-                      onChange={(e) => {
-                        const newForm = [...bulkForms];
-                        newForm[index].category = e.target.value;
-                        setBulkForms(newForm);
-                      }}
-                    >
-                      {CATEGORY_OPTIONS.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </BulkSelectInput>
-                  </BulkFieldWrapper>
-                  <BulkFieldWrapper>
-                    <BulkFiledLabelMust>狀態</BulkFiledLabelMust>
-                    <BulkSelectInput
-                      onChange={(e) => {
-                        const newForm = [...bulkForms];
-                        newForm[index].status = e.target.value;
-                        setBulkForms(newForm);
-                      }}
-                    >
-                      {STATUS_OPTIONS.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </BulkSelectInput>
-                  </BulkFieldWrapper>
-                  <div>
-                    <BulkFiledLabel>描述</BulkFiledLabel>
-                    <Description
-                      value={form.description}
-                      onChange={(e) => {
-                        const newForm = [...bulkForms];
-                        newForm[index].description = e.target.value;
-                        setBulkForms(newForm);
-                      }}
-                    />
-                  </div>
-                </BulkInfoWrapper>
-              </BulkItemWrapper>
-            ))}
-          </BulkContainer> */}
         </>
       )}
     </Container>
