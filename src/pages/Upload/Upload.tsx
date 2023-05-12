@@ -19,6 +19,7 @@ import { RxCross1 } from 'react-icons/rx';
 import { v4 as uuidv4 } from 'uuid';
 
 import Alert from '../../components/Alert/Alert';
+import { BulkForm } from '../../components/Form/BulkForm';
 
 const Container = styled.div<{ isEdit: boolean }>`
   width: 1000px;
@@ -1242,7 +1243,8 @@ export default function Upload({
             </BulkUploadWrapper>
           </BulkCountWrapper>
 
-          <BulkContainer>
+          <BulkForm bulkForms={bulkForms} setBulkForms={setBulkForms} />
+          {/* <BulkContainer>
             {bulkForms.map((form, index) => (
               <BulkItemWrapper key={index}>
                 <BulkCancelBtn onClick={() => handleBulkDelete(index)}>
@@ -1308,7 +1310,7 @@ export default function Upload({
                 </BulkInfoWrapper>
               </BulkItemWrapper>
             ))}
-          </BulkContainer>
+          </BulkContainer> */}
         </>
       )}
     </Container>

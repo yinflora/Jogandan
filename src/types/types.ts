@@ -66,6 +66,15 @@ type VisionBoard = {
   lastModified: Timestamp | null;
 };
 
+type FormInputs = {
+  name: string;
+  category: Category | '請選擇類別';
+  status: Status | '請選擇狀態';
+  description?: string;
+  images: string[];
+  [key: string]: string | string[] | undefined;
+};
+
 export type {
   SignupForm,
   LoginForm,
@@ -76,4 +85,5 @@ export type {
   User,
   BoardTemplate,
   VisionBoard,
+  FormInputs,
 };
