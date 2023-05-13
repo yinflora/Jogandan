@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { CiTrash, CiUndo } from 'react-icons/ci';
 import { TfiSaveAlt, TfiText } from 'react-icons/tfi';
 import styled from 'styled-components';
-import { AuthContext } from '../../context/authContext';
+import { UserInfoContext } from '../../context/UserInfoContext';
 
 const VisionBoardContainer = styled.div`
   display: flex;
@@ -135,7 +135,7 @@ export default function VisionBoard({
   deleteActiveItem,
   saveProject,
 }) {
-  const { isPopout, setIsPopout } = useContext(AuthContext);
+  const { isPopout, setIsPopout } = useContext(UserInfoContext);
 
   return (
     <VisionBoardContainer>

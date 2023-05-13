@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -55,7 +55,7 @@ type PopoutProp = {
   selectedItem: Item | null;
 };
 
-const Popout: React.FC<PopoutProp> = ({ selectedItem }) => {
+const Popout = ({ selectedItem }: PopoutProp) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const navigate = useNavigate();
 

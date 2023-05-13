@@ -3,10 +3,10 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
-import AuthContext from '../../context/authContext';
+import UserInfoContext from '../../context/UserInfoContext';
 import { FormInputs } from '../../types/types';
 import { storage, updateItem, uploadItem } from '../../utils/firebase';
-import Alert from '../Alert/Alert';
+import Alert from '../Alert';
 import Button from '../Button/Button';
 import { ImageForm } from './ImageForm';
 import { InputForm } from './InputForm';
@@ -18,9 +18,9 @@ const Container = styled.div`
   gap: 30px;
 `;
 
-const useSingleForm = (id: string | null) => {
+const useSingleForm = (id: string | undefined) => {
   const SINGLE_LIMIT = 8;
-  const { items } = useContext(AuthContext);
+  const { items } = useContext(UserInfoContext);
   const [singleForm, setSingleForm] = useState<FormInputs>({
     name: '',
     category: '',
@@ -47,15 +47,15 @@ const useSingleForm = (id: string | null) => {
       description,
       images: filledImages,
     });
-  }, [items]);
+  }, [id, items]);
 
   return { singleForm, setSingleForm };
 };
 
 const index = () => {
-  const { user, isPopout, setIsPopout } = useContext(AuthContext);
+  const { user, isPopout, setIsPopout } = useContext(UserInfoContext);
   const { id } = useParams();
-  const { singleForm, setSingleForm } = useSingleForm(id ?? null);
+  const { singleForm, setSingleForm } = useSingleForm(id);
   const navigate = useNavigate();
 
   const handleUploadItem = async () => {

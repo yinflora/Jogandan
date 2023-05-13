@@ -33,7 +33,7 @@ const Check = styled.polyline`
   animation-delay: 0.95s;
 `;
 
-export default function Success() {
+const Success = () => {
   return (
     <svg width="100" height="100">
       <Circle
@@ -56,4 +56,6 @@ export default function Success() {
       />
     </svg>
   );
-}
+};
+
+export default Success;

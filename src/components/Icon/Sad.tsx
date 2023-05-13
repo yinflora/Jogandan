@@ -106,7 +106,7 @@ const Mouth = styled.div`
   border-color: #fff transparent transparent transparent;
 `;
 
-export default function Sad() {
+const Sad = () => {
   return (
     <Head>
       <Face>
@@ -116,4 +116,6 @@ export default function Sad() {
       </Face>
     </Head>
   );
-}
+};
+
+export default Sad;

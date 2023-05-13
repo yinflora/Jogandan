@@ -5,7 +5,7 @@ type LoadingContextType = {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-type LoadingContextProviderProps = {
+type LoadingContextProviderProp = {
   children: React.ReactNode;
 };
 
@@ -16,7 +16,7 @@ export const LoadingContext = createContext<LoadingContextType>({
 
 export const LoadingContextProvider = ({
   children,
-}: LoadingContextProviderProps) => {
+}: LoadingContextProviderProp) => {
   const [isLoading, setIsLoading] = useState(true);
   return (
     <LoadingContext.Provider value={{ isLoading, setIsLoading }}>

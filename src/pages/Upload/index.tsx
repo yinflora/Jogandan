@@ -4,10 +4,10 @@ import { CiCircleInfo } from 'react-icons/ci';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
-import Alert from '../../components/Alert/Alert';
+import Alert from '../../components/Alert';
 import Button from '../../components/Button/Button';
 import SingleForm from '../../components/SingleForm';
-import { AuthContext } from '../../context/authContext';
+import { UserInfoContext } from '../../context/UserInfoContext';
 import { FormInputs } from '../../types/types';
 import { storage, uploadItem } from '../../utils/firebase';
 import { BulkForm } from './BulkForm';
@@ -48,10 +48,11 @@ const ModeToggler = styled.div`
   align-items: center;
 `;
 
-const ModeText = styled.span<{ $active: boolean }>`
+const ModeText = styled.span<{ $isActive: boolean }>`
   letter-spacing: 0.1rem;
-  color: ${({ $active }) => ($active ? '#fff' : 'rgba(255, 255, 255, 0.4)')};
-  font-weight: ${({ $active }) => ($active ? 500 : 400)};
+  color: ${({ $isActive }) =>
+    $isActive ? '#fff' : 'rgba(255, 255, 255, 0.4)'};
+  font-weight: ${({ $isActive }) => ($isActive ? 500 : 400)};
 `;
 
 const SwitchContainer = styled.div`
@@ -166,7 +167,6 @@ const BulkImageUpload = styled.div`
   display: flex;
   width: 100%;
   height: 500px;
-  /* margin: 40px 0 0; */
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -192,18 +192,18 @@ const Remind = styled.p`
   color: #fff;
 `;
 
-export default function Upload() {
+const Upload = () => {
   const BULK_LIMIT = 16;
 
-  const { user, isPopout, setIsPopout } = useContext(AuthContext);
+  const { user, isPopout, setIsPopout } = useContext(UserInfoContext);
   const navigate = useNavigate();
   const [bulkForms, setBulkForms] = useState<FormInputs[]>([]);
   const [isBulkMode, setIsBulkMode] = useState<boolean>(false);
 
-  async function handleSelectedImages(
+  const handleSelectedImages = async (
     e: React.ChangeEvent<HTMLInputElement>,
     limit: number
-  ) {
+  ) => {
     let files: FileList | null = e.target.files;
 
     if (!files) return;
@@ -229,9 +229,9 @@ export default function Upload() {
     }
 
     setBulkForms(newBulkForms);
-  }
+  };
 
-  async function handleUploadItem(form: FormInputs) {
+  const handleUploadItem = async (form: FormInputs) => {
     const newForm = { ...form };
 
     await Promise.all(
@@ -252,7 +252,7 @@ export default function Upload() {
     );
 
     await uploadItem(newForm);
-  }
+  };
 
   const handleSelectImage = () => {
     const uploadImage = document.getElementById('uploadImage');
@@ -263,38 +263,6 @@ export default function Upload() {
 
   return (
     <Container>
-      {/* {isEdit
-        ? isPopout && (
-            <Alert
-              type="success"
-              title="儲存成功！"
-              buttonConfig={[
-                {
-                  buttonType: 'dark',
-                  value: '確認結果',
-                  action: () => {
-                    isEdit && setIsEdit && setIsEdit(false);
-                    navigate(`/inventory/${id}`);
-                  },
-                },
-              ]}
-            />
-          )
-        : isPopout && (
-            <Alert
-              type="success"
-              title="上傳成功！"
-              buttonConfig={[
-                {
-                  buttonType: 'dark',
-                  value: '確認結果',
-                  action: () => {
-                    navigate('/inventory');
-                  },
-                },
-              ]}
-            />
-          )} */}
       {isPopout && (
         <Alert
           type="success"
@@ -316,7 +284,7 @@ export default function Upload() {
           <PageTitle>UPLOAD</PageTitle>
 
           <ModeToggler>
-            <ModeText $active={!isBulkMode}>單次</ModeText>
+            <ModeText $isActive={!isBulkMode}>單次</ModeText>
             <SwitchContainer>
               <Input
                 id="switchUpload"
@@ -331,7 +299,7 @@ export default function Upload() {
                 <Slider $checked={isBulkMode} />
               </label>
             </SwitchContainer>
-            <ModeText $active={isBulkMode}>批次</ModeText>
+            <ModeText $isActive={isBulkMode}>批次</ModeText>
           </ModeToggler>
         </SharedWrapper>
 
@@ -424,4 +392,6 @@ export default function Upload() {
       })()}
     </Container>
   );
-}
+};
+
+export default Upload;

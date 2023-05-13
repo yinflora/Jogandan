@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Chevron from '../Icon/Chevron';
 
@@ -14,21 +14,20 @@ const bounce = keyframes`
   }
 `;
 
-const StyledButton = styled.button<{ isVisible: boolean }>`
+const StyledButton = styled.button<{ $isVisible: boolean }>`
   position: fixed;
   right: 30px;
   bottom: 30px;
-  display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
+  display: ${({ $isVisible }) => ($isVisible ? 'block' : 'none')};
   width: 80px;
   height: 80px;
-  /* opacity: ${({ isVisible }) => (isVisible ? 1 : 0)}; */
   border-radius: 50%;
   background-color: rgba(223, 223, 223, 0.5);
   animation: ${bounce} 1s infinite;
   cursor: pointer;
 `;
 
-export default function BackButton() {
+const BackButton = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   function toggleVisibility() {
@@ -55,8 +54,10 @@ export default function BackButton() {
   }, []);
 
   return (
-    <StyledButton onClick={scrollToTop} isVisible={isVisible}>
+    <StyledButton onClick={scrollToTop} $isVisible={isVisible}>
       <Chevron rotateDeg={0} color="#a2a2a2" />
     </StyledButton>
   );
-}
+};
+
+export default BackButton;

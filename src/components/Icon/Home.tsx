@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const HomeBtn = styled.svg<HomeProps>`
+const HomeBtn = styled.svg`
   width: 25px;
   height: 25px;
 
@@ -9,11 +9,11 @@ const HomeBtn = styled.svg<HomeProps>`
   }
 `;
 
-type HomeProps = {
+type HomeProp = {
   fill: string;
 };
 
-export default function Home({ fill }: HomeProps) {
+const Home = ({ fill }: HomeProp) => {
   return (
     <HomeBtn
       version="1.1"
@@ -47,4 +47,6 @@ export default function Home({ fill }: HomeProps) {
       </g>
     </HomeBtn>
   );
-}
+};
+
+export default Home;

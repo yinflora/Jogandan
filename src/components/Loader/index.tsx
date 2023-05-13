@@ -83,7 +83,7 @@ const G = styled(Text)`
   animation-delay: 1.4s;
 `;
 
-export default function Loader() {
+const Loader = () => {
   return (
     <LoaderContainer>
       <L>L</L>
@@ -97,4 +97,6 @@ export default function Loader() {
       <Dot2>.</Dot2>
     </LoaderContainer>
   );
-}
+};
+
+export default Loader;

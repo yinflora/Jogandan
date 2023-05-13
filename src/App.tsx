@@ -3,10 +3,10 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import { Reset } from 'styled-reset';
 import BackButton from './components/Button/BackButton';
-import Header from './components/Header/Header';
-import Loader from './components/Loader/Loader';
-import { AuthContextProvider } from './context/authContext';
-import { LoadingContext } from './context/loadingContext';
+import Header from './components/Header';
+import Loader from './components/Loader';
+import { LoadingContext } from './context/LoadingContext';
+import { UserInfoContextProvider } from './context/UserInfoContext';
 
 const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
   * {
@@ -41,7 +41,7 @@ const GlobalStyle = createGlobalStyle<{ backgroundColor: string }>`
   }
 `;
 
-function App() {
+const App = () => {
   const { isLoading } = useContext(LoadingContext);
   const location = useLocation();
 
@@ -55,7 +55,7 @@ function App() {
     <>
       <Reset />
       <GlobalStyle backgroundColor={backgroundColor} />
-      <AuthContextProvider>
+      <UserInfoContextProvider>
         {isLoading ? (
           <Loader />
         ) : (
@@ -65,9 +65,9 @@ function App() {
             <BackButton />
           </>
         )}
-      </AuthContextProvider>
+      </UserInfoContextProvider>
     </>
   );
-}
+};
 
 export default App;

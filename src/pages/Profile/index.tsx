@@ -7,9 +7,9 @@ import { TfiArrowRight } from 'react-icons/tfi';
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components/macro';
 import Button from '../../components/Button/Button';
-import Level from '../../components/Level/Level';
-import Report from '../../components/Report/Report';
-import { AuthContext } from '../../context/authContext';
+import Level from '../../components/Level';
+import Report from '../../components/Report';
+import { UserInfoContext } from '../../context/UserInfoContext';
 import { Item, User } from '../../types/types';
 import { getUser, storage, updateUser } from '../../utils/firebase';
 import {
@@ -118,7 +118,7 @@ const LinkToGame = styled.p`
   color: #000;
 `;
 
-const GameEntry = styled.button<{ canShow: boolean }>`
+const GameEntry = styled.button<{ $isVisible: boolean }>`
   position: relative;
   display: flex;
   width: fit-content;
@@ -127,8 +127,8 @@ const GameEntry = styled.button<{ canShow: boolean }>`
   align-items: center;
   gap: 0.5rem;
   font-size: 1rem;
-  cursor: ${({ canShow }) => (canShow ? 'pointer' : 'default')};
-  opacity: ${({ canShow }) => (canShow ? 1 : 0)};
+  cursor: ${({ $isVisible }) => ($isVisible ? 'pointer' : 'default')};
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
 
   &::after {
     position: absolute;
@@ -192,7 +192,7 @@ const LinkToEdit = styled(LinkToGame)`
   color: #fff;
 `;
 
-const EditButton = styled.button<{ canShow: boolean }>`
+const EditButton = styled.button<{ $isVisible: boolean }>`
   position: relative;
   display: flex;
   width: fit-content;
@@ -203,7 +203,7 @@ const EditButton = styled.button<{ canShow: boolean }>`
   gap: 10px;
   font-size: 1rem;
   cursor: pointer;
-  opacity: ${({ canShow }) => (canShow ? 1 : 0)};
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
 
   &::after {
     position: absolute;
@@ -433,7 +433,7 @@ const BOARD_HEIGHT = 748;
 const BOARD_ORIGIN_WIDTH = 625;
 const BOARD_ORIGIN_HEIGHT = 475;
 
-function useReportItems(items: Item[]) {
+const useReportItems = (items: Item[]) => {
   const [reportItems, setReportItems] = useState<Item[] | []>([]);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
   const [status, setStatus] = useState<ReportStatus>('目前持有');
@@ -474,10 +474,10 @@ function useReportItems(items: Item[]) {
     status,
     setStatus,
   };
-}
+};
 
-export default function Profile() {
-  const { user, setUser, uid, items } = useContext(AuthContext);
+const Profile = () => {
+  const { user, setUser, uid, items } = useContext(UserInfoContext);
   const { reportItems, period, setPeriod, status, setStatus } =
     useReportItems(items);
   const [isFirst, setIsFirst] = useState<boolean>(false);
@@ -516,7 +516,7 @@ export default function Profile() {
     });
   }, [user]);
 
-  async function handleModifyImage(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleModifyImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const image = e.target.files?.[0];
 
     if (!image) return;
@@ -528,7 +528,7 @@ export default function Profile() {
     await updateUser(url);
 
     setUser({ ...user, image: url });
-  }
+  };
 
   return (
     <>
@@ -566,7 +566,7 @@ export default function Profile() {
             items.filter((item: Item) => item.status === '已處理').length / 100
           }
         />
-        <GameEntry canShow={items.length >= GAME_MIN_NUMBER}>
+        <GameEntry $isVisible={items.length >= GAME_MIN_NUMBER}>
           <LinkToGame
             onClick={() =>
               items.length >= GAME_MIN_NUMBER && navigate('/sparkJoy')
@@ -591,7 +591,10 @@ export default function Profile() {
               </VisionBoardOverlay>
             )}
           </VisionBoard>
-          <EditButton canShow={!isFirst} onClick={() => navigate(`/compose`)}>
+          <EditButton
+            $isVisible={!isFirst}
+            onClick={() => navigate(`/compose`)}
+          >
             <LinkToEdit>編輯夢想板</LinkToEdit>
             <TfiArrowRight className="arrow" />
           </EditButton>
@@ -661,4 +664,6 @@ export default function Profile() {
       <Background />
     </>
   );
-}
+};
+
+export default Profile;

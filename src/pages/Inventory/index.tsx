@@ -2,9 +2,8 @@ import { useContext, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
-import { v4 as uuidv4 } from 'uuid';
 import Search from '../../components/Icon/Search';
-import { AuthContext } from '../../context/authContext';
+import { UserInfoContext } from '../../context/UserInfoContext';
 import { Category, Item, Status } from '../../types/types';
 import Popout from './Popout';
 
@@ -162,11 +161,11 @@ const TitleWrapper = styled.div`
   align-items: center;
 `;
 
-const SubTitle = styled.p<{ isSelected: boolean }>`
+const SubTitle = styled.p<{ $isSelected: boolean }>`
   font-size: 14px;
   letter-spacing: 0.2rem;
-  color: ${({ isSelected }) => (isSelected ? '#8D9CA4' : '#b5b4b4')};
-  font-weight: ${({ isSelected }) => isSelected && 500};
+  color: ${({ $isSelected }) => ($isSelected ? '#8D9CA4' : '#b5b4b4')};
+  font-weight: ${({ $isSelected }) => $isSelected && 500};
   transition: 0.3s ease-out;
   cursor: pointer;
 `;
@@ -273,8 +272,8 @@ const SUBCATEGORY: Category[] = [
 ];
 const SUBSTATUS: Status[] = ['保留', '待處理', '已處理'];
 
-export default function Inventory() {
-  const { items } = useContext(AuthContext);
+const Inventory = () => {
+  const { items } = useContext(UserInfoContext);
 
   const [filter, setFilter] = useState<Filter>({
     category: '',
@@ -378,7 +377,7 @@ export default function Inventory() {
                   onClick={() => {
                     setFilter({ ...filter, category });
                   }}
-                  isSelected={filter.category === category}
+                  $isSelected={filter.category === category}
                 >
                   {category}
                 </SubTitle>
@@ -403,7 +402,7 @@ export default function Inventory() {
                   onClick={() => {
                     setFilter({ ...filter, status });
                   }}
-                  isSelected={filter.status === status}
+                  $isSelected={filter.status === status}
                 >
                   {status}
                 </SubTitle>
@@ -426,8 +425,8 @@ export default function Inventory() {
               <NoMatchText>沒有符合搜尋條件的項目</NoMatchText>
             </NoMatchPrompt>
           ) : (
-            userItems.map((item: Item) => (
-              <Product key={uuidv4()}>
+            userItems.map((item: Item, index: number) => (
+              <Product key={index}>
                 {item.images && (
                   <Image
                     src={item.images[0]}
@@ -446,4 +445,6 @@ export default function Inventory() {
       <Background />
     </Container>
   );
-}
+};
+
+export default Inventory;

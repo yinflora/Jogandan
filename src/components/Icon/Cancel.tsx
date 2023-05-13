@@ -1,4 +1,4 @@
-export default function Cancel() {
+const Cancel = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -16,4 +16,6 @@ export default function Cancel() {
       <path d="M10 10l4 4m0 -4l-4 4" />
     </svg>
   );
-}
+};
+
+export default Cancel;

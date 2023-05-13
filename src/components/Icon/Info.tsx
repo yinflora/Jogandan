@@ -3,7 +3,7 @@ type InfoProps = {
   color?: string;
 };
 
-export default function Info({ size, color }: InfoProps) {
+const Info = ({ size, color }: InfoProps) => {
   return (
     <svg
       width={size ? size : '50'}
@@ -27,4 +27,6 @@ export default function Info({ size, color }: InfoProps) {
       </g>
     </svg>
   );
-}
+};
+
+export default Info;

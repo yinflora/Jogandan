@@ -75,11 +75,11 @@ const YTAG_X_AXIS: number = 30;
 const TEXT_SPACING: number = 12.5;
 const TEXT_TO_RECT: number = 10;
 
-type ReportProps = {
+type ReportProp = {
   items: Item[];
 };
 
-export default function Report({ items }: ReportProps) {
+const Report = ({ items }: ReportProp) => {
   const itemQty = items.reduce((acc, item) => {
     const index = CATEGORIES.indexOf(item.category);
     if (index !== -1) {
@@ -160,4 +160,6 @@ export default function Report({ items }: ReportProps) {
       ))}
     </Svg>
   );
-}
+};
+
+export default Report;

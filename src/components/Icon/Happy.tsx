@@ -101,7 +101,7 @@ const Mouth = styled.div`
   border-radius: 0 0 50px 50px;
 `;
 
-export default function Happy() {
+const Happy = () => {
   return (
     <Head>
       <Face>
@@ -111,4 +111,6 @@ export default function Happy() {
       </Face>
     </Head>
   );
-}
+};
+
+export default Happy;

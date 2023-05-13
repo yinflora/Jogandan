@@ -190,10 +190,7 @@ type ItemInfoProps = {
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const ItemInfo: React.FC<ItemInfoProps> = ({
-  selectedItem,
-  setIsEdit,
-}) => {
+export const ItemInfo = ({ selectedItem, setIsEdit }: ItemInfoProps) => {
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
   const intervalRef = useRef<number | null>(null);
   const { id } = useParams();

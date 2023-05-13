@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
-import AuthContext from '../../context/authContext';
+import UserInfoContext from '../../context/UserInfoContext';
 
 const NUM_OF_STYLES = 8;
 
@@ -33,7 +33,7 @@ const ScrollSection = styled.div`
   overflow-x: scroll;
 `;
 
-const Image = styled.img<{ index: number }>`
+const Image = styled.img<{ $index: number }>`
   flex-shrink: 0;
   filter: grayscale(100%);
   transition: all 0.2s ease-in-out;
@@ -47,8 +47,8 @@ const Image = styled.img<{ index: number }>`
     cursor: pointer;
   }
 
-  ${({ index }) => {
-    switch (index % NUM_OF_STYLES) {
+  ${({ $index }) => {
+    switch ($index % NUM_OF_STYLES) {
       case 0:
         return css`
           z-index: 1;
@@ -116,8 +116,8 @@ const Image = styled.img<{ index: number }>`
   }}
 `;
 
-export default function Achievement() {
-  const { items } = useContext(AuthContext);
+const Achievement = () => {
+  const { items } = useContext(UserInfoContext);
   const navigate = useNavigate();
 
   if (items) {
@@ -131,7 +131,7 @@ export default function Achievement() {
               <Image
                 key={uuidv4()}
                 src={item.images[0]}
-                index={index}
+                $index={index}
                 onClick={() => navigate(`/inventory/${item.id}`)}
               />
             ))}
@@ -141,4 +141,6 @@ export default function Achievement() {
     );
   }
   return null;
-}
+};
+
+export default Achievement;

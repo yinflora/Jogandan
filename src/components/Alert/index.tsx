@@ -1,12 +1,10 @@
 import { useContext } from 'react';
+import { RxCross1 } from 'react-icons/rx';
 import styled from 'styled-components';
-
-import AuthContext from '../../context/authContext';
+import UserInfoContext from '../../context/UserInfoContext';
 import Button from '../Button/Button';
 import Sad from '../Icon/Sad';
 import Success from '../Icon/Success';
-
-import { RxCross1 } from 'react-icons/rx';
 
 const StyledContainer = styled.div`
   position: fixed;
@@ -84,36 +82,21 @@ type ButtonConfig = {
 type AlertProps = {
   type: string;
   title: string;
-  // action?: () => void | {};
   buttonConfig: ButtonConfig[];
 };
 
-export default function Alert({ type, title, buttonConfig }: AlertProps) {
-  const { isPopout, setIsPopout } = useContext(AuthContext);
+const Alert = ({ type, title, buttonConfig }: AlertProps) => {
+  const { isPopout, setIsPopout } = useContext(UserInfoContext);
 
   return (
     <StyledContainer>
       <Overlay />
       <AlertWrapper>
-        <RxCross1
-          className="close"
-          onClick={() => {
-            setIsPopout(!isPopout);
-          }}
-        />
+        <RxCross1 className="close" onClick={() => setIsPopout(!isPopout)} />
         <SuccessWrapper>
           {type === 'success' ? <Success /> : <Sad />}
         </SuccessWrapper>
         <Message>{title}</Message>
-        {/* <Button
-          buttonType="dark"
-          onClick={() => {
-            action();
-            setIsPopout(!isPopout);
-          }}
-        >
-          確認結果
-        </Button> */}
         <ButtonWrapper>
           {buttonConfig.map((config, index) => (
             <Button
@@ -132,4 +115,6 @@ export default function Alert({ type, title, buttonConfig }: AlertProps) {
       </AlertWrapper>
     </StyledContainer>
   );
-}
+};
+
+export default Alert;

@@ -4,12 +4,11 @@ import { TfiArrowRight } from 'react-icons/tfi';
 import { useNavigate } from 'react-router-dom';
 import TinderCard from 'react-tinder-card';
 import styled, { keyframes } from 'styled-components/macro';
-import { v4 as uuidv4 } from 'uuid';
 import Button from '../../components/Button/Button';
 import Cancel from '../../components/Icon/Cancel';
 import Check from '../../components/Icon/Check';
 import Happy from '../../components/Icon/Happy';
-import AuthContext from '../../context/authContext';
+import UserInfoContext from '../../context/UserInfoContext';
 import { Item } from '../../types/types';
 import { updateItem } from '../../utils/firebase';
 import circle from './images/circle-blue.png';
@@ -64,7 +63,7 @@ const Choice = styled.p`
   color: #8d9ca4;
 `;
 
-const QuestionText = styled.p`
+const QuestionText = styled.p<{ children: string }>`
   position: relative;
   font-size: 1.5rem;
   letter-spacing: 0.2rem;
@@ -72,7 +71,7 @@ const QuestionText = styled.p`
   color: #000;
 
   ::after {
-    content: '${(props) => (props.children as string).slice(-4)}';
+    content: '${({ children }) => children.slice(-4)}';
     color: #8d9ca4;
     position: absolute;
     right: 0;
@@ -125,10 +124,10 @@ const TinderCardWrapper = styled(TinderCard)`
   cursor: grab;
 `;
 
-const Card = styled.div<{ url: string }>`
+const Card = styled.div<{ $url: string }>`
   width: 100%;
   aspect-ratio: 1/1;
-  background: center / cover url(${({ url }) => url});
+  background: center / cover url(${({ $url }) => $url});
 `;
 
 const InfoWrapper = styled.div`
@@ -414,8 +413,8 @@ type API = {
 
 const CARD_QTY = 10;
 
-export default function SparkJoy() {
-  const { items } = useContext(AuthContext);
+const SparkJoy = () => {
+  const { items } = useContext(UserInfoContext);
 
   const [randomItems, setRandomItems] = useState<Item[] | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(CARD_QTY - 1);
@@ -436,7 +435,7 @@ export default function SparkJoy() {
   useEffect(() => {
     const declutteredItems = items.filter((item) => item.status !== '已處理');
 
-    function getRandomIndexes(n: number) {
+    const getRandomIndexes = (n: number) => {
       const indexes = Array.from(
         { length: declutteredItems.length },
         (_, i) => i
@@ -446,9 +445,9 @@ export default function SparkJoy() {
         [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
       }
       return indexes.slice(0, n);
-    }
+    };
 
-    function getRandomElements() {
+    const getRandomElements = () => {
       const randomIndexes = getRandomIndexes(CARD_QTY);
 
       const selectedElements = randomIndexes.map(
@@ -456,7 +455,7 @@ export default function SparkJoy() {
       );
       setRandomItems(selectedElements);
       setCurrentIndex(selectedElements.length - 1);
-    }
+    };
 
     if (declutteredItems.length > 0) getRandomElements();
     if (!gamePopout)
@@ -496,7 +495,10 @@ export default function SparkJoy() {
     await childRefs[newIndex].current?.restoreCard();
   };
 
-  async function handleStatusChange(status: '保留' | '待處理', index: number) {
+  const handleStatusChange = async (
+    status: '保留' | '待處理',
+    index: number
+  ) => {
     if (!randomItems) return;
 
     const updatedItem = randomItems[index];
@@ -506,7 +508,7 @@ export default function SparkJoy() {
     const updatedRandomItems = [...randomItems];
     updatedRandomItems[index].status = status;
     setRandomItems(updatedRandomItems);
-  }
+  };
 
   return (
     <>
@@ -549,7 +551,7 @@ export default function SparkJoy() {
           {randomItems &&
             randomItems.map((item, index) => (
               <TinderCardWrapper
-                key={uuidv4()}
+                key={index}
                 ref={childRefs[index]}
                 preventSwipe={['up', 'down']}
                 flickOnSwipe
@@ -560,7 +562,7 @@ export default function SparkJoy() {
                 }}
                 onCardLeftScreen={() => outOfFrame(index)}
               >
-                <Card url={item.images[0]} />
+                <Card $url={item.images[0]} />
                 <InfoWrapper>
                   <Category>{item.category}</Category>
                   <Name>{item.name}</Name>
@@ -621,4 +623,6 @@ export default function SparkJoy() {
       )}
     </>
   );
-}
+};
+
+export default SparkJoy;
