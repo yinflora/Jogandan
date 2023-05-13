@@ -47,7 +47,7 @@ const useSingleForm = (id: string | undefined) => {
       description,
       images: filledImages,
     });
-  }, [id, items]);
+  }, [items]);
 
   return { singleForm, setSingleForm };
 };

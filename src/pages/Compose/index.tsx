@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
 import Alert from '../../components/Alert';
 import UserInfoContext from '../../context/UserInfoContext';
+import { User, VisionBoard } from '../../types/types';
 import { getTemplate, saveBoard, storage } from '../../utils/firebase';
 import ImageUpload from './ImageUpload';
-import VisionBoard from './VisionBoard';
+import Board from './VisionBoard';
 
 const Container = styled.div`
   min-width: 1280px;
@@ -83,17 +84,28 @@ const BoardContainer = styled.div`
   gap: 30px;
 `;
 
-function useVisionBoard(user, images, draggingIndex) {
-  const [visionBoard, setVisionBoard] = useState(null);
-  const [activeItem, setActiveItem] = useState(null);
-  const [bgColor, setBgColor] = useState('#F4F3EF');
-  const [textConfig, setTextConfig] = useState({
+export type TextConfig = {
+  color: string;
+  fontSize: number;
+};
+
+const useVisionBoard = (
+  user: User,
+  images: string[],
+  draggingIndex: number | null
+) => {
+  const [visionBoard, setVisionBoard] = useState<any | null>(null);
+  const [activeItem, setActiveItem] = useState<fabric.Object | null>(null);
+  const [bgColor, setBgColor] = useState<string>('#F4F3EF');
+  const [textConfig, setTextConfig] = useState<TextConfig>({
     color: '#000',
     fontSize: 16,
   });
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  async function saveProject() {
+  const saveProject = async () => {
+    if (!visionBoard) return;
+
     setIsSaving(true);
 
     const visionBoardData = visionBoard.toJSON([
@@ -106,11 +118,11 @@ function useVisionBoard(user, images, draggingIndex) {
     await saveBoard(visionBoardData, true);
 
     setTimeout(() => setIsSaving(false), 1000);
-  }
+  };
 
   useEffect(() => {
     if (!user) return;
-    async function setBoard() {
+    const setBoard = async () => {
       try {
         const canvas = new fabric.Canvas('canvas', {
           width: 625,
@@ -119,21 +131,21 @@ function useVisionBoard(user, images, draggingIndex) {
         });
 
         const { data } = user.visionBoard;
-        canvas.loadFromJSON(data);
+        canvas.loadFromJSON(data, () => null);
 
         setVisionBoard(canvas);
         setBgColor(data.background);
       } catch (error) {
         console.error(error);
       }
-    }
+    };
     setBoard();
   }, [user]);
 
   useEffect(() => {
     if (!visionBoard) return;
 
-    function setActiveObject() {
+    const setActiveObject = () => {
       const activeObject = visionBoard.getActiveObject();
       setActiveItem(activeObject);
 
@@ -143,18 +155,19 @@ function useVisionBoard(user, images, draggingIndex) {
           fontSize: activeObject.fontSize,
         });
       }
-    }
+    };
 
-    function dropImage(e) {
+    const dropImage = (e: any) => {
       if (draggingIndex === null || images.length === 0) return;
-
       const target = e.target;
-      let clipPath;
+      let clipPath: fabric.Object | undefined;
 
       if (!target.isClipFrame) return;
 
       target.clipPath = null;
-      target.clone((cloned) => (clipPath = cloned));
+      target.clone((cloned: fabric.Object) => (clipPath = cloned));
+
+      if (!clipPath) return;
       clipPath.absolutePositioned = true;
 
       const movingImage = images[draggingIndex];
@@ -182,15 +195,10 @@ function useVisionBoard(user, images, draggingIndex) {
       );
 
       saveProject();
-    }
+    };
 
     visionBoard.on('mouse:down', setActiveObject);
     visionBoard.on('drop', dropImage);
-
-    return () => {
-      visionBoard.off('mouse:down', setActiveObject);
-      visionBoard.off('drop', dropImage);
-    };
   }, [visionBoard, draggingIndex]);
 
   useEffect(() => {
@@ -226,15 +234,15 @@ function useVisionBoard(user, images, draggingIndex) {
     setIsSaving,
     saveProject,
   };
-}
+};
 
-function useImages(user) {
-  const [images, setImages] = useState([]);
-  const [isBottom, setIsBottom] = useState(false);
+const useImages = (user: User) => {
+  const [images, setImages] = useState<string[]>([]);
+  const [isBottom, setIsBottom] = useState<boolean>(false);
 
-  const imageContainerRef = useRef(null);
-  const startIndexRef = useRef(null);
-  const imagesRef = useRef(null);
+  const imageContainerRef = useRef<HTMLDivElement | null>(null);
+  const startIndexRef = useRef<number>(0);
+  const imagesRef = useRef<string[] | null>(null);
 
   const storageRef = ref(storage, `/${user.uid}/images/`);
   const MAX_IMAGES = 14;
@@ -251,15 +259,19 @@ function useImages(user) {
         const urls = await Promise.all(
           res.items.map((itemRef) => getDownloadURL(itemRef))
         );
+        const newData = data.map((metadata, index) => {
+          return {
+            metadata,
+            url: urls[index],
+          };
+        });
+        newData.sort(
+          (a, b) =>
+            Number(new Date(b.metadata.updated)) -
+            Number(new Date(a.metadata.updated))
+        );
 
-        const newData = urls.reduce((acc, curr, index) => {
-          acc[index].url = curr;
-          return acc;
-        }, data);
-
-        newData.sort((a, b) => new Date(b.updated) - new Date(a.updated));
-
-        const newUrls = newData.map((data) => data.url);
+        const newUrls = newData.map((item) => item.url);
         imagesRef.current = newUrls;
 
         const startIndex = startIndexRef.current;
@@ -280,21 +292,21 @@ function useImages(user) {
   }, [user]);
 
   useEffect(() => {
-    if (!imageContainerRef.current) return;
+    const onScroll = () => {
+      if (!imageContainerRef.current) return;
 
-    function onScroll() {
       const { scrollTop, clientHeight, scrollHeight } =
         imageContainerRef.current;
       const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
 
       if (distanceFromBottom < 10) setIsBottom(true);
-    }
+    };
 
-    imageContainerRef.current.addEventListener('scroll', onScroll);
+    imageContainerRef.current?.addEventListener('scroll', onScroll);
   }, [imageContainerRef.current]);
 
   useEffect(() => {
-    async function setNewImages() {
+    const setNewImages = async () => {
       if (
         !isBottom ||
         !imagesRef.current ||
@@ -312,18 +324,18 @@ function useImages(user) {
       setImages(newImages);
       startIndexRef.current = endIndex;
       setIsBottom(false);
-    }
+    };
     setNewImages();
   }, [isBottom]);
 
   return { images, setImages, imageContainerRef, storageRef };
-}
+};
 
-export default function Compose() {
+const Compose = () => {
   const { user, isPopout } = useContext(UserInfoContext);
 
-  const [draggingIndex, setDraggingIndex] = useState(null);
-  const [buttonAction, setButtonAction] = useState(null);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [buttonAction, setButtonAction] = useState<string | null>(null);
 
   const { images, setImages, imageContainerRef, storageRef } = useImages(user);
   const {
@@ -340,15 +352,15 @@ export default function Compose() {
 
   const navigate = useNavigate();
 
-  function deleteActiveItem() {
+  const deleteActiveItem = () => {
     if (!activeItem || !visionBoard) return;
 
     visionBoard.remove(activeItem);
     visionBoard.renderAll();
     saveProject();
-  }
+  };
 
-  function addText() {
+  const addText = () => {
     const newText = new fabric.IText('Enter Here...', {
       top: 10,
       left: 10,
@@ -363,9 +375,9 @@ export default function Compose() {
     });
     visionBoard.add(newText).setActiveObject(newText);
     setActiveItem(newText);
-  }
+  };
 
-  async function clear() {
+  const clear = async () => {
     visionBoard.clear();
     setBgColor('#F4F3EF');
     setTextConfig({
@@ -374,11 +386,11 @@ export default function Compose() {
     });
     setActiveItem(null);
 
-    const { template } = await getTemplate();
+    const { template } = (await getTemplate()) as VisionBoard;
     visionBoard.loadFromJSON(template);
 
     saveProject();
-  }
+  };
 
   return (
     <Container>
@@ -386,21 +398,28 @@ export default function Compose() {
         <Alert
           type={buttonAction === 'clear' ? 'sad' : 'success'}
           title={buttonAction === 'clear' ? '確定要重置嗎？' : '儲存成功！'}
-          buttonConfig={[
-            {
-              buttonType: buttonAction === 'clear' ? 'light' : 'dark',
-              value: buttonAction === 'clear' ? '取消重置' : '確認結果',
-              action: () =>
-                navigate(buttonAction === 'clear' ? '/compose' : '/profile'),
-            },
+          buttonConfig={
             buttonAction === 'clear'
-              ? {
-                  buttonType: 'dark',
-                  value: '確認重置',
-                  action: clear,
-                }
-              : null,
-          ].filter(Boolean)}
+              ? [
+                  {
+                    buttonType: 'light',
+                    value: '取消重置',
+                    action: () => navigate('/compose'),
+                  },
+                  {
+                    buttonType: 'dark',
+                    value: '確認重置',
+                    action: clear,
+                  },
+                ]
+              : [
+                  {
+                    buttonType: 'dark',
+                    value: '確認結果',
+                    action: () => navigate('/profile'),
+                  },
+                ]
+          }
         />
       )}
 
@@ -425,7 +444,7 @@ export default function Compose() {
           setDraggingIndex={setDraggingIndex}
         />
 
-        <VisionBoard
+        <Board
           bgColor={bgColor}
           setBgColor={setBgColor}
           activeItem={activeItem}
@@ -440,4 +459,6 @@ export default function Compose() {
       <Background />
     </Container>
   );
-}
+};
+
+export default Compose;

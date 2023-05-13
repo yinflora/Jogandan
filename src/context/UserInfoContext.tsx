@@ -1,7 +1,7 @@
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Item, SignupForm, User } from '../types/types';
+import { BoardData, Item, SignupForm, User } from '../types/types';
 import {
   auth,
   getItems,
@@ -18,6 +18,7 @@ type UserInfoContextType = {
   setUser: React.Dispatch<React.SetStateAction<User>>;
   uid: string | null;
   items: Item[];
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
   login: () => Promise<void>;
   logout: () => void;
   isPopout: boolean;
@@ -25,6 +26,26 @@ type UserInfoContextType = {
   previousPath: string | null;
   // eslint-disable-next-line no-unused-vars
   signUp: (form: SignupForm) => Promise<void>;
+};
+
+const INITIAL_BOARD_DATA: BoardData = {
+  background: '#F4F3EF',
+  hoverCursor: 'move',
+  objects: [],
+  version: '',
+};
+
+const INITIAL_USER_DATA: User = {
+  uid: '',
+  name: '',
+  email: '',
+  image: '',
+  level: '',
+  visionBoard: {
+    data: INITIAL_BOARD_DATA,
+    isEdited: false,
+    lastModified: null,
+  },
 };
 
 export const UserInfoContext = createContext<UserInfoContextType>({
@@ -35,11 +56,16 @@ export const UserInfoContext = createContext<UserInfoContextType>({
     email: '',
     image: '',
     level: '',
-    visionBoard: { data: {}, isEdited: false, lastModified: null },
+    visionBoard: {
+      data: INITIAL_BOARD_DATA,
+      isEdited: false,
+      lastModified: null,
+    },
   },
   setUser: () => {},
   uid: null,
   items: [],
+  setItems: () => {},
   login: async () => {},
   logout: () => {},
   isPopout: false,
@@ -51,15 +77,6 @@ export const UserInfoContext = createContext<UserInfoContextType>({
 
 type UserInfoContextProviderProp = {
   children: React.ReactNode;
-};
-
-const INITIAL_USER_DATA: User = {
-  uid: '',
-  name: '',
-  email: '',
-  image: '',
-  level: '',
-  visionBoard: { data: {}, isEdited: false, lastModified: null },
 };
 
 export const UserInfoContextProvider = ({
@@ -184,6 +201,7 @@ export const UserInfoContextProvider = ({
         setUser,
         uid,
         items,
+        setItems,
         login,
         logout,
         isPopout,
