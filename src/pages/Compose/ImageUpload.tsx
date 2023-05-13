@@ -1,4 +1,10 @@
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import {
+  StorageReference,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
+import React from 'react';
 import { CiCircleInfo } from 'react-icons/ci';
 import styled from 'styled-components';
 import Button from '../../components/Button/Button';
@@ -47,15 +53,25 @@ const Image = styled.img`
   cursor: grab;
 `;
 
-export default function ImageUpload({
+type ImageUploadProps = {
+  storageRef: StorageReference;
+  images: string[];
+  setImages: React.Dispatch<React.SetStateAction<string[]>>;
+  imageContainerRef: React.RefObject<HTMLDivElement>;
+  setDraggingIndex: React.Dispatch<React.SetStateAction<number | null>>;
+};
+
+const ImageUpload = ({
   storageRef,
   images,
   setImages,
   imageContainerRef,
   setDraggingIndex,
-}) {
-  async function handleFileUpload(e) {
-    const files = e.target.files;
+}: ImageUploadProps) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files: FileList | null = e.target.files;
+
+    if (!files) return;
 
     const uploadedFiles = [];
 
@@ -69,12 +85,12 @@ export default function ImageUpload({
     }
 
     setImages([...uploadedFiles, ...images]);
-  }
+  };
 
-  function handleSelectImage() {
+  const handleSelectImage = () => {
     const uploadImage = document.getElementById('uploadImage');
     if (uploadImage) uploadImage.click();
-  }
+  };
 
   return (
     <UploadContainer>
@@ -110,4 +126,6 @@ export default function ImageUpload({
       )}
     </UploadContainer>
   );
-}
+};
+
+export default ImageUpload;

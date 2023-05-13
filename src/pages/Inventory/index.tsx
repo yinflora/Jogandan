@@ -1,10 +1,11 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import Search from '../../components/Icon/Search';
 import { UserInfoContext } from '../../context/UserInfoContext';
 import { Category, Item, Status } from '../../types/types';
+import { getItems } from '../../utils/firebase';
 import Popout from './Popout';
 
 const Container = styled.div`
@@ -273,7 +274,7 @@ const SUBCATEGORY: Category[] = [
 const SUBSTATUS: Status[] = ['保留', '待處理', '已處理'];
 
 const Inventory = () => {
-  const { items } = useContext(UserInfoContext);
+  const { user, items, setItems } = useContext(UserInfoContext);
 
   const [filter, setFilter] = useState<Filter>({
     category: '',
@@ -283,6 +284,17 @@ const Inventory = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const getUserItems = async () => {
+      const userItems = (await getItems()) as Item[];
+      setItems(userItems);
+    };
+
+    getUserItems();
+  }, [user]);
 
   let userItems: Item[] = items;
 

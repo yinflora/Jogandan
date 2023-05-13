@@ -119,13 +119,13 @@ type ButtonProps = {
   onClick?: (param?: any) => void;
 };
 
-export default function Button({
+const Button = ({
   width,
   buttonType,
   onClick,
   children,
   disabled,
-}: ButtonProps) {
+}: ButtonProps) => {
   return (
     <StyledButton
       width={width}
@@ -136,4 +136,6 @@ export default function Button({
       {children}
     </StyledButton>
   );
-}
+};
+
+export default Button;

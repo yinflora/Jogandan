@@ -60,8 +60,17 @@ type BoardTemplate = {
   template: object;
 };
 
+type BoardData = {
+  background: string;
+  hoverCursor: string;
+  objects: [];
+  version: string;
+};
+
 type VisionBoard = {
-  data: object;
+  // data: object;
+  data: BoardData;
+  template?: BoardData;
   isEdited: boolean;
   lastModified: Timestamp | null;
 };
@@ -84,6 +93,7 @@ export type {
   Item,
   User,
   BoardTemplate,
+  BoardData,
   VisionBoard,
   FormInputs,
 };

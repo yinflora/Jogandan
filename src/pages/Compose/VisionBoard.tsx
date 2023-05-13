@@ -1,8 +1,10 @@
-import { useContext } from 'react';
+import { fabric } from 'fabric';
+import React, { useContext } from 'react';
 import { CiTrash, CiUndo } from 'react-icons/ci';
 import { TfiSaveAlt, TfiText } from 'react-icons/tfi';
 import styled from 'styled-components';
 import { UserInfoContext } from '../../context/UserInfoContext';
+import { TextConfig } from './index';
 
 const VisionBoardContainer = styled.div`
   display: flex;
@@ -124,7 +126,19 @@ const Board = styled.div`
   box-shadow: 0px 4px 90px 10px rgba(0, 0, 0, 0.1);
 `;
 
-export default function VisionBoard({
+type VisionBoardProps = {
+  bgColor: string;
+  setBgColor: React.Dispatch<React.SetStateAction<string>>;
+  activeItem: fabric.Object | null;
+  textConfig: TextConfig;
+  setTextConfig: React.Dispatch<React.SetStateAction<TextConfig>>;
+  setButtonAction: React.Dispatch<React.SetStateAction<string | null>>;
+  addText: () => void;
+  deleteActiveItem: () => void;
+  saveProject: () => Promise<void>;
+};
+
+const VisionBoard = ({
   bgColor,
   setBgColor,
   activeItem,
@@ -134,7 +148,7 @@ export default function VisionBoard({
   addText,
   deleteActiveItem,
   saveProject,
-}) {
+}: VisionBoardProps) => {
   const { isPopout, setIsPopout } = useContext(UserInfoContext);
 
   return (
@@ -217,4 +231,6 @@ export default function VisionBoard({
       </Board>
     </VisionBoardContainer>
   );
-}
+};
+
+export default VisionBoard;
