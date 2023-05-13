@@ -433,13 +433,10 @@ const SparkJoy = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const declutteredItems = items.filter((item) => item.status !== '已處理');
+    const existingItems = items.filter((item) => item.status !== '已處理');
 
     const getRandomIndexes = (n: number) => {
-      const indexes = Array.from(
-        { length: declutteredItems.length },
-        (_, i) => i
-      );
+      const indexes = Array.from({ length: existingItems.length }, (_, i) => i);
       for (let i = indexes.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
@@ -451,13 +448,17 @@ const SparkJoy = () => {
       const randomIndexes = getRandomIndexes(CARD_QTY);
 
       const selectedElements = randomIndexes.map(
-        (index) => declutteredItems[index]
+        (index) => existingItems[index]
       );
       setRandomItems(selectedElements);
       setCurrentIndex(selectedElements.length - 1);
     };
 
-    if (declutteredItems.length > 0) getRandomElements();
+    if (existingItems.length >= 10) {
+      getRandomElements();
+    } else {
+      navigate('/');
+    }
     if (!gamePopout)
       setTimeout(() => {
         setGuide(false);

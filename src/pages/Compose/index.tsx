@@ -284,7 +284,7 @@ const useImages = (user: User) => {
 
         startIndexRef.current = endIndex;
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 

@@ -125,7 +125,7 @@ const createUser = async (userAuth: User, name: string | null) => {
     await setDoc(userRef, userData);
     return userData;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -218,7 +218,7 @@ const getTemplate = async () => {
     const docSnap = await getDoc(templatesRef);
     return docSnap.data();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

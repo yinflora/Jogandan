@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import SingleForm from '../../components/SingleForm';
+import UserInfoContext from '../../context/UserInfoContext';
 import { Item } from '../../types/types';
+import { getItems } from '../../utils/firebase';
 import { ItemInfo } from './ItemInfo';
 
 const StyledContainer = styled.div`
@@ -56,8 +58,20 @@ type PopoutProp = {
 };
 
 const Popout = ({ selectedItem }: PopoutProp) => {
+  const { user, setItems } = useContext(UserInfoContext);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isEdit || !user) return;
+
+    const getUserItems = async () => {
+      const userItems = (await getItems()) as Item[];
+      setItems(userItems);
+    };
+
+    getUserItems();
+  }, [user, isEdit]);
 
   if (selectedItem) {
     return (
@@ -67,7 +81,7 @@ const Popout = ({ selectedItem }: PopoutProp) => {
         <Container $isEdit={isEdit}>
           <RxCross1 className="close" onClick={() => navigate('/inventory')} />
           {isEdit ? (
-            <SingleForm />
+            <SingleForm setIsEdit={setIsEdit} />
           ) : (
             <ItemInfo selectedItem={selectedItem} setIsEdit={setIsEdit} />
           )}
