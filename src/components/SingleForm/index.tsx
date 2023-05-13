@@ -1,5 +1,5 @@
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { useContext, useEffect, useState } from 'react';
+import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,8 +18,9 @@ const Container = styled.div`
   gap: 30px;
 `;
 
+const SINGLE_LIMIT = 8;
+
 const useSingleForm = (id: string | undefined) => {
-  const SINGLE_LIMIT = 8;
   const { items } = useContext(UserInfoContext);
   const [singleForm, setSingleForm] = useState<FormInputs>({
     name: '',
@@ -52,14 +53,17 @@ const useSingleForm = (id: string | undefined) => {
   return { singleForm, setSingleForm };
 };
 
-const index = () => {
+type SingleFormProp = {
+  setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const SingleForm = ({ setIsEdit }: SingleFormProp) => {
   const { user, isPopout, setIsPopout } = useContext(UserInfoContext);
   const { id } = useParams();
   const { singleForm, setSingleForm } = useSingleForm(id);
   const navigate = useNavigate();
 
   const handleUploadItem = async () => {
-    //!Fixme: 上傳失敗而且會重新整理
     const newForm = { ...singleForm };
 
     await Promise.all(
@@ -98,6 +102,7 @@ const index = () => {
               value: '確認結果',
               action: () => {
                 if (id) {
+                  setIsEdit && setIsEdit(false);
                   navigate(`/inventory/${id}`);
                 } else {
                   navigate('/inventory');
@@ -115,9 +120,17 @@ const index = () => {
           <Button
             buttonType="dark"
             width="100%"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               handleUploadItem();
               setIsPopout(!isPopout);
+              setSingleForm({
+                name: '',
+                category: '',
+                status: '',
+                description: '',
+                images: Array(SINGLE_LIMIT).fill(''),
+              });
             }}
             disabled={
               singleForm.name === '' ||
@@ -134,4 +147,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default SingleForm;
