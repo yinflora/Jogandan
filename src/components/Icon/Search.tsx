@@ -1,4 +1,4 @@
-export default function Search() {
+const Search = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -16,4 +16,6 @@ export default function Search() {
       <line x1="21" y1="21" x2="15" y2="15" />
     </svg>
   );
-}
+};
+
+export default Search;

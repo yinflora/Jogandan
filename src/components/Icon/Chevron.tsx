@@ -11,12 +11,7 @@ type ChevronProps = {
   onClick?: () => void;
 };
 
-export default function Chevron({
-  size,
-  rotateDeg,
-  color,
-  onClick,
-}: ChevronProps) {
+const Chevron = ({ size, rotateDeg, color, onClick }: ChevronProps) => {
   return (
     <StyledChevron
       rotateDeg={rotateDeg}
@@ -40,4 +35,6 @@ export default function Chevron({
       </g>
     </StyledChevron>
   );
-}
+};
+
+export default Chevron;

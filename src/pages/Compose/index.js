@@ -3,8 +3,8 @@ import { getDownloadURL, getMetadata, listAll, ref } from 'firebase/storage';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
-import Alert from '../../components/Alert/Alert';
-import AuthContext from '../../context/authContext';
+import Alert from '../../components/Alert';
+import UserInfoContext from '../../context/UserInfoContext';
 import { getTemplate, saveBoard, storage } from '../../utils/firebase';
 import ImageUpload from './ImageUpload';
 import VisionBoard from './VisionBoard';
@@ -320,7 +320,7 @@ function useImages(user) {
 }
 
 export default function Compose() {
-  const { user, isPopout } = useContext(AuthContext);
+  const { user, isPopout } = useContext(UserInfoContext);
 
   const [draggingIndex, setDraggingIndex] = useState(null);
   const [buttonAction, setButtonAction] = useState(null);

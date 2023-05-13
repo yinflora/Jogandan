@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import Home from '../../components/Icon/Home';
-import { AuthContext } from '../../context/authContext';
+import { UserInfoContext } from '../../context/UserInfoContext';
 import Login from '../Button/Login';
+import Home from '../Icon/Home';
 
-const Container = styled.section`
+const Container = styled.section<{ $color: string }>`
   position: absolute;
   z-index: 10;
   top: 0;
@@ -14,7 +14,7 @@ const Container = styled.section`
   width: 100vw;
   padding: 30px 60px 0;
   align-items: center;
-  color: ${({ color }) => color};
+  color: ${({ $color }) => $color};
 `;
 
 const Logo = styled(Link)`
@@ -31,7 +31,7 @@ const Nav = styled.nav`
   gap: 50px;
 `;
 
-const NavButton = styled(Link)<{ color: string; isActive: boolean }>`
+const NavButton = styled(Link)<{ $color: string; $isActive: boolean }>`
   position: relative;
   height: 35px;
   font-size: 1rem;
@@ -43,10 +43,10 @@ const NavButton = styled(Link)<{ color: string; isActive: boolean }>`
     cursor: pointer;
   }
 
-  ${({ isActive, color }) =>
-    isActive
+  ${({ $isActive, $color }) =>
+    $isActive
       ? css`
-          border-bottom: 1px solid ${color};
+          border-bottom: 1px solid ${$color};
         `
       : css`
           &::before {
@@ -56,7 +56,7 @@ const NavButton = styled(Link)<{ color: string; isActive: boolean }>`
             bottom: 0;
             right: 100%;
             left: 0;
-            border-bottom: 1px solid ${color};
+            border-bottom: 1px solid ${$color};
             opacity: 0;
             z-index: -1;
             transition: all 0.5s;
@@ -70,7 +70,7 @@ const NavButton = styled(Link)<{ color: string; isActive: boolean }>`
         `}
 `;
 
-const HomeWrapper = styled.div<{ color: string; isActive: boolean }>`
+const HomeWrapper = styled.div<{ $color: string; $isActive: boolean }>`
   position: relative;
   display: flex;
   height: 35px;
@@ -81,10 +81,10 @@ const HomeWrapper = styled.div<{ color: string; isActive: boolean }>`
     cursor: pointer;
   }
 
-  ${({ isActive, color }) =>
-    isActive
+  ${({ $isActive, $color }) =>
+    $isActive
       ? css`
-          border-bottom: 1px solid ${color};
+          border-bottom: 1px solid ${$color};
         `
       : css`
           &::before {
@@ -94,7 +94,7 @@ const HomeWrapper = styled.div<{ color: string; isActive: boolean }>`
             bottom: 0;
             right: 100%;
             left: 0;
-            border-bottom: 1px solid ${color};
+            border-bottom: 1px solid ${$color};
             opacity: 0;
             z-index: -1;
             transition: all 0.5s;
@@ -115,8 +115,8 @@ const routes = [
   { pathName: '/compose', text: 'Vision Board' },
 ];
 
-export default function Header() {
-  const { isLogin, logout } = useContext(AuthContext);
+const Header = () => {
+  const { isLogin, logout } = useContext(UserInfoContext);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -128,18 +128,18 @@ export default function Header() {
       : '#000';
 
   const isAtLogin =
-    location.pathname === '/signup' || location.pathname === '/login';
+    location.pathname === '/sign-up' || location.pathname === '/login';
 
   return (
-    <Container color={fillColor}>
+    <Container $color={fillColor}>
       <Logo to="/">JOGANDAN</Logo>
       {isLogin ? (
         <Nav>
           {routes.map((route) => (
             <NavButton
               to={route.pathName}
-              color={fillColor}
-              isActive={location.pathname.includes(route.pathName)}
+              $color={fillColor}
+              $isActive={location.pathname.includes(route.pathName)}
             >
               {route.text}
             </NavButton>
@@ -148,8 +148,8 @@ export default function Header() {
             Logout
           </Login>
           <HomeWrapper
-            color={fillColor}
-            isActive={location.pathname.includes('/profile')}
+            $color={fillColor}
+            $isActive={location.pathname.includes('/profile')}
             onClick={() => navigate('/profile')}
           >
             <Home fill={fillColor} />
@@ -164,4 +164,6 @@ export default function Header() {
       )}
     </Container>
   );
-}
+};
+
+export default Header;

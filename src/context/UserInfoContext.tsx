@@ -1,7 +1,7 @@
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Item, SignupForm, VisionBoard } from '../types/types';
+import { Item, SignupForm, User } from '../types/types';
 import {
   auth,
   getItems,
@@ -10,18 +10,9 @@ import {
   signin,
   signout,
 } from '../utils/firebase';
-import { LoadingContext } from './loadingContext';
+import { LoadingContext } from './LoadingContext';
 
-type User = {
-  uid: string;
-  name: string;
-  email: string;
-  image: string;
-  level: string;
-  visionBoard: VisionBoard;
-};
-
-type AuthContextType = {
+type UserInfoContextType = {
   isLogin: boolean;
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
@@ -36,7 +27,7 @@ type AuthContextType = {
   signUp: (form: SignupForm) => Promise<void>;
 };
 
-export const AuthContext = createContext<AuthContextType>({
+export const UserInfoContext = createContext<UserInfoContextType>({
   isLogin: false,
   user: {
     uid: '',
@@ -55,10 +46,10 @@ export const AuthContext = createContext<AuthContextType>({
   setIsPopout: () => {},
   previousPath: null,
   // eslint-disable-next-line no-unused-vars
-  signUp: async (form: SignupForm) => {},
+  signUp: async (form) => {},
 });
 
-type AuthContextProviderProps = {
+type UserInfoContextProviderProp = {
   children: React.ReactNode;
 };
 
@@ -71,7 +62,9 @@ const INITIAL_USER_DATA: User = {
   visionBoard: { data: {}, isEdited: false, lastModified: null },
 };
 
-export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
+export const UserInfoContextProvider = ({
+  children,
+}: UserInfoContextProviderProp) => {
   const { setIsLoading } = useContext(LoadingContext);
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -184,7 +177,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider
+    <UserInfoContext.Provider
       value={{
         isLogin,
         user,
@@ -200,8 +193,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       }}
     >
       {children}
-    </AuthContext.Provider>
+    </UserInfoContext.Provider>
   );
 };
 
-export default AuthContext;
+export default UserInfoContext;

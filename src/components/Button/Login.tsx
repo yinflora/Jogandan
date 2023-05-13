@@ -39,10 +39,12 @@ type LoginProps = {
   onClick: () => void;
 };
 
-export default function Login({ color, children, onClick }: LoginProps) {
+const Login = ({ color, children, onClick }: LoginProps) => {
   return (
     <LoginBtn onClick={onClick} color={color}>
       {children}
     </LoginBtn>
   );
-}
+};
+
+export default Login;

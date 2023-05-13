@@ -4,7 +4,7 @@ type CrossProps = {
   color?: string;
 };
 
-export default function Cross({ size, lineWidth, color }: CrossProps) {
+const Cross = ({ size, lineWidth, color }: CrossProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -38,4 +38,6 @@ export default function Cross({ size, lineWidth, color }: CrossProps) {
       />
     </svg>
   );
-}
+};
+
+export default Cross;

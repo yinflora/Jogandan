@@ -3,7 +3,7 @@ import { TfiArrowRight } from 'react-icons/tfi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../../components/Button/Button';
-import { AuthContext } from '../../context/authContext';
+import { UserInfoContext } from '../../context/UserInfoContext';
 import { nativeLogin } from '../../utils/firebase';
 import background from './background.jpeg';
 
@@ -194,11 +194,11 @@ const BackgroundImage = styled.div`
   background: top / cover no-repeat url(${background});
 `;
 
-export default function Login() {
+const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { signUp, login, previousPath } = useContext(AuthContext);
+  const { signUp, login, previousPath } = useContext(UserInfoContext);
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [signUpForm, setSignUpForm] = useState({
@@ -215,14 +215,14 @@ export default function Login() {
     if (location.pathname === '/signup') setIsSignUp(true);
   }, [location]);
 
-  async function onSubmit() {
+  const onSubmit = async () => {
     if (isSignUp) {
       await signUp(signUpForm);
     } else {
       nativeLogin(loginForm);
     }
     previousPath ? navigate(previousPath) : navigate('/');
-  }
+  };
 
   return (
     <>
@@ -345,4 +345,6 @@ export default function Login() {
       </Container>
     </>
   );
-}
+};
+
+export default Login;

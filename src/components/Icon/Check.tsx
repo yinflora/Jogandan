@@ -1,4 +1,4 @@
-export default function Check() {
+const Check = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -16,4 +16,6 @@ export default function Check() {
       <path d="M9 12l2 2l4 -4" />
     </svg>
   );
-}
+};
+
+export default Check;

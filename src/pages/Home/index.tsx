@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled, { css, keyframes } from 'styled-components/macro';
 import Button from '../../components/Button/Button';
 import Chevron from '../../components/Icon/Chevron';
+import loginBackground from './images/LoginBackground.jpeg';
 import achievement from './images/achievement.png';
 import background from './images/background.jpeg';
 import inventory from './images/inventory.png';
@@ -120,7 +121,7 @@ const IntroDescription = styled.p`
   letter-spacing: 0.1rem;
 `;
 
-const Introduction = styled.div<{ entering: string | null }>`
+const Introduction = styled.div<{ $entering: string | null }>`
   display: flex;
   width: 100%;
   height: 100%;
@@ -128,8 +129,8 @@ const Introduction = styled.div<{ entering: string | null }>`
   flex-direction: column;
   gap: 10%;
 
-  ${({ entering }) =>
-    entering === 'intro' &&
+  ${({ $entering }) =>
+    $entering === 'intro' &&
     css`
       & ${IntroTitle} {
         opacity: 0;
@@ -145,12 +146,12 @@ const Introduction = styled.div<{ entering: string | null }>`
     `};
 `;
 
-const Feature = styled.div<{ entering: string | null }>`
+const Feature = styled.div<{ $entering: string | null }>`
   width: 100%;
   height: 100%;
 
-  ${({ entering }) => {
-    if (entering === 'feature1') {
+  ${({ $entering }) => {
+    if ($entering === 'feature1') {
       return css`
         & .visionBoard {
           & > img {
@@ -180,7 +181,7 @@ const Feature = styled.div<{ entering: string | null }>`
           }
         }
       `;
-    } else if (entering === 'feature2') {
+    } else if ($entering === 'feature2') {
       return css`
         & .inventory {
           & > img {
@@ -210,7 +211,7 @@ const Feature = styled.div<{ entering: string | null }>`
           }
         }
       `;
-    } else if (entering === 'feature3') {
+    } else if ($entering === 'feature3') {
       return css`
         & .sparkJoy {
           & > img {
@@ -290,7 +291,7 @@ const Login = styled.div`
   justify-content: center;
   align-items: center;
   background: rgba(255, 255, 255, 0.9) center / cover no-repeat
-    url('https://images.unsplash.com/photo-1530075568197-cbf64cf2cb64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80');
+    url(${loginBackground});
 
   &::before {
     content: '';
@@ -318,7 +319,7 @@ const LoginSubTitle = styled.p`
   line-height: 3rem;
 `;
 
-export default function Home() {
+const Home = () => {
   const [entering, setEntering] = useState<string | null>(null);
 
   const introRef = useRef<HTMLDivElement | null>(null);
@@ -329,7 +330,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    function handleScroll() {
+    const handleScroll = () => {
       if (
         !introRef.current ||
         !feature1Ref.current ||
@@ -349,7 +350,7 @@ export default function Home() {
       if (feature1Position.top < windowHeight) setEntering('feature1');
       if (feature2Position.top < windowHeight) setEntering('feature2');
       if (feature3Position.top < windowHeight) setEntering('feature3');
-    }
+    };
 
     window.addEventListener('scroll', handleScroll);
 
@@ -383,7 +384,7 @@ export default function Home() {
       </Container>
 
       <ContainerM ref={introRef}>
-        <Introduction entering={entering}>
+        <Introduction $entering={entering}>
           <IntroTitle>
             「春至陋室中，
             <br />
@@ -397,7 +398,7 @@ export default function Home() {
       </ContainerM>
 
       <Container ref={feature1Ref}>
-        <Feature entering={entering}>
+        <Feature $entering={entering}>
           <FeatureWrapperR className="visionBoard">
             <FeatureTextR>
               <FeatureTitle>
@@ -434,7 +435,7 @@ export default function Home() {
       </Container>
 
       <Container ref={feature2Ref}>
-        <Feature entering={entering}>
+        <Feature $entering={entering}>
           <FeatureWrapperR className="inventory">
             <FeatureTextR>
               <FeatureTitle>
@@ -469,7 +470,7 @@ export default function Home() {
       </Container>
 
       <ContainerS ref={feature3Ref}>
-        <Feature entering={entering}>
+        <Feature $entering={entering}>
           <FeatureWrapperRSmall className="sparkJoy">
             <FeatureTextR>
               <FeatureTitle>
@@ -495,7 +496,7 @@ export default function Home() {
           <Button
             width="30%"
             buttonType="normal"
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate('/sign-up')}
           >
             START YOUR JOURNEY
           </Button>
@@ -503,4 +504,6 @@ export default function Home() {
       </ContainerM>
     </>
   );
-}
+};
+
+export default Home;

@@ -59,7 +59,7 @@ type LevelProp = {
   percent: number;
 };
 
-export default function Level({ percent }: LevelProp) {
+const Level = ({ percent }: LevelProp) => {
   return (
     <Container>
       <Bar>
@@ -73,4 +73,6 @@ export default function Level({ percent }: LevelProp) {
       </LevelWrapper>
     </Container>
   );
-}
+};
+
+export default Level;

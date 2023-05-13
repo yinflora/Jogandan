@@ -53,7 +53,7 @@ provider.setCustomParameters({
 const USER_DEFAULT_IMAGE =
   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/userPhoto.png?alt=media&token=679fd51a-4928-4201-870e-1d9b2b592e3f';
 
-async function signin() {
+const signin = async () => {
   try {
     const { user } = await signInWithPopup(auth, provider);
     const userInfo = await createUser(user, null);
@@ -61,17 +61,17 @@ async function signin() {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-async function signout() {
+const signout = async () => {
   try {
     await signOut(auth);
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-async function nativeSignup(form: SignupForm) {
+const nativeSignup = async (form: SignupForm) => {
   try {
     const { name, email, password } = form;
 
@@ -86,18 +86,18 @@ async function nativeSignup(form: SignupForm) {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-async function nativeLogin(form: LoginForm) {
+const nativeLogin = async (form: LoginForm) => {
   try {
     const { email, password } = form;
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-async function createUser(userAuth: User, name: string | null) {
+const createUser = async (userAuth: User, name: string | null) => {
   const userRef = doc(db, 'users', userAuth.uid);
   const userDoc = await getDoc(userRef);
 
@@ -127,9 +127,9 @@ async function createUser(userAuth: User, name: string | null) {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
-async function getUser() {
+const getUser = async () => {
   try {
     const user = auth.currentUser;
     if (!user) return;
@@ -140,9 +140,9 @@ async function getUser() {
     console.error(error);
   }
   return null;
-}
+};
 
-async function updateUser(url: string) {
+const updateUser = async (url: string) => {
   try {
     const user = auth.currentUser;
     if (!user) return;
@@ -154,9 +154,9 @@ async function updateUser(url: string) {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-async function uploadItem(form: FormInputs) {
+const uploadItem = async (form: FormInputs) => {
   try {
     const user = auth.currentUser;
     if (!user) return;
@@ -182,9 +182,9 @@ async function uploadItem(form: FormInputs) {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-async function getItems() {
+const getItems = async () => {
   const user = auth.currentUser;
   if (!user) return;
   const itemsRef = collection(db, 'users', user.uid, 'items');
@@ -195,9 +195,9 @@ async function getItems() {
   querySnapshot.forEach((document) => items.push(document.data()));
 
   return items;
-}
+};
 
-async function updateItem(itemId: string, newForm: FormInputs | Item) {
+const updateItem = async (itemId: string, newForm: FormInputs | Item) => {
   try {
     const user = auth.currentUser;
     if (!user) return;
@@ -209,9 +209,9 @@ async function updateItem(itemId: string, newForm: FormInputs | Item) {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-async function getTemplate() {
+const getTemplate = async () => {
   try {
     const TEMPLATE_ID = 'eDuLEGPS3NCJsyeIYzXl';
     const templatesRef = doc(db, 'templates', TEMPLATE_ID);
@@ -220,9 +220,9 @@ async function getTemplate() {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
-async function saveBoard(boardData: object, isEdited: boolean) {
+const saveBoard = async (boardData: object, isEdited: boolean) => {
   try {
     const user = auth.currentUser;
     if (!user) return;
@@ -238,7 +238,7 @@ async function saveBoard(boardData: object, isEdited: boolean) {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export {
   storage,
