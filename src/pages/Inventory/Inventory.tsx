@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
@@ -280,7 +280,6 @@ export default function Inventory() {
     category: '',
     status: '',
   });
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [search, setSearch] = useState<string>('');
 
   const { id } = useParams();
@@ -325,15 +324,6 @@ export default function Inventory() {
       );
     }
   }
-
-  useEffect(() => {
-    if (id) {
-      const selectedUserItems = items.find((item) => item.id === id);
-      selectedUserItems && setSelectedItem(selectedUserItems);
-    } else {
-      setSelectedItem(null);
-    }
-  }, [id, items]);
 
   return (
     <Container>
@@ -449,11 +439,8 @@ export default function Inventory() {
             ))
           )}
         </ProductWrapper>
-        {id && selectedItem && (
-          <Popout
-            selectedItem={selectedItem}
-            setSelectedItem={setSelectedItem}
-          />
+        {id && (
+          <Popout selectedItem={items.find((item) => item.id === id) || null} />
         )}
       </ItemContainer>
       <Background />

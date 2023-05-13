@@ -4,7 +4,7 @@ const StyledButton = styled.button<ButtonProps>`
   position: relative;
   z-index: 0;
   min-width: 200px;
-  min-height: 50px;
+  height: 50px;
   width: ${({ width }) => width};
   font-size: 1rem;
   letter-spacing: 0.1rem;

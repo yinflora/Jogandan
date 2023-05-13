@@ -1,6 +1,10 @@
 import React from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import styled, { css } from 'styled-components';
+import {
+  categoryOptions,
+  statusOptions,
+} from '../../components/SingleForm/InputForm';
 import { FormInputs } from '../../types/types';
 
 const Container = styled.div`
@@ -22,13 +26,13 @@ const ItemWrapper = styled.div`
   background: rgba(255, 255, 255, 0.1);
 `;
 
-const Image = styled.div<{ url: string }>`
+const Image = styled.div<{ $url: string }>`
   width: 200px;
   height: 200px;
   object-fit: cover;
   object-position: center;
   border: 1px solid #fff;
-  background: ${({ url }) => `center / cover no-repeat url(${url})`};
+  background: ${({ $url }) => `center / cover no-repeat url(${$url})`};
 `;
 
 const CancelButton = styled.button`
@@ -68,13 +72,13 @@ const FieldWrapper = styled.div`
   }
 `;
 
-const FieldLabel = styled.label<{ must: boolean }>`
+const FieldLabel = styled.label<{ $isRequire: boolean }>`
   width: 45px;
   line-height: 30px;
   letter-spacing: 0.1rem;
 
-  ${({ must }) =>
-    must &&
+  ${({ $isRequire }) =>
+    $isRequire &&
     css`
       position: relative;
 
@@ -129,44 +133,28 @@ type BulkFormProps = {
   setBulkForms: React.Dispatch<React.SetStateAction<FormInputs[]>>;
 };
 
-const categoryOptions = [
-  '請選擇類別',
-  '居家生活',
-  '服飾配件',
-  '美妝保養',
-  '3C產品',
-  '影音產品',
-  '書報雜誌',
-  '體育器材',
-  '寵物用品',
-  '食物及飲料',
-  '興趣及遊戲',
-  '紀念意義',
-  '其他',
-];
-const statusOptions = ['請選擇狀態', '保留', '待處理', '已處理'];
 const formInputs = [
   {
     label: '名稱',
     key: 'name',
     type: 'input',
-    must: true,
+    isRequire: true,
   },
   {
     label: '分類',
     key: 'category',
     type: 'select',
-    must: true,
+    isRequire: true,
     options: categoryOptions,
   },
   {
     label: '狀態',
     key: 'status',
     type: 'select',
-    must: true,
+    isRequire: true,
     options: statusOptions,
   },
-  { label: '描述', key: 'description', type: 'textarea', must: false },
+  { label: '描述', key: 'description', type: 'textarea', isRequire: false },
 ];
 
 export const BulkForm = ({ bulkForms, setBulkForms }: BulkFormProps) => {
@@ -183,7 +171,7 @@ export const BulkForm = ({ bulkForms, setBulkForms }: BulkFormProps) => {
           <CancelButton onClick={() => handleBulkDelete(formIndex)}>
             <RxCross1 />
           </CancelButton>
-          <Image url={form.images[0]} />
+          <Image $url={form.images[0]} />
           <InfoWrapper>
             {formInputs.map((input) => {
               let fieldElement = null;
@@ -234,7 +222,9 @@ export const BulkForm = ({ bulkForms, setBulkForms }: BulkFormProps) => {
               }
               return (
                 <FieldWrapper key={input.key}>
-                  <FieldLabel must={input.must}>{input.label}</FieldLabel>
+                  <FieldLabel $isRequire={input.isRequire}>
+                    {input.label}
+                  </FieldLabel>
                   {fieldElement}
                 </FieldWrapper>
               );

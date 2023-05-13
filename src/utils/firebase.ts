@@ -25,8 +25,8 @@ import {
 import { getStorage } from 'firebase/storage';
 import {
   BoardTemplate,
+  FormInputs,
   Item,
-  ItemForm,
   LoginForm,
   SignupForm,
 } from '../types/types';
@@ -156,7 +156,7 @@ async function updateUser(url: string) {
   }
 }
 
-async function uploadItems(form: ItemForm) {
+async function uploadItem(form: FormInputs) {
   try {
     const user = auth.currentUser;
     if (!user) return;
@@ -182,7 +182,6 @@ async function uploadItems(form: ItemForm) {
   } catch (error) {
     console.error(error);
   }
-  return null;
 }
 
 async function getItems() {
@@ -198,14 +197,14 @@ async function getItems() {
   return items;
 }
 
-async function updateItem(itemId: string, itemRef: Item) {
+async function updateItem(itemId: string, newForm: FormInputs | Item) {
   try {
     const user = auth.currentUser;
     if (!user) return;
     const itemDocRef = doc(db, 'users', user.uid, 'items', itemId);
     await updateDoc(itemDocRef, {
-      ...itemRef,
-      processedDate: status === '已處理' ? serverTimestamp() : '',
+      ...newForm,
+      processedDate: newForm.status === '已處理' ? serverTimestamp() : '',
     });
   } catch (error) {
     console.error(error);
@@ -250,7 +249,7 @@ export {
   nativeLogin,
   getUser,
   updateUser,
-  uploadItems,
+  uploadItem,
   getItems,
   updateItem,
   getTemplate,

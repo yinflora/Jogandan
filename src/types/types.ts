@@ -68,8 +68,8 @@ type VisionBoard = {
 
 type FormInputs = {
   name: string;
-  category: Category | '請選擇類別';
-  status: Status | '請選擇狀態';
+  category: Category | '請選擇類別' | '';
+  status: Status | '請選擇狀態' | '';
   description?: string;
   images: string[];
   [key: string]: string | string[] | undefined;
