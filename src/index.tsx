@@ -1,5 +1,3 @@
-import { Timestamp } from 'firebase/firestore';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import App from './App';
@@ -25,33 +23,7 @@ root.render(
           <Route path="signup" element={<Login />} />
           <Route path="login" element={<Login />} />
           <Route path="profile" element={<Profile />} />
-          <Route
-            path="upload"
-            element={
-              <Upload
-                setIsEdit={function (): void {
-                  throw new Error('Function not implemented.');
-                }}
-                isEdit={false}
-                selectedItem={null}
-                setSelectedItem={function (
-                  // eslint-disable-next-line no-unused-vars
-                  value: React.SetStateAction<{
-                    id?: string;
-                    name: string;
-                    status: string;
-                    category: string;
-                    created?: Timestamp;
-                    processedDate?: string;
-                    description: string;
-                    images: string[];
-                  } | null>
-                ): void {
-                  throw new Error('Function not implemented.');
-                }}
-              />
-            }
-          />
+          <Route path="upload" element={<Upload />} />
           <Route path="inventory" element={<Inventory />}>
             <Route path=":id" element={<Inventory />} />
           </Route>

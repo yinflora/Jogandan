@@ -1,35 +1,35 @@
-import { Timestamp } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { CiCircleInfo } from 'react-icons/ci';
-import { RxCross1 } from 'react-icons/rx';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
-import Button from '../../components/Button/Button';
-import { AuthContext } from '../../context/authContext';
-import {
-  getItemById,
-  storage,
-  updateItem,
-  uploadItems,
-} from '../../utils/firebase';
-import image from './image.png';
-import photo from './photo.png';
-
 import Alert from '../../components/Alert/Alert';
+import Button from '../../components/Button/Button';
+import SingleForm from '../../components/SingleForm';
+import { AuthContext } from '../../context/authContext';
+import { FormInputs } from '../../types/types';
+import { storage, uploadItem } from '../../utils/firebase';
 import { BulkForm } from './BulkForm';
+import image from './image.png';
 
-const Container = styled.div<{ isEdit: boolean }>`
+const Container = styled.div`
   width: 1000px;
-  margin: ${({ isEdit }) => (isEdit ? 0 : '150px auto 0')};
+  margin: 150px auto 0;
   color: #fff;
   cursor: default;
 `;
 
-const TitleWrapper = styled.div<{ isBulkMode: boolean }>`
+const TitleWrapper = styled.div`
   display: flex;
-  margin-bottom: ${({ isBulkMode }) => (isBulkMode ? 0 : '80px')};
+  width: 100%;
+  flex-direction: column;
+`;
+
+const SharedWrapper = styled.div<{ $hasBulkItems: boolean }>`
+  display: flex;
+  width: 100%;
+  margin-bottom: ${({ $hasBulkItems }) => ($hasBulkItems ? 0 : '40px')};
   justify-content: space-between;
   align-items: end;
 `;
@@ -48,20 +48,10 @@ const ModeToggler = styled.div`
   align-items: center;
 `;
 
-const ModeText = styled.span`
+const ModeText = styled.span<{ $active: boolean }>`
   letter-spacing: 0.1rem;
-`;
-
-const SingleMode = styled(ModeText)<{ isBulkMode: boolean }>`
-  color: ${({ isBulkMode }) =>
-    isBulkMode ? 'rgba(255, 255, 255, 0.4)' : '#fff'};
-  font-weight: ${({ isBulkMode }) => (isBulkMode ? 400 : 500)};
-`;
-
-const BulkMode = styled(ModeText)<{ isBulkMode: boolean }>`
-  color: ${({ isBulkMode }) =>
-    isBulkMode ? '#fff' : 'rgba(255, 255, 255, 0.4)'};
-  font-weight: ${({ isBulkMode }) => (isBulkMode ? 500 : 400)};
+  color: ${({ $active }) => ($active ? '#fff' : 'rgba(255, 255, 255, 0.4)')};
+  font-weight: ${({ $active }) => ($active ? 500 : 400)};
 `;
 
 const SwitchContainer = styled.div`
@@ -87,7 +77,7 @@ const SwitchContainer = styled.div`
   }
 `;
 
-const Slider = styled.div<{ checked: boolean }>`
+const Slider = styled.div<{ $checked: boolean }>`
   background-color: #ccc;
   position: absolute;
   top: 0;
@@ -96,8 +86,9 @@ const Slider = styled.div<{ checked: boolean }>`
   bottom: 0;
   border-radius: 24px;
   transition: all 0.3s;
-  background-color: ${({ checked }) =>
-    checked ? 'rgb(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.4)'};
+  background-color: ${({ $checked }) =>
+    $checked ? 'rgb(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.4)'};
+  cursor: pointer;
 
   &:before {
     position: absolute;
@@ -109,12 +100,7 @@ const Slider = styled.div<{ checked: boolean }>`
     background-color: white;
     border-radius: 50%;
     transition: all 0.3s;
-
-    transform: translateX(${({ checked }) => (checked ? '24px' : '0px')});
-  }
-
-  &:hover {
-    cursor: pointer;
+    transform: translateX(${({ $checked }) => ($checked ? '24px' : '0px')});
   }
 `;
 
@@ -130,24 +116,11 @@ const BulkUploadWrapper = styled.div`
   gap: 20px;
 `;
 
-const UploadContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100%;
-  /* gap: 60px; */
-  gap: 30px;
+const InvisibleInput = styled.input`
+  display: none;
 `;
 
-const ImageWrapper = styled.div``;
-
-const ImageInfoWrapper = styled.div`
-  display: flex;
-  height: 40px;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const PromptWrapper = styled.div<{ isBulkMode: boolean }>`
+const PromptWrapper = styled.div`
   display: flex;
   height: 30px;
   gap: 5px;
@@ -157,26 +130,26 @@ const PromptWrapper = styled.div<{ isBulkMode: boolean }>`
   & > .info {
     width: 20px;
     height: 20px;
-    color: ${({ isBulkMode }) => (isBulkMode ? '#000' : '#fff')};
+    color: #000;
     stroke-width: 0.5px;
   }
 `;
 
-const PromptRemind = styled.span<{ color: string }>`
+const PromptRemind = styled.span`
   letter-spacing: 0.1em;
-  color: ${({ color }) => color};
+  color: #000;
 `;
 
-const BulkCountWrapper = styled.div`
+const BulkTitleWrapper = styled.div`
   display: flex;
   width: 100%;
-  margin: 20px 0 10px;
+  height: 80px;
+  padding: 20px 0 10px;
   justify-content: end;
   align-items: flex-end;
 `;
 
 const SlideCount = styled.div`
-  margin-left: auto;
   color: #fff;
 `;
 
@@ -189,24 +162,17 @@ const TotalIndex = styled.span`
   letter-spacing: 0.4rem;
 `;
 
-const ImageArea = styled.div`
+const BulkImageUpload = styled.div`
   display: flex;
-  height: 400px;
-`;
-
-const MainImageWrapper = styled.div`
-  height: 100%;
-  margin-left: 5px;
-  padding: 5px;
-  aspect-ratio: 1/1;
-`;
-
-const MainImage = styled.div`
-  object-fit: cover;
-  object-position: center;
-  aspect-ratio: 1/1;
+  width: 100%;
+  height: 500px;
+  /* margin: 40px 0 0; */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   border: 1px dashed #fff;
   background-color: rgb(255, 255, 255, 0.2);
+  gap: 10px;
 `;
 
 const ImageIcon = styled.img`
@@ -214,39 +180,7 @@ const ImageIcon = styled.img`
   height: 60px;
 `;
 
-const PhotoIcon = styled.img`
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-`;
-
-const CancelIcon = styled.button`
-  position: absolute;
-  top: 20px;
-  right: 15px;
-  cursor: pointer;
-
-  & .close {
-    width: 30px;
-    height: 30px;
-    color: #fff;
-  }
-`;
-
 const RemindWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-`;
-
-const BulkRemindWrapper = styled.div`
   display: flex;
   margin-bottom: 30px;
   flex-direction: column;
@@ -258,483 +192,15 @@ const Remind = styled.p`
   color: #fff;
 `;
 
-const SubImageContainer = styled.div`
-  position: relative;
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  overflow-y: scroll;
-
-  /* &::-webkit-scrollbar {
-    display: none;
-  } */
-`;
-
-const CancelBtn = styled.button`
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
-  display: none;
-  width: 25px;
-  height: 25px;
-  padding: 0 auto;
-  font-size: 1rem;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  background-color: rgb(0, 0, 0, 0.6);
-  color: #fff;
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const SubImageWrapper = styled.div`
-  position: relative;
-  height: calc((100% - 40px) / 4);
-  margin: 5px;
-  aspect-ratio: 1/1;
-  flex-shrink: 0 0 25%;
-
-  &:hover ${CancelBtn} {
-    display: flex;
-  }
-`;
-
-const CoverText = styled.p`
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 25px;
-  font-size: 1rem;
-  line-height: 25px;
-  text-align: center;
-  background-color: rgb(0, 0, 0, 0.6);
-  color: #fff;
-`;
-
-const SubImage = styled.div<{ imageUrl: string }>`
-  width: 100%;
-  object-fit: cover;
-  object-position: center;
-  aspect-ratio: 1/1;
-  border: 1px solid #fff;
-  background: ${({ imageUrl }) =>
-    imageUrl === '' ? 'none' : `center / cover no-repeat url(${imageUrl})`};
-
-  &:hover {
-    cursor: ${({ imageUrl }) => (imageUrl === '' ? 'default' : 'grab')};
-  }
-`;
-
-const InfoWrapper = styled.form`
-  display: flex;
-  padding: 5px 0 45px;
-  flex-grow: 1;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const BulkInfoWrapper = styled(InfoWrapper)`
-  display: flex;
-  padding: 0;
-`;
-
-const FieldWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const BulkFieldWrapper = styled(FieldWrapper)`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  border-bottom: 1px solid #fff;
-  gap: 0;
-`;
-
-const HalfFieldWrapper = styled(FieldWrapper)`
-  width: 50%;
-`;
-
-const FiledLabel = styled.label`
-  letter-spacing: 0.1rem;
-`;
-
-const FiledLabelMust = styled(FiledLabel)`
-  position: relative;
-  letter-spacing: 0.1rem;
-
-  &::before {
-    content: '*';
-    position: absolute;
-    top: -5px;
-    left: 40px;
-    color: #fff;
-  }
-
-  &:hover::after {
-    content: '必填';
-    position: absolute;
-    top: -5px;
-    left: 50px;
-    padding: 5px;
-    background-color: rgba(0, 0, 0, 0.3);
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.8);
-    border-radius: 5px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const BulkFiledLabel = styled(FiledLabel)`
-  width: 45px;
-  line-height: 30px;
-`;
-
-const BulkFiledLabelMust = styled(BulkFiledLabel)`
-  position: relative;
-
-  &::before {
-    content: '*';
-    position: absolute;
-    top: -5px;
-    right: 0;
-    color: #fff;
-  }
-`;
-
-const TextInput = styled.input`
-  width: 100%;
-  height: 30px;
-  padding-left: 5px;
-  font-size: 1rem;
-  letter-spacing: 0.1rem;
-  border-bottom: 1px solid #fff;
-  color: #fff;
-`;
-
-const BulkTextInput = styled(TextInput)`
-  width: calc(100% - 45px);
-  padding-left: 15px;
-  border: none;
-`;
-
-const SelectWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-`;
-
-const SelectInput = styled.select`
-  height: 30px;
-  font-size: 1rem;
-  letter-spacing: 0.1rem;
-  border-bottom: 1px solid #fff;
-  color: #fff;
-  cursor: pointer;
-`;
-
-const SelectOption = styled.option`
-  color: #000;
-`;
-
-const BulkSelectInput = styled(SelectInput)`
-  width: calc(100% - 45px);
-  height: 30px;
-  padding-left: 10px;
-  letter-spacing: 0.1rem;
-  border: none;
-  color: #fff;
-`;
-
-const Description = styled.textarea`
-  width: 100%;
-  padding: 10px;
-  font-family: 'TT Norms Pro', sans-serif;
-  font-size: 1rem;
-  line-height: 1.25rem;
-  resize: none;
-  border: 1px solid #fff;
-  outline: none;
-  background-color: transparent;
-  color: #fff;
-
-  &::placeholder {
-    content: '非必填';
-    color: rgba(255, 255, 255, 0.8);
-  }
-`;
-
-const ItemWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  height: 30vh;
-  border: 1px solid black;
-`;
-
-const BulkImageWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  height: 500px;
-  margin: 40px 0 0;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: 1px dashed #fff;
-  background-color: rgb(255, 255, 255, 0.2);
-  gap: 10px;
-`;
-
-const BulkContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100%;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 20px;
-`;
-
-const BulkItemWrapper = styled(ItemWrapper)`
-  position: relative;
-  width: calc(50% - 10px);
-  max-width: calc(50% - 10px);
-  height: 250px;
-  padding: 25px;
-  flex: 1 0;
-  gap: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-`;
-
-const BulkImage = styled(SubImage)`
-  width: 200px;
-  height: 200px;
-`;
-
-const BulkCancelBtn = styled.button`
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  width: 25px;
-  height: 25px;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #000;
-
-  &:hover {
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #fff;
-  }
-`;
-
-const VideoWrapper = styled.div`
-  position: relative;
-  height: 100%;
-  margin-left: 5px;
-  padding: 5px;
-  aspect-ratio: 1/1;
-`;
-
-const Video = styled.video`
-  width: 100%;
-  object-fit: cover;
-  object-position: center;
-  aspect-ratio: 1/1;
-  border: 1px solid #fff;
-`;
-
-const CATEGORY_OPTIONS = [
-  '請選擇類別',
-  '居家生活',
-  '服飾配件',
-  '美妝保養',
-  '3C產品',
-  '影音產品',
-  '書報雜誌',
-  '體育器材',
-  '寵物用品',
-  '食物及飲料',
-  '興趣及遊戲',
-  '紀念意義',
-  '其他',
-];
-
-const STATUS_OPTIONS = ['請選擇狀態', '保留', '待處理', '已處理'];
-
-type Item = {
-  id?: string;
-  name: string;
-  status: string;
-  category: string;
-  created?: Timestamp;
-  processedDate?: string;
-  description: string;
-  images: string[];
-};
-
-type EditProp = {
-  isEdit: boolean;
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedItem: Item | null;
-  setSelectedItem: React.Dispatch<React.SetStateAction<Item | null>>;
-};
-
-type Form = {
-  name: string;
-  category: string;
-  status: string;
-  description: string;
-  images: string[];
-  [key: string]: any;
-  created?: Timestamp;
-  id?: string;
-  processedDate?: string;
-};
-
-export default function Upload({
-  isEdit,
-  setIsEdit,
-  setSelectedItem,
-}: EditProp) {
-  const SINGLE_LIMIT = 8;
+export default function Upload() {
   const BULK_LIMIT = 16;
 
-  const { uid, isPopout, setIsPopout } = useContext(AuthContext);
-  const { id } = useParams();
+  const { user, isPopout, setIsPopout } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  const [singleForm, setSingleForm] = useState<Form>({
-    name: '',
-    category: '',
-    status: '',
-    description: '',
-    images: Array(SINGLE_LIMIT).fill(''),
-  });
-
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [showCamera, setShowCamera] = useState<boolean>(false);
-
+  const [bulkForms, setBulkForms] = useState<FormInputs[]>([]);
   const [isBulkMode, setIsBulkMode] = useState<boolean>(false);
-  const [bulkForms, setBulkForms] = useState<Form[] | []>([]);
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    async function getItem() {
-      const item = await getItemById(uid, id);
-      const {
-        images,
-        name,
-        category,
-        status,
-        description,
-        created,
-        processedDate,
-      } = item[0];
-
-      if (images.length < SINGLE_LIMIT) {
-        const filledImages = new Array(SINGLE_LIMIT)
-          .fill('')
-          .map((_, i) => images[i] || '');
-
-        setSingleForm({
-          name,
-          category,
-          status,
-          description,
-          images: filledImages,
-          created,
-          id: item[0].id,
-          processedDate,
-        });
-      } else {
-        setSingleForm({
-          name,
-          category,
-          status,
-          description,
-          images,
-          created,
-          id: item[0].id,
-          processedDate,
-        });
-      }
-    }
-    if (isEdit && id) getItem();
-  }, []);
-
-  useEffect(() => {
-    if (!showCamera) return;
-
-    async function startCamera() {
-      if (!videoRef.current) return;
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        videoRef.current.srcObject = stream;
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    startCamera();
-  }, [showCamera]);
-
-  function stopCamera() {
-    if (!videoRef.current) return;
-
-    const stream = videoRef.current.srcObject as MediaStream; //!Fixme
-    const tracks = stream && stream.getTracks();
-
-    if (tracks && tracks.length > 0) {
-      tracks.forEach((track: MediaStreamTrack) => {
-        track.stop();
-      });
-      videoRef.current.srcObject = null;
-    }
-    setShowCamera(false);
-  }
-
-  function takePhoto() {
-    const canvas: any = document.createElement('canvas');
-
-    if (!videoRef.current || !canvas) return;
-
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    canvas
-      .getContext('2d')
-      .drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-
-    canvas.toBlob(
-      (blob: any) => {
-        const url = URL.createObjectURL(blob);
-
-        const newSingleForm = { ...singleForm };
-        const startIndex = newSingleForm.images.findIndex(
-          (image) => image === ''
-        );
-        newSingleForm.images.splice(startIndex, 1, url);
-
-        setSingleForm(newSingleForm);
-        stopCamera();
-      },
-      'image/png',
-      1
-    );
-  }
-
-  async function handleFileUpload(
+  async function handleSelectedImages(
     e: React.ChangeEvent<HTMLInputElement>,
     limit: number
   ) {
@@ -750,47 +216,33 @@ export default function Upload({
     if (!files) return;
 
     const newBulkForms = [...bulkForms];
-    const newSingleForm = { ...singleForm };
 
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const url = URL.createObjectURL(file);
-
-      if (isBulkMode) {
-        newBulkForms.push({
-          name: '',
-          category: '',
-          status: '',
-          description: '',
-          images: [url],
-        });
-      } else {
-        const startIndex = newSingleForm.images.findIndex(
-          (image) => image === ''
-        );
-        newSingleForm.images.splice(startIndex, 1, url);
-      }
+      const url = URL.createObjectURL(files[i]);
+      newBulkForms.push({
+        name: '',
+        category: '',
+        status: '',
+        description: '',
+        images: [url],
+      });
     }
 
-    if (isBulkMode) {
-      setBulkForms(newBulkForms);
-    } else {
-      setSingleForm(newSingleForm);
-    }
+    setBulkForms(newBulkForms);
   }
 
-  async function handleUploadItems(form: Form) {
+  async function handleUploadItem(form: FormInputs) {
     const newForm = { ...form };
 
     await Promise.all(
-      newForm.images.map(async (image: any, index: number) => {
+      newForm.images.map(async (image: string, index: number) => {
         if (image === '') {
           newForm.images[index] = '';
         } else {
           const res = await fetch(image);
           const blobImage = await res.blob();
 
-          const storageRef = ref(storage, `/${uid}/images/${uuidv4()}`);
+          const storageRef = ref(storage, `/${user.uid}/images/${uuidv4()}`);
           const snapshot = await uploadBytes(storageRef, blobImage);
           const url = await getDownloadURL(snapshot.ref);
 
@@ -799,118 +251,19 @@ export default function Upload({
       })
     );
 
-    const itemId = await uploadItems(newForm);
-
-    !isBulkMode &&
-      itemId &&
-      setSingleForm({
-        name: '',
-        category: '',
-        status: '',
-        description: '',
-        images: Array(8).fill(''),
-      });
+    await uploadItem(newForm);
   }
 
-  async function handleUpdateItems() {
-    const newForm = { ...singleForm };
-
-    await Promise.all(
-      newForm.images.map(async (image: any, index: number) => {
-        if (image === '') {
-          newForm.images[index] = '';
-        } else if (!image.includes('https://')) {
-          const res = await fetch(image);
-          const blobImage = await res.blob();
-
-          const storageRef = ref(storage, `/${uid}/images/${uuidv4()}`);
-          const snapshot = await uploadBytes(storageRef, blobImage);
-          const url = await getDownloadURL(snapshot.ref);
-
-          newForm.images[index] = url;
-        }
-      })
-    );
-
-    await updateItem(uid, id, newForm);
-    setSelectedItem(newForm);
-  }
-
-  function handleDeleted(index: number) {
-    const newImages = [...singleForm.images];
-    newImages.splice(index, 1);
-    setSingleForm({ ...singleForm, images: [...newImages, ''] });
-  }
-
-  function handleBulkDelete(index: number) {
-    const newForms = [...bulkForms];
-    newForms.splice(index, 1);
-    setBulkForms(newForms);
-  }
-
-  function handleDragOverImg(
-    e: React.DragEvent<HTMLDivElement>,
-    index: number
-  ) {
-    e.preventDefault();
-    if (
-      draggingIndex !== null &&
-      draggingIndex !== index &&
-      singleForm.images[index]
-    ) {
-      e.dataTransfer.dropEffect = 'copy';
-    } else {
-      e.dataTransfer.dropEffect = 'none';
-    }
-  }
-
-  function handleDrop(e: React.DragEvent<HTMLDivElement>, index: number) {
-    e.preventDefault();
-    if (draggingIndex !== null && draggingIndex !== index) {
-      const newImages = [...singleForm.images];
-      [newImages[draggingIndex], newImages[index]] = [
-        newImages[index],
-        newImages[draggingIndex],
-      ];
-      setSingleForm({ ...singleForm, images: newImages });
-    }
-    setDraggingIndex(null);
-  }
-
-  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    const container = containerRef.current;
-
-    if (!container) return;
-
-    const rect = container.getBoundingClientRect();
-    const containerLeft = rect.x - rect.width;
-    const containerRight = rect.x + rect.width;
-    if (e.clientX > containerRight - 50) {
-      container.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'end',
-      });
-    } else if (e.clientX < containerLeft - 50) {
-      container.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'start',
-      });
-    }
-  }
-
-  function handleSelectImage() {
+  const handleSelectImage = () => {
     const uploadImage = document.getElementById('uploadImage');
     if (uploadImage) {
       uploadImage.click();
     }
-  }
+  };
 
   return (
-    <Container isEdit={isEdit}>
-      {isEdit
+    <Container>
+      {/* {isEdit
         ? isPopout && (
             <Alert
               type="success"
@@ -941,14 +294,29 @@ export default function Upload({
                 },
               ]}
             />
-          )}
+          )} */}
+      {isPopout && (
+        <Alert
+          type="success"
+          title="上傳成功！"
+          buttonConfig={[
+            {
+              buttonType: 'dark',
+              value: '確認結果',
+              action: () => {
+                navigate('/inventory');
+              },
+            },
+          ]}
+        />
+      )}
 
-      {!isEdit && (
-        <TitleWrapper isBulkMode={isBulkMode}>
+      <TitleWrapper>
+        <SharedWrapper $hasBulkItems={bulkForms.length > 0}>
           <PageTitle>UPLOAD</PageTitle>
 
           <ModeToggler>
-            <SingleMode isBulkMode={isBulkMode}>單次</SingleMode>
+            <ModeText $active={!isBulkMode}>單次</ModeText>
             <SwitchContainer>
               <Input
                 id="switchUpload"
@@ -956,256 +324,33 @@ export default function Upload({
                 checked={isBulkMode}
                 onChange={() => {
                   setIsBulkMode(!isBulkMode);
-                  setSingleForm({
-                    name: '',
-                    category: '',
-                    status: '',
-                    description: '',
-                    images: Array(SINGLE_LIMIT).fill(''),
-                  });
                   setBulkForms([]);
                 }}
               />
               <label htmlFor="switchUpload">
-                <Slider checked={isBulkMode} />
+                <Slider $checked={isBulkMode} />
               </label>
             </SwitchContainer>
-            <BulkMode isBulkMode={isBulkMode}>批次</BulkMode>
+            <ModeText $active={isBulkMode}>批次</ModeText>
           </ModeToggler>
-        </TitleWrapper>
-      )}
+        </SharedWrapper>
 
-      {isBulkMode ? (
-        bulkForms.length === 0 && (
-          <BulkImageWrapper>
-            <ImageIcon src={image} />
-            <BulkRemindWrapper>
-              <Remind>選擇照片進行批量上傳</Remind>
-              <PromptWrapper isBulkMode={isBulkMode}>
-                <CiCircleInfo className="info" />
-                <PromptRemind color="#000">
-                  最多只能選擇 {BULK_LIMIT} 張
-                </PromptRemind>
-              </PromptWrapper>
-            </BulkRemindWrapper>
-
-            <input
-              id="uploadImage"
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                handleFileUpload(e, BULK_LIMIT - bulkForms.length)
-              }
-              multiple
-              style={{ display: 'none' }}
-            />
-            <label htmlFor="uploadImage">
-              <Button buttonType="dark" onClick={handleSelectImage}>
-                選擇照片
-              </Button>
-            </label>
-          </BulkImageWrapper>
-        )
-      ) : (
-        <UploadContainer>
-          <ImageWrapper>
-            <ImageArea>
-              <SubImageContainer
-                ref={containerRef}
-                onDragOver={(e) => handleDragOver(e)}
-              >
-                {singleForm.images.map((image, index) => (
-                  <SubImageWrapper
-                    key={index}
-                    onDragOver={(e) => handleDragOverImg(e, index)}
-                    onDrop={(e) => image !== '' && handleDrop(e, index)}
-                  >
-                    <div
-                      draggable={singleForm.images[index] !== ''}
-                      onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-                        e.currentTarget.style.opacity = '0.01';
-                        setDraggingIndex(index);
-                      }}
-                      onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {
-                        e.currentTarget.style.opacity = '1';
-                        setDraggingIndex(null);
-                      }}
-                    >
-                      <SubImage imageUrl={image} />
-                      {singleForm.images[index] !== '' && (
-                        <CancelBtn onClick={() => handleDeleted(index)}>
-                          <RxCross1 />
-                        </CancelBtn>
-                      )}
-                      {index === 0 && <CoverText>封面</CoverText>}
-                    </div>
-                  </SubImageWrapper>
-                ))}
-              </SubImageContainer>
-              {showCamera ? (
-                <VideoWrapper>
-                  <Video ref={videoRef} autoPlay />
-                  <PhotoIcon src={photo} onClick={takePhoto} />
-                  <CancelIcon onClick={stopCamera}>
-                    {/* <Cross size={50} lineWidth={3} /> */}
-                    <RxCross1 className="close" />
-                  </CancelIcon>
-                </VideoWrapper>
-              ) : (
-                <MainImageWrapper>
-                  <MainImage>
-                    <RemindWrapper>
-                      <ImageIcon src={image} />
-                      <Remind style={{ marginBottom: 30 }}>
-                        最多上傳 {SINGLE_LIMIT} 張
-                      </Remind>
-                      <Button
-                        buttonType="normal"
-                        onClick={() => setShowCamera(true)}
-                      >
-                        拍照上傳
-                      </Button>
-                      <input
-                        id="uploadImage"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                          handleFileUpload(
-                            e,
-                            SINGLE_LIMIT -
-                              singleForm.images.filter((item) => item !== '')
-                                .length
-                          )
-                        }
-                        multiple
-                        capture
-                        style={{ display: 'none' }}
-                      />
-                      <label htmlFor="uploadImage">
-                        <Button buttonType="normal" onClick={handleSelectImage}>
-                          選擇照片
-                        </Button>
-                      </label>
-                    </RemindWrapper>
-                  </MainImage>
-                </MainImageWrapper>
-              )}
-            </ImageArea>
-            <ImageInfoWrapper>
-              {singleForm.images.findIndex((image) => image === '') > 1 && (
-                <PromptWrapper isBulkMode={isBulkMode}>
-                  <CiCircleInfo className="info" />
-                  <PromptRemind color="#fff">拖拉照片調整位置</PromptRemind>
-                </PromptWrapper>
-              )}
-
-              <SlideCount>
-                <NowIndex>
-                  {singleForm.images.filter((image) => image !== '').length}
-                </NowIndex>
-                <TotalIndex>/{singleForm.images.length}</TotalIndex>
-              </SlideCount>
-            </ImageInfoWrapper>
-          </ImageWrapper>
-          <InfoWrapper>
-            <FieldWrapper>
-              <FiledLabelMust>名稱</FiledLabelMust>
-
-              <TextInput
-                type="text"
-                value={singleForm.name}
-                onChange={(e) =>
-                  setSingleForm({ ...singleForm, name: e.target.value })
-                }
-              />
-            </FieldWrapper>
-            <SelectWrapper>
-              <HalfFieldWrapper>
-                <FiledLabelMust>分類</FiledLabelMust>
-                <SelectInput
-                  onChange={(e) =>
-                    setSingleForm({ ...singleForm, category: e.target.value })
-                  }
-                >
-                  {CATEGORY_OPTIONS.map((option) => (
-                    <SelectOption
-                      key={option}
-                      value={option}
-                      selected={option === singleForm.category}
-                    >
-                      {option}
-                    </SelectOption>
-                  ))}
-                </SelectInput>
-              </HalfFieldWrapper>
-              <HalfFieldWrapper>
-                <FiledLabelMust>狀態</FiledLabelMust>
-                <SelectInput
-                  onChange={(e) =>
-                    setSingleForm({ ...singleForm, status: e.target.value })
-                  }
-                >
-                  {STATUS_OPTIONS.map((option) => (
-                    <SelectOption
-                      key={option}
-                      value={option}
-                      selected={option === singleForm.status}
-                    >
-                      {option}
-                    </SelectOption>
-                  ))}
-                </SelectInput>
-              </HalfFieldWrapper>
-            </SelectWrapper>
-            <FieldWrapper>
-              <FiledLabel>描述</FiledLabel>
-              <Description
-                value={singleForm.description}
-                onChange={(e) =>
-                  setSingleForm({ ...singleForm, description: e.target.value })
-                }
-                rows={5}
-                cols={33}
-              />
-            </FieldWrapper>
-            <Button
-              buttonType="dark"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault();
-                isEdit ? handleUpdateItems() : handleUploadItems(singleForm);
-                setIsPopout(!isPopout);
-              }}
-              disabled={
-                singleForm.name === '' ||
-                singleForm.category === '' ||
-                singleForm.status === '' ||
-                !singleForm.images.some((image) => image !== '')
-              }
-            >
-              {isEdit ? '確認更新' : '確認上傳'}
-            </Button>
-          </InfoWrapper>
-        </UploadContainer>
-      )}
-
-      {bulkForms.length > 0 && (
-        <>
-          <BulkCountWrapper>
-            <SlideCount style={{ margin: 0 }}>
+        {bulkForms.length > 0 && (
+          <BulkTitleWrapper>
+            <SlideCount>
               <NowIndex>{bulkForms.length}</NowIndex>
               <TotalIndex>/{BULK_LIMIT}</TotalIndex>
             </SlideCount>
 
             <BulkUploadWrapper>
-              <input
+              <InvisibleInput
                 id="uploadImage"
                 type="file"
                 accept="image/*"
-                onChange={(e) =>
-                  handleFileUpload(e, BULK_LIMIT - bulkForms.length)
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleSelectedImages(e, BULK_LIMIT - bulkForms.length)
                 }
                 multiple
-                style={{ display: 'none' }}
               />
               <label htmlFor="uploadImage">
                 <Button
@@ -1220,7 +365,7 @@ export default function Upload({
                 buttonType="dark"
                 onClick={() =>
                   Promise.all(
-                    bulkForms.map((item) => handleUploadItems(item))
+                    bulkForms.map((form) => handleUploadItem(form))
                   ).then(() => {
                     setIsPopout(!isPopout);
                     setBulkForms([]);
@@ -1238,11 +383,45 @@ export default function Upload({
                 確認上傳
               </Button>
             </BulkUploadWrapper>
-          </BulkCountWrapper>
+          </BulkTitleWrapper>
+        )}
+      </TitleWrapper>
 
-          <BulkForm bulkForms={bulkForms} setBulkForms={setBulkForms} />
-        </>
-      )}
+      {(() => {
+        if (isBulkMode) {
+          if (bulkForms.length === 0) {
+            return (
+              <BulkImageUpload>
+                <ImageIcon src={image} />
+                <RemindWrapper>
+                  <Remind>選擇照片進行批量上傳</Remind>
+                  <PromptWrapper>
+                    <CiCircleInfo className="info" />
+                    <PromptRemind>最多只能選擇 {BULK_LIMIT} 張</PromptRemind>
+                  </PromptWrapper>
+                </RemindWrapper>
+
+                <InvisibleInput
+                  id="uploadImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    handleSelectedImages(e, BULK_LIMIT - bulkForms.length)
+                  }
+                  multiple
+                />
+                <label htmlFor="uploadImage">
+                  <Button buttonType="dark" onClick={handleSelectImage}>
+                    選擇照片
+                  </Button>
+                </label>
+              </BulkImageUpload>
+            );
+          }
+          return <BulkForm bulkForms={bulkForms} setBulkForms={setBulkForms} />;
+        }
+        return <SingleForm />;
+      })()}
     </Container>
   );
 }
