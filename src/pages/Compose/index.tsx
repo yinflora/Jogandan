@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
 import Alert from '../../components/Alert';
 import UserInfoContext from '../../context/UserInfoContext';
-import { User, VisionBoard } from '../../types/types';
-import { getTemplate, saveBoard, storage } from '../../utils/firebase';
+import { UserType, VisionBoardType } from '../../types/types';
+import * as firebase from '../../utils/firebase';
 import ImageUpload from './ImageUpload';
-import Board from './VisionBoard';
+import VisionBoard from './VisionBoard';
 
 const Container = styled.div`
   min-width: 1280px;
@@ -90,7 +90,7 @@ export type TextConfig = {
 };
 
 const useVisionBoard = (
-  user: User,
+  user: UserType,
   images: string[],
   draggingIndex: number | null
 ) => {
@@ -115,7 +115,7 @@ const useVisionBoard = (
       'hoverCursor',
     ]);
 
-    await saveBoard(visionBoardData, true);
+    await firebase.saveBoard(visionBoardData, true);
 
     setTimeout(() => setIsSaving(false), 1000);
   };
@@ -236,7 +236,7 @@ const useVisionBoard = (
   };
 };
 
-const useImages = (user: User) => {
+const useImages = (user: UserType) => {
   const [images, setImages] = useState<string[]>([]);
   const [isBottom, setIsBottom] = useState<boolean>(false);
 
@@ -244,7 +244,7 @@ const useImages = (user: User) => {
   const startIndexRef = useRef<number>(0);
   const imagesRef = useRef<string[] | null>(null);
 
-  const storageRef = ref(storage, `/${user.uid}/images/`);
+  const storageRef = ref(firebase.storage, `/${user.uid}/images/`);
   const MAX_IMAGES = 14;
 
   useEffect(() => {
@@ -386,7 +386,7 @@ const Compose = () => {
     });
     setActiveItem(null);
 
-    const { template } = (await getTemplate()) as VisionBoard;
+    const { template } = (await firebase.getTemplate()) as VisionBoardType;
     visionBoard.loadFromJSON(template);
 
     saveProject();
@@ -444,7 +444,7 @@ const Compose = () => {
           setDraggingIndex={setDraggingIndex}
         />
 
-        <Board
+        <VisionBoard
           bgColor={bgColor}
           setBgColor={setBgColor}
           activeItem={activeItem}

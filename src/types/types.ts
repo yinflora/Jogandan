@@ -1,9 +1,16 @@
 import { Timestamp } from 'firebase/firestore';
 
-type SignupForm = {
+type SignupFormType = {
   name: string;
   email: string;
   password: string;
+  [key: string]: string;
+};
+
+type LoginFormType = {
+  email: string;
+  password: string;
+  [key: string]: string;
 };
 
 type SignupErrorType = {
@@ -14,20 +21,15 @@ type LoginErrorType = {
   code: 'auth/user-not-found' | 'auth/wrong-password' | 'auth/invalid-email';
 };
 
-type LoginForm = {
-  email: string;
-  password: string;
-};
-
-type ItemForm = {
+type ItemFormType = {
   name: string;
-  category: Category;
-  status: Status;
+  category: CategoryType;
+  status: StatusType;
   description: string;
   images: string[];
 };
 
-type Category =
+type CategoryType =
   | '居家生活'
   | '服飾配件'
   | '美妝保養'
@@ -41,69 +43,68 @@ type Category =
   | '紀念意義'
   | '其他';
 
-type Status = '保留' | '待處理' | '已處理';
+type StatusType = '保留' | '待處理' | '已處理';
 
-type Item = {
+type ItemType = {
   id: string;
   name: string;
-  status: Status;
-  category: Category;
+  status: StatusType;
+  category: CategoryType;
   created: Timestamp;
   processedDate: Timestamp | '';
   description: string;
   images: string[];
 };
 
-type User = {
+type UserType = {
   uid: string;
   name: string;
   email: string;
   image: string;
   level: string;
-  visionBoard: VisionBoard;
+  visionBoard: VisionBoardType;
 };
 
-type BoardTemplate = {
+type BoardTemplateType = {
   id: string;
   template: object;
 };
 
-type BoardData = {
+type BoardDataType = {
   background: string;
   hoverCursor: string;
   objects: [];
   version: string;
 };
 
-type VisionBoard = {
-  // data: object;
-  data: BoardData;
-  template?: BoardData;
+type VisionBoardType = {
+  data: BoardDataType;
+  template?: BoardDataType;
   isEdited: boolean;
   lastModified: Timestamp | null;
 };
 
-type FormInputs = {
+type FormInputsType = {
   name: string;
-  category: Category | '請選擇類別' | '';
-  status: Status | '請選擇狀態' | '';
+  category: CategoryType | '請選擇類別' | '';
+  status: StatusType | '請選擇狀態' | '';
   description?: string;
   images: string[];
   [key: string]: string | string[] | undefined;
 };
 
 export type {
-  SignupForm,
+  SignupFormType,
   SignupErrorType,
   LoginErrorType,
-  LoginForm,
-  ItemForm,
-  Category,
-  Status,
-  Item,
-  User,
-  BoardTemplate,
-  BoardData,
-  VisionBoard,
-  FormInputs,
+  LoginFormType,
+  ItemFormType,
+  CategoryType,
+  StatusType,
+  ItemType,
+  UserType,
+  BoardTemplateType,
+  BoardDataType,
+  VisionBoardType,
+  FormInputsType,
 };

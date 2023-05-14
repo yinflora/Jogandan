@@ -24,11 +24,11 @@ import {
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import {
-  BoardTemplate,
-  FormInputs,
-  Item,
-  LoginForm,
-  SignupForm,
+  BoardTemplateType,
+  FormInputsType,
+  ItemType,
+  LoginFormType,
+  SignupFormType,
 } from '../types/types';
 
 const firebaseConfig = {
@@ -71,40 +71,16 @@ const logout = async () => {
   }
 };
 
-const nativeSignup = async (form: SignupForm) => {
-  // try {
-  //   const { name, email, password } = form;
-
-  //   const { user } = await createUserWithEmailAndPassword(
-  //     auth,
-  //     email,
-  //     password
-  //   );
-
-  //   const userData = await createUser(user, name);
-  //   return userData;
-  // } catch (error) {
-  //   const errorMessages: Record<string, string> = {
-  //     'auth/ail-already-in-use': '註冊失敗，電子信箱已存在',
-  //     'auth/weak-password': '註冊失敗，密碼應至少 6 位',
-  //     'auth/invalid-email': '註冊失敗，信箱格式不正確',
-  //     default: '註冊失敗，請重試',
-  //   };
-  //   return errorMessages[(error as SignupErrorType).code || 'default'];
-  // }
+const nativeSignup = async (form: SignupFormType) => {
   const { name, email, password } = form;
   const { user } = await createUserWithEmailAndPassword(auth, email, password);
   const userData = await createUser(user, name);
   return userData;
 };
 
-const nativeLogin = async (form: LoginForm) => {
-  // try {
+const nativeLogin = async (form: LoginFormType) => {
   const { email, password } = form;
   await signInWithEmailAndPassword(auth, email, password);
-  // } catch (error) {
-  //   console.error(error);
-  // }
 };
 
 const createUser = async (userAuth: User, name: string | null) => {
@@ -116,7 +92,7 @@ const createUser = async (userAuth: User, name: string | null) => {
   }
 
   const authProvider = userAuth.providerData[0].providerId;
-  const { template } = (await getTemplate()) as BoardTemplate;
+  const { template } = (await getTemplate()) as BoardTemplateType;
   const { displayName, email, photoURL, uid } = userAuth;
 
   try {
@@ -166,7 +142,7 @@ const updateUser = async (url: string) => {
   }
 };
 
-const uploadItem = async (form: FormInputs) => {
+const uploadItem = async (form: FormInputsType) => {
   try {
     const user = auth.currentUser;
     if (!user) return;
@@ -207,7 +183,10 @@ const getItems = async () => {
   return items;
 };
 
-const updateItem = async (itemId: string, newForm: FormInputs | Item) => {
+const updateItem = async (
+  itemId: string,
+  newForm: FormInputsType | ItemType
+) => {
   try {
     const user = auth.currentUser;
     if (!user) return;

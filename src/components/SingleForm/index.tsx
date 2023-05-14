@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 import UserInfoContext from '../../context/UserInfoContext';
-import { FormInputs } from '../../types/types';
-import { storage, updateItem, uploadItem } from '../../utils/firebase';
+import { FormInputsType } from '../../types/types';
+import * as firebase from '../../utils/firebase';
 import Alert from '../Alert';
 import Button from '../Button/Button';
 import { ImageForm } from './ImageForm';
@@ -22,7 +22,7 @@ const SINGLE_LIMIT = 8;
 
 const useSingleForm = (id: string | undefined) => {
   const { items } = useContext(UserInfoContext);
-  const [singleForm, setSingleForm] = useState<FormInputs>({
+  const [singleForm, setSingleForm] = useState<FormInputsType>({
     name: '',
     category: '',
     status: '',
@@ -74,7 +74,10 @@ const SingleForm = ({ setIsEdit }: SingleFormProp) => {
           const res = await fetch(image);
           const blobImage = await res.blob();
 
-          const storageRef = ref(storage, `/${user.uid}/images/${uuidv4()}`);
+          const storageRef = ref(
+            firebase.storage,
+            `/${user.uid}/images/${uuidv4()}`
+          );
           const snapshot = await uploadBytes(storageRef, blobImage);
           const url = await getDownloadURL(snapshot.ref);
 
@@ -84,9 +87,9 @@ const SingleForm = ({ setIsEdit }: SingleFormProp) => {
     );
 
     if (id) {
-      await updateItem(id, newForm);
+      await firebase.updateItem(id, newForm);
     } else {
-      await uploadItem(newForm);
+      await firebase.uploadItem(newForm);
     }
   };
 
@@ -120,8 +123,7 @@ const SingleForm = ({ setIsEdit }: SingleFormProp) => {
           <Button
             buttonType="dark"
             width="100%"
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               handleUploadItem();
               setIsPopout(!isPopout);
               setSingleForm({

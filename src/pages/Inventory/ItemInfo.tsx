@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Chevron from '../../components/Icon/Chevron';
-import { Item } from '../../types/types';
+import { ItemType } from '../../types/types';
 import { formatTime } from '../../utils/timeHelper';
 
 const ContentWrapper = styled.div`
@@ -185,12 +185,12 @@ const CreatedTime = styled.p`
   color: #959595;
 `;
 
-type ItemInfoProps = {
-  selectedItem: Item;
+type ItemInfoPropsType = {
+  selectedItem: ItemType;
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const ItemInfo = ({ selectedItem, setIsEdit }: ItemInfoProps) => {
+export const ItemInfo = ({ selectedItem, setIsEdit }: ItemInfoPropsType) => {
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);
   const intervalRef = useRef<number | null>(null);
   const { id } = useParams();

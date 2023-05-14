@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-const StyledButton = styled.button<ButtonProps>`
+const StyledButton = styled.button<ButtonPropsType>`
   position: relative;
   z-index: 0;
   min-width: 200px;
@@ -110,13 +110,12 @@ const StyledButton = styled.button<ButtonProps>`
   }}
 `;
 
-type ButtonProps = {
+type ButtonPropsType = {
   width?: string;
   buttonType: 'dark' | 'normal' | 'light';
   children: string;
   disabled?: boolean;
-  // eslint-disable-next-line no-unused-vars
-  onClick?: (param?: any) => void;
+  onClick?: () => void;
 };
 
 const Button = ({
@@ -125,7 +124,7 @@ const Button = ({
   onClick,
   children,
   disabled,
-}: ButtonProps) => {
+}: ButtonPropsType) => {
   return (
     <StyledButton
       width={width}

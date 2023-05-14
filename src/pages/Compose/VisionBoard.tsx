@@ -126,7 +126,7 @@ const Board = styled.div`
   box-shadow: 0px 4px 90px 10px rgba(0, 0, 0, 0.1);
 `;
 
-type VisionBoardProps = {
+type VisionBoardPropsType = {
   bgColor: string;
   setBgColor: React.Dispatch<React.SetStateAction<string>>;
   activeItem: fabric.Object | null;
@@ -148,7 +148,7 @@ const VisionBoard = ({
   addText,
   deleteActiveItem,
   saveProject,
-}: VisionBoardProps) => {
+}: VisionBoardPropsType) => {
   const { isPopout, setIsPopout } = useContext(UserInfoContext);
 
   return (

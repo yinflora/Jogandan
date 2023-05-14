@@ -1,9 +1,9 @@
-type InfoProps = {
+type InfoPropsType = {
   size?: number;
   color?: string;
 };
 
-const Info = ({ size, color }: InfoProps) => {
+const Info = ({ size, color }: InfoPropsType) => {
   return (
     <svg
       width={size ? size : '50'}

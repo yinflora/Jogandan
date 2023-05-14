@@ -2,45 +2,42 @@ import { onAuthStateChanged } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  BoardData,
-  Item,
+  BoardDataType,
+  ItemType,
   LoginErrorType,
-  LoginForm,
+  LoginFormType,
   SignupErrorType,
-  SignupForm,
-  User,
+  SignupFormType,
+  UserType,
 } from '../types/types';
-import { auth, getItems, getUser, nativeSignup } from '../utils/firebase';
-
 import * as firebase from '../utils/firebase';
 import { LoadingContext } from './LoadingContext';
 
 type UserInfoContextType = {
-  isLogin: boolean;
-  user: User;
-  setUser: React.Dispatch<React.SetStateAction<User>>;
-  items: Item[];
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  user: UserType;
+  setUser: React.Dispatch<React.SetStateAction<UserType>>;
+  items: ItemType[];
+  setItems: React.Dispatch<React.SetStateAction<ItemType[]>>;
   googleLogin: () => Promise<void>;
   logout: () => Promise<void>;
   isPopout: boolean;
   setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
   previousPath: string | null;
   // eslint-disable-next-line no-unused-vars
-  nativeLogin: (form: LoginForm) => Promise<void>;
+  nativeLogin: (form: LoginFormType) => Promise<void>;
   // eslint-disable-next-line no-unused-vars
-  signUp: (form: SignupForm) => Promise<void>;
+  signUp: (form: SignupFormType) => Promise<void>;
   authErrorMessage: string | null;
 };
 
-const INITIAL_BOARD_DATA: BoardData = {
+const INITIAL_BOARD_DATA: BoardDataType = {
   background: '#F4F3EF',
   hoverCursor: 'move',
   objects: [],
   version: '',
 };
 
-const INITIAL_USER_DATA: User = {
+const INITIAL_USER_DATA: UserType = {
   uid: '',
   name: '',
   email: '',
@@ -54,7 +51,6 @@ const INITIAL_USER_DATA: User = {
 };
 
 export const UserInfoContext = createContext<UserInfoContextType>({
-  isLogin: false,
   user: {
     uid: '',
     name: '',
@@ -76,7 +72,7 @@ export const UserInfoContext = createContext<UserInfoContextType>({
   setIsPopout: () => {},
   previousPath: null,
   // eslint-disable-next-line no-unused-vars
-  nativeLogin: async (form: LoginForm) => {},
+  nativeLogin: async (form: LoginFormType) => {},
   // eslint-disable-next-line no-unused-vars
   signUp: async (form) => {},
   authErrorMessage: null,
@@ -91,9 +87,8 @@ export const UserInfoContextProvider = ({
 }: UserInfoContextProviderProp) => {
   const { setIsLoading } = useContext(LoadingContext);
 
-  const [isLogin, setIsLogin] = useState<boolean>(false);
-  const [user, setUser] = useState<User>(INITIAL_USER_DATA);
-  const [items, setItems] = useState<Item[]>([]);
+  const [user, setUser] = useState<UserType>(INITIAL_USER_DATA);
+  const [items, setItems] = useState<ItemType[]>([]);
   const [isPopout, setIsPopout] = useState<boolean>(false);
   const [previousPath, setPreviousPath] = useState<string | null>(null);
   const [authErrorMessage, setAuthErrorMessage] = useState<string | null>(null);
@@ -101,14 +96,14 @@ export const UserInfoContextProvider = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  async function getUserItems() {
-    const itemList = (await getItems()) as Item[];
+  const getUserItems = async () => {
+    const itemList = (await firebase.getItems()) as ItemType[];
     setItems(itemList);
-  }
+  };
 
-  function handleLevel() {
+  const handleLevel = () => {
     const declutteredItems = items.filter(
-      (item: Item) => item.status === '已處理'
+      (item: ItemType) => item.status === '已處理'
     ).length;
 
     if (declutteredItems >= 100) {
@@ -119,12 +114,12 @@ export const UserInfoContextProvider = ({
       return 'Seasoned';
     }
     return 'Rookie';
-  }
+  };
 
   useEffect(() => {
-    onAuthStateChanged(auth, async (userInfo) => {
+    onAuthStateChanged(firebase.auth, async (userInfo) => {
       if (userInfo) {
-        const userData = (await getUser()) as User;
+        const userData = (await firebase.getUser()) as UserType;
 
         if (!userData) return;
 
@@ -134,7 +129,6 @@ export const UserInfoContextProvider = ({
           ...userData,
           level: handleLevel(),
         });
-        setIsLogin(true);
         setTimeout(() => setIsLoading(false), 1500);
 
         if (
@@ -146,7 +140,6 @@ export const UserInfoContextProvider = ({
         }
       } else {
         setUser(INITIAL_USER_DATA);
-        setIsLogin(false);
         setTimeout(() => setIsLoading(false), 1500);
 
         if (
@@ -162,7 +155,7 @@ export const UserInfoContextProvider = ({
   }, []);
 
   const googleLogin = async () => {
-    const userData = (await firebase.googleLogin()) as User;
+    const userData = (await firebase.googleLogin()) as UserType;
 
     if (!userData) return;
 
@@ -170,7 +163,6 @@ export const UserInfoContextProvider = ({
       ...userData,
       level: handleLevel(),
     });
-    setIsLogin(true);
     setTimeout(() => setIsLoading(false), 1500);
     previousPath ? navigate(previousPath) : navigate('/');
   };
@@ -178,12 +170,11 @@ export const UserInfoContextProvider = ({
   const logout = async () => {
     await firebase.logout();
     setUser(INITIAL_USER_DATA);
-    setIsLogin(false);
     setTimeout(() => setIsLoading(false), 1500);
     navigate('/login');
   };
 
-  const nativeLogin = async (form: LoginForm) => {
+  const nativeLogin = async (form: LoginFormType) => {
     try {
       await firebase.nativeLogin(form);
       previousPath ? navigate(previousPath) : navigate('/');
@@ -201,17 +192,16 @@ export const UserInfoContextProvider = ({
     }
   };
 
-  const signUp = async (form: SignupForm) => {
+  const signUp = async (form: SignupFormType) => {
     try {
       if (!form) return;
 
-      const userData = (await nativeSignup(form)) as User;
+      const userData = (await firebase.nativeSignup(form)) as UserType;
 
       setUser({
         ...userData,
         level: handleLevel(),
       });
-      setIsLogin(true);
       setAuthErrorMessage(null);
       setTimeout(() => setIsLoading(false), 1500);
       previousPath ? navigate(previousPath) : navigate('/');
@@ -232,7 +222,6 @@ export const UserInfoContextProvider = ({
   return (
     <UserInfoContext.Provider
       value={{
-        isLogin,
         user,
         setUser,
         items,

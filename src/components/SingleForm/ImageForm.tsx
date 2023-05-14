@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CiCircleInfo } from 'react-icons/ci';
 import { RxCross1 } from 'react-icons/rx';
 import styled from 'styled-components';
-import { FormInputs } from '../../types/types';
+import { FormInputsType } from '../../types/types';
 import Button from '../Button/Button';
 import image from './image.png';
 import photo from './photo.png';
@@ -200,8 +200,8 @@ const Video = styled.video`
 `;
 
 type ImageFormProps = {
-  singleForm: FormInputs;
-  setSingleForm: React.Dispatch<React.SetStateAction<FormInputs>>;
+  singleForm: FormInputsType;
+  setSingleForm: React.Dispatch<React.SetStateAction<FormInputsType>>;
 };
 
 export const ImageForm = ({ singleForm, setSingleForm }: ImageFormProps) => {

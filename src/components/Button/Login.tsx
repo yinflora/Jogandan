@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const LoginBtn = styled.button`
+const LoginBtn = styled.button<LoginPropsType>`
   position: relative;
   width: 90px;
   height: 35px;
@@ -33,13 +33,13 @@ const LoginBtn = styled.button`
   }
 `;
 
-type LoginProps = {
+type LoginPropsType = {
   color: string;
   children: string;
   onClick: () => void;
 };
 
-const Login = ({ color, children, onClick }: LoginProps) => {
+const Login = ({ color, children, onClick }: LoginPropsType) => {
   return (
     <LoginBtn onClick={onClick} color={color}>
       {children}

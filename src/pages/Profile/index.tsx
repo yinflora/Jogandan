@@ -10,8 +10,8 @@ import Button from '../../components/Button/Button';
 import Level from '../../components/Level';
 import Report from '../../components/Report';
 import { UserInfoContext } from '../../context/UserInfoContext';
-import { Item, User } from '../../types/types';
-import { getUser, storage, updateUser } from '../../utils/firebase';
+import { ItemType, UserType } from '../../types/types';
+import * as firebase from '../../utils/firebase';
 import {
   getLastMonth,
   getLastYear,
@@ -433,8 +433,8 @@ const BOARD_HEIGHT = 748;
 const BOARD_ORIGIN_WIDTH = 625;
 const BOARD_ORIGIN_HEIGHT = 475;
 
-const useReportItems = (items: Item[]) => {
-  const [reportItems, setReportItems] = useState<Item[] | []>([]);
+const useReportItems = (items: ItemType[]) => {
+  const [reportItems, setReportItems] = useState<ItemType[] | []>([]);
   const [period, setPeriod] = useState<Period>({ start: '', end: '' });
   const [status, setStatus] = useState<ReportStatus>('目前持有');
 
@@ -443,7 +443,7 @@ const useReportItems = (items: Item[]) => {
 
     if (status === '已處理') {
       const declutteredItems = items.filter(
-        (item: Item) => item.status === '已處理'
+        (item: ItemType) => item.status === '已處理'
       );
       const periodStart = new Date(`${period.start}T00:00:00.000Z`).getTime();
       const periodEnd = new Date(`${period.end}T23:59:59.999Z`).getTime();
@@ -451,7 +451,7 @@ const useReportItems = (items: Item[]) => {
       if (isNaN(periodStart) || isNaN(periodEnd)) {
         setReportItems(declutteredItems);
       } else {
-        const filteredItems = declutteredItems.filter((item: Item) => {
+        const filteredItems = declutteredItems.filter((item: ItemType) => {
           const createdTime = new Date(
             item.created.seconds * 1000 + item.created.nanoseconds / 1000000
           ).getTime();
@@ -461,7 +461,7 @@ const useReportItems = (items: Item[]) => {
       }
     } else {
       const existingItems = items.filter(
-        (item: Item) => item.status !== '已處理'
+        (item: ItemType) => item.status !== '已處理'
       );
       setReportItems(existingItems);
     }
@@ -485,7 +485,7 @@ const Profile = () => {
 
   useEffect(() => {
     async function getCurrentUser() {
-      const userData = (await getUser()) as User;
+      const userData = (await firebase.getUser()) as UserType;
       setUser(userData);
     }
     getCurrentUser();
@@ -521,11 +521,14 @@ const Profile = () => {
 
     if (!image) return;
 
-    const storageRef = ref(storage, `/${user.uid}/userImages/${image.name}`);
+    const storageRef = ref(
+      firebase.storage,
+      `/${user.uid}/userImages/${image.name}`
+    );
     const snapshot = await uploadBytes(storageRef, image);
     const url = await getDownloadURL(snapshot.ref);
 
-    await updateUser(url);
+    await firebase.updateUser(url);
 
     setUser({ ...user, image: url });
   };
@@ -563,7 +566,8 @@ const Profile = () => {
 
         <Level
           percent={
-            items.filter((item: Item) => item.status === '已處理').length / 100
+            items.filter((item: ItemType) => item.status === '已處理').length /
+            100
           }
         />
         <GameEntry $isVisible={items.length >= GAME_MIN_NUMBER}>

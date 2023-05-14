@@ -16,6 +16,10 @@ const UploadContainer = styled.div`
   background-color: rgba(141, 156, 164, 0.5);
 `;
 
+const InvisibleInput = styled.input`
+  display: none;
+`;
+
 const RemindWrapper = styled.div`
   display: flex;
   height: 30px;
@@ -94,13 +98,12 @@ const ImageUpload = ({
 
   return (
     <UploadContainer>
-      <input
+      <InvisibleInput
         id="uploadImage"
         type="file"
         accept="image/*"
         onChange={(e) => handleFileUpload(e)}
         multiple
-        style={{ display: 'none' }}
       />
       <label htmlFor="uploadImage">
         <Button width="100%" buttonType="normal" onClick={handleSelectImage}>
