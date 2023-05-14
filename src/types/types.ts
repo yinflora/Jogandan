@@ -6,6 +6,14 @@ type SignupForm = {
   password: string;
 };
 
+type SignupErrorType = {
+  code: 'auth/ail-already-in-use' | 'auth/weak-password' | 'auth/invalid-email';
+};
+
+type LoginErrorType = {
+  code: 'auth/user-not-found' | 'auth/wrong-password' | 'auth/invalid-email';
+};
+
 type LoginForm = {
   email: string;
   password: string;
@@ -86,6 +94,8 @@ type FormInputs = {
 
 export type {
   SignupForm,
+  SignupErrorType,
+  LoginErrorType,
   LoginForm,
   ItemForm,
   Category,

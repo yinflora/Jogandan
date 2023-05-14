@@ -477,7 +477,7 @@ const useReportItems = (items: Item[]) => {
 };
 
 const Profile = () => {
-  const { user, setUser, uid, items } = useContext(UserInfoContext);
+  const { user, setUser, items } = useContext(UserInfoContext);
   const { reportItems, period, setPeriod, status, setStatus } =
     useReportItems(items);
   const [isFirst, setIsFirst] = useState<boolean>(false);
@@ -521,7 +521,7 @@ const Profile = () => {
 
     if (!image) return;
 
-    const storageRef = ref(storage, `/${uid}/userImages/${image.name}`);
+    const storageRef = ref(storage, `/${user.uid}/userImages/${image.name}`);
     const snapshot = await uploadBytes(storageRef, image);
     const url = await getDownloadURL(snapshot.ref);
 

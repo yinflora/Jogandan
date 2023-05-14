@@ -53,7 +53,7 @@ provider.setCustomParameters({
 const USER_DEFAULT_IMAGE =
   'https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/userPhoto.png?alt=media&token=679fd51a-4928-4201-870e-1d9b2b592e3f';
 
-const signin = async () => {
+const googleLogin = async () => {
   try {
     const { user } = await signInWithPopup(auth, provider);
     const userInfo = await createUser(user, null);
@@ -63,7 +63,7 @@ const signin = async () => {
   }
 };
 
-const signout = async () => {
+const logout = async () => {
   try {
     await signOut(auth);
   } catch (error) {
@@ -72,29 +72,39 @@ const signout = async () => {
 };
 
 const nativeSignup = async (form: SignupForm) => {
-  try {
-    const { name, email, password } = form;
+  // try {
+  //   const { name, email, password } = form;
 
-    const { user } = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+  //   const { user } = await createUserWithEmailAndPassword(
+  //     auth,
+  //     email,
+  //     password
+  //   );
 
-    const userData = await createUser(user, name);
-    return userData;
-  } catch (error) {
-    console.error(error);
-  }
+  //   const userData = await createUser(user, name);
+  //   return userData;
+  // } catch (error) {
+  //   const errorMessages: Record<string, string> = {
+  //     'auth/ail-already-in-use': '註冊失敗，電子信箱已存在',
+  //     'auth/weak-password': '註冊失敗，密碼應至少 6 位',
+  //     'auth/invalid-email': '註冊失敗，信箱格式不正確',
+  //     default: '註冊失敗，請重試',
+  //   };
+  //   return errorMessages[(error as SignupErrorType).code || 'default'];
+  // }
+  const { name, email, password } = form;
+  const { user } = await createUserWithEmailAndPassword(auth, email, password);
+  const userData = await createUser(user, name);
+  return userData;
 };
 
 const nativeLogin = async (form: LoginForm) => {
-  try {
-    const { email, password } = form;
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (error) {
-    console.error(error);
-  }
+  // try {
+  const { email, password } = form;
+  await signInWithEmailAndPassword(auth, email, password);
+  // } catch (error) {
+  //   console.error(error);
+  // }
 };
 
 const createUser = async (userAuth: User, name: string | null) => {
@@ -178,7 +188,7 @@ const uploadItem = async (form: FormInputs) => {
       id,
     });
 
-    return id;
+    // return id;
   } catch (error) {
     console.error(error);
   }
@@ -243,8 +253,8 @@ const saveBoard = async (boardData: object, isEdited: boolean) => {
 export {
   storage,
   auth,
-  signin,
-  signout,
+  googleLogin,
+  logout,
   nativeSignup,
   nativeLogin,
   getUser,
