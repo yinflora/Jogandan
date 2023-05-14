@@ -19,7 +19,7 @@ const Bar = styled.div`
   border: 1px solid #8d9ca4;
 `;
 
-const Fill = styled.div<LevelProp>`
+const Fill = styled.div<LevelPropType>`
   background-color: #8d9ca4;
   height: 100%;
   border-radius: inherit;
@@ -55,11 +55,11 @@ const Title = styled.p`
   letter-spacing: 0.2rem;
 `;
 
-type LevelProp = {
+type LevelPropType = {
   percent: number;
 };
 
-const Level = ({ percent }: LevelProp) => {
+const Level = ({ percent }: LevelPropType) => {
   return (
     <Container>
       <Bar>

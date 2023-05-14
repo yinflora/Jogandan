@@ -1,10 +1,10 @@
-type CrossProps = {
+type CrossPropsType = {
   size?: number;
   lineWidth?: number;
   color?: string;
 };
 
-const Cross = ({ size, lineWidth, color }: CrossProps) => {
+const Cross = ({ size, lineWidth, color }: CrossPropsType) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

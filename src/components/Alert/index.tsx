@@ -72,20 +72,20 @@ const ButtonWrapper = styled.div`
   gap: 10px;
 `;
 
-type ButtonConfig = {
+type ButtonConfigType = {
   width?: string;
   buttonType: 'dark' | 'normal' | 'light';
   value: string;
   action: () => void | {};
 };
 
-type AlertProps = {
+type AlertPropsType = {
   type: string;
   title: string;
-  buttonConfig: ButtonConfig[];
+  buttonConfig: ButtonConfigType[];
 };
 
-const Alert = ({ type, title, buttonConfig }: AlertProps) => {
+const Alert = ({ type, title, buttonConfig }: AlertPropsType) => {
   const { isPopout, setIsPopout } = useContext(UserInfoContext);
 
   return (

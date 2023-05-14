@@ -8,8 +8,8 @@ import Alert from '../../components/Alert';
 import Button from '../../components/Button/Button';
 import SingleForm from '../../components/SingleForm';
 import { UserInfoContext } from '../../context/UserInfoContext';
-import { FormInputs } from '../../types/types';
-import { storage, uploadItem } from '../../utils/firebase';
+import { FormInputsType } from '../../types/types';
+import * as firebase from '../../utils/firebase';
 import { BulkForm } from './BulkForm';
 import image from './image.png';
 
@@ -197,7 +197,7 @@ const Upload = () => {
 
   const { user, isPopout, setIsPopout } = useContext(UserInfoContext);
   const navigate = useNavigate();
-  const [bulkForms, setBulkForms] = useState<FormInputs[]>([]);
+  const [bulkForms, setBulkForms] = useState<FormInputsType[]>([]);
   const [isBulkMode, setIsBulkMode] = useState<boolean>(false);
 
   const handleSelectedImages = async (
@@ -231,7 +231,7 @@ const Upload = () => {
     setBulkForms(newBulkForms);
   };
 
-  const handleUploadItem = async (form: FormInputs) => {
+  const handleUploadItem = async (form: FormInputsType) => {
     const newForm = { ...form };
 
     await Promise.all(
@@ -242,7 +242,10 @@ const Upload = () => {
           const res = await fetch(image);
           const blobImage = await res.blob();
 
-          const storageRef = ref(storage, `/${user.uid}/images/${uuidv4()}`);
+          const storageRef = ref(
+            firebase.storage,
+            `/${user.uid}/images/${uuidv4()}`
+          );
           const snapshot = await uploadBytes(storageRef, blobImage);
           const url = await getDownloadURL(snapshot.ref);
 
@@ -251,7 +254,7 @@ const Upload = () => {
       })
     );
 
-    await uploadItem(newForm);
+    await firebase.uploadItem(newForm);
   };
 
   const handleSelectImage = () => {

@@ -116,7 +116,7 @@ const routes = [
 ];
 
 const Header = () => {
-  const { isLogin, logout } = useContext(UserInfoContext);
+  const { user, logout } = useContext(UserInfoContext);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -133,7 +133,13 @@ const Header = () => {
   return (
     <Container $color={fillColor}>
       <Logo to="/">JOGANDAN</Logo>
-      {isLogin ? (
+      {user.uid === '' ? (
+        !isAtLogin && (
+          <Login onClick={() => navigate('/login')} color={fillColor}>
+            Login
+          </Login>
+        )
+      ) : (
         <Nav>
           {routes.map((route) => (
             <NavButton
@@ -155,12 +161,6 @@ const Header = () => {
             <Home fill={fillColor} />
           </HomeWrapper>
         </Nav>
-      ) : (
-        !isAtLogin && (
-          <Login onClick={() => navigate('/login')} color={fillColor}>
-            Login
-          </Login>
-        )
       )}
     </Container>
   );

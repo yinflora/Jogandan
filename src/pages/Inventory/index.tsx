@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import Search from '../../components/Icon/Search';
 import { UserInfoContext } from '../../context/UserInfoContext';
-import { Category, Item, Status } from '../../types/types';
-import { getItems } from '../../utils/firebase';
+import { CategoryType, ItemType, StatusType } from '../../types/types';
+import * as firebase from '../../utils/firebase';
 import Popout from './Popout';
 
 const Container = styled.div`
@@ -252,12 +252,12 @@ const Name = styled.p`
   cursor: default;
 `;
 
-type Filter = {
-  category: Category | '';
-  status: Status | '';
+type FilterType = {
+  category: CategoryType | '';
+  status: StatusType | '';
 };
 
-const SUBCATEGORY: Category[] = [
+const SUBCATEGORY: CategoryType[] = [
   '居家生活',
   '服飾配件',
   '美妝保養',
@@ -271,12 +271,12 @@ const SUBCATEGORY: Category[] = [
   '紀念意義',
   '其他',
 ];
-const SUBSTATUS: Status[] = ['保留', '待處理', '已處理'];
+const SUBSTATUS: StatusType[] = ['保留', '待處理', '已處理'];
 
 const Inventory = () => {
   const { user, items, setItems } = useContext(UserInfoContext);
 
-  const [filter, setFilter] = useState<Filter>({
+  const [filter, setFilter] = useState<FilterType>({
     category: '',
     status: '',
   });
@@ -289,24 +289,24 @@ const Inventory = () => {
     if (!user) return;
 
     const getUserItems = async () => {
-      const userItems = (await getItems()) as Item[];
+      const userItems = (await firebase.getItems()) as ItemType[];
       setItems(userItems);
     };
 
     getUserItems();
   }, [user]);
 
-  let userItems: Item[] = items;
+  let userItems: ItemType[] = items;
 
   if (filter.category !== '' && filter.status !== '') {
     if (search === '') {
       userItems = items.filter(
-        (item: Item) =>
+        (item: ItemType) =>
           item.category === filter.category && item.status === filter.status
       );
     } else {
       userItems = items.filter(
-        (item: Item) =>
+        (item: ItemType) =>
           item.category === filter.category &&
           item.status === filter.status &&
           item.name.toLowerCase().includes(search.toLowerCase())
@@ -315,21 +315,23 @@ const Inventory = () => {
   } else if (filter.category !== '') {
     if (search === '') {
       userItems = items.filter(
-        (item: Item) => item.category === filter.category
+        (item: ItemType) => item.category === filter.category
       );
     } else {
       userItems = items.filter(
-        (item: Item) =>
+        (item: ItemType) =>
           item.category === filter.category &&
           item.name.toLowerCase().includes(search.toLowerCase())
       );
     }
   } else if (filter.status !== '') {
     if (search === '') {
-      userItems = items.filter((item: Item) => item.status === filter.status);
+      userItems = items.filter(
+        (item: ItemType) => item.status === filter.status
+      );
     } else {
       userItems = items.filter(
-        (item: Item) =>
+        (item: ItemType) =>
           item.status === filter.status &&
           item.name.toLowerCase().includes(search.toLowerCase())
       );
@@ -437,7 +439,7 @@ const Inventory = () => {
               <NoMatchText>沒有符合搜尋條件的項目</NoMatchText>
             </NoMatchPrompt>
           ) : (
-            userItems.map((item: Item, index: number) => (
+            userItems.map((item: ItemType, index: number) => (
               <Product key={index}>
                 {item.images && (
                   <Image

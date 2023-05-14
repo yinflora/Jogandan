@@ -9,11 +9,11 @@ const HomeBtn = styled.svg`
   }
 `;
 
-type HomeProp = {
+type HomePropType = {
   fill: string;
 };
 
-const Home = ({ fill }: HomeProp) => {
+const Home = ({ fill }: HomePropType) => {
   return (
     <HomeBtn
       version="1.1"

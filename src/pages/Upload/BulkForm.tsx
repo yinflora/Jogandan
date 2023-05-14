@@ -5,7 +5,7 @@ import {
   categoryOptions,
   statusOptions,
 } from '../../components/SingleForm/InputForm';
-import { FormInputs } from '../../types/types';
+import { FormInputsType } from '../../types/types';
 
 const Container = styled.div`
   display: flex;
@@ -128,9 +128,9 @@ const Description = styled.textarea`
   color: #fff;
 `;
 
-type BulkFormProps = {
-  bulkForms: FormInputs[];
-  setBulkForms: React.Dispatch<React.SetStateAction<FormInputs[]>>;
+type BulkFormPropsType = {
+  bulkForms: FormInputsType[];
+  setBulkForms: React.Dispatch<React.SetStateAction<FormInputsType[]>>;
 };
 
 const formInputs = [
@@ -157,7 +157,7 @@ const formInputs = [
   { label: '描述', key: 'description', type: 'textarea', isRequire: false },
 ];
 
-export const BulkForm = ({ bulkForms, setBulkForms }: BulkFormProps) => {
+export const BulkForm = ({ bulkForms, setBulkForms }: BulkFormPropsType) => {
   const handleBulkDelete = (index: number) => {
     const newForms = [...bulkForms];
     newForms.splice(index, 1);
@@ -166,7 +166,7 @@ export const BulkForm = ({ bulkForms, setBulkForms }: BulkFormProps) => {
 
   return (
     <Container>
-      {bulkForms.map((form: FormInputs, formIndex: number) => (
+      {bulkForms.map((form: FormInputsType, formIndex: number) => (
         <ItemWrapper key={formIndex}>
           <CancelButton onClick={() => handleBulkDelete(formIndex)}>
             <RxCross1 />

@@ -1,8 +1,8 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { FormInputs } from '../../types/types';
+import { FormInputsType } from '../../types/types';
 
-const InfoWrapper = styled.form`
+const FormWrapper = styled.form`
   display: flex;
   padding: 5px 0 45px;
   flex-wrap: wrap;
@@ -135,8 +135,8 @@ const formInputs = [
 ];
 
 type InputFormProps = {
-  singleForm: FormInputs;
-  setSingleForm: React.Dispatch<React.SetStateAction<FormInputs>>;
+  singleForm: FormInputsType;
+  setSingleForm: React.Dispatch<React.SetStateAction<FormInputsType>>;
   children: React.ReactNode;
 };
 
@@ -146,7 +146,7 @@ export const InputForm = ({
   children,
 }: InputFormProps) => {
   return (
-    <InfoWrapper>
+    <FormWrapper onSubmit={(e) => e.preventDefault()}>
       {formInputs.map((input) => {
         let fieldElement = null;
         switch (input.type) {
@@ -205,6 +205,6 @@ export const InputForm = ({
         );
       })}
       {children}
-    </InfoWrapper>
+    </FormWrapper>
   );
 };

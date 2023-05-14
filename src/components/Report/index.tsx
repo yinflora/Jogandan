@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import styled from 'styled-components';
-import { Category, Item } from '../../types/types';
+import { CategoryType, ItemType } from '../../types/types';
 
 const Svg = styled.svg`
   width: 1000px;
@@ -34,9 +34,9 @@ const Qty = styled(Text)`
   text-anchor: middle;
 `;
 
-type Quantities = number[];
+type QuantitiesType = number[];
 
-const CATEGORIES: Category[] = [
+const CATEGORIES: CategoryType[] = [
   '居家生活',
   '服飾配件',
   '美妝保養',
@@ -51,9 +51,11 @@ const CATEGORIES: Category[] = [
   '其他',
 ];
 
-const SPACING_UNIT_1: Quantities = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const SPACING_UNIT_5: Quantities = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
-const SPACING_UNIT_10: Quantities = [
+const SPACING_UNIT_1: QuantitiesType = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const SPACING_UNIT_5: QuantitiesType = [
+  0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
+];
+const SPACING_UNIT_10: QuantitiesType = [
   0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
 ];
 
@@ -76,7 +78,7 @@ const TEXT_SPACING: number = 12.5;
 const TEXT_TO_RECT: number = 10;
 
 type ReportProp = {
-  items: Item[];
+  items: ItemType[];
 };
 
 const Report = ({ items }: ReportProp) => {
@@ -108,7 +110,7 @@ const Report = ({ items }: ReportProp) => {
   return (
     <Svg preserveAspectRatio="xMinYMin meet">
       <Line x1={X_START_AXIS} y1={Y_END_AXIS} x2={X_END_AXIS} y2={Y_END_AXIS} />
-      {CATEGORIES.map((item: Category, index: number) => (
+      {CATEGORIES.map((item: CategoryType, index: number) => (
         <XTag
           key={item}
           x={XTAG_START_AXIS + index * XTAG_SPACE + TEXT_SPACING}

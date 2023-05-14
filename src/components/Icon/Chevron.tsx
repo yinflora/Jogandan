@@ -1,17 +1,17 @@
 import styled from 'styled-components';
 
-const StyledChevron = styled.svg<ChevronProps>`
+const StyledChevron = styled.svg<ChevronPropsType>`
   transform: scale(1, 0.5) rotate(${({ rotateDeg }) => rotateDeg}deg);
 `;
 
-type ChevronProps = {
+type ChevronPropsType = {
   size?: number;
   rotateDeg: number;
   color?: string;
   onClick?: () => void;
 };
 
-const Chevron = ({ size, rotateDeg, color, onClick }: ChevronProps) => {
+const Chevron = ({ size, rotateDeg, color, onClick }: ChevronPropsType) => {
   return (
     <StyledChevron
       rotateDeg={rotateDeg}

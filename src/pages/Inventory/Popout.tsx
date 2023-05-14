@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import SingleForm from '../../components/SingleForm';
 import UserInfoContext from '../../context/UserInfoContext';
-import { Item } from '../../types/types';
-import { getItems } from '../../utils/firebase';
+import { ItemType } from '../../types/types';
+import * as firebase from '../../utils/firebase';
 import { ItemInfo } from './ItemInfo';
 
 const StyledContainer = styled.div`
@@ -53,11 +53,11 @@ const Container = styled.div<{ $isEdit: boolean }>`
   }
 `;
 
-type PopoutProp = {
-  selectedItem: Item | null;
+type PopoutPropType = {
+  selectedItem: ItemType | null;
 };
 
-const Popout = ({ selectedItem }: PopoutProp) => {
+const Popout = ({ selectedItem }: PopoutPropType) => {
   const { user, setItems } = useContext(UserInfoContext);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -66,7 +66,7 @@ const Popout = ({ selectedItem }: PopoutProp) => {
     if (isEdit || !user) return;
 
     const getUserItems = async () => {
-      const userItems = (await getItems()) as Item[];
+      const userItems = (await firebase.getItems()) as ItemType[];
       setItems(userItems);
     };
 

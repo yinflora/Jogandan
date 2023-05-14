@@ -9,8 +9,8 @@ import Cancel from '../../components/Icon/Cancel';
 import Check from '../../components/Icon/Check';
 import Happy from '../../components/Icon/Happy';
 import UserInfoContext from '../../context/UserInfoContext';
-import { Item } from '../../types/types';
-import { updateItem } from '../../utils/firebase';
+import { ItemType } from '../../types/types';
+import * as firebase from '../../utils/firebase';
 import circle from './images/circle-blue.png';
 import cross from './images/cross-blue.png';
 import sparkJoy from './images/sparkJoy.png';
@@ -416,7 +416,7 @@ const CARD_QTY = 10;
 const SparkJoy = () => {
   const { items } = useContext(UserInfoContext);
 
-  const [randomItems, setRandomItems] = useState<Item[] | null>(null);
+  const [randomItems, setRandomItems] = useState<ItemType[] | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(CARD_QTY - 1);
   const [gamePopout, setGamePopout] = useState<boolean>(true);
   const [guide, setGuide] = useState<boolean>(true);
@@ -504,7 +504,7 @@ const SparkJoy = () => {
 
     const updatedItem = randomItems[index];
     updatedItem.status = status;
-    await updateItem(updatedItem.id, updatedItem);
+    await firebase.updateItem(updatedItem.id, updatedItem);
 
     const updatedRandomItems = [...randomItems];
     updatedRandomItems[index].status = status;

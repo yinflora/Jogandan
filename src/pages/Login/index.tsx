@@ -1,12 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { TfiArrowRight } from 'react-icons/tfi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Alert from '../../components/Alert';
 import Button from '../../components/Button/Button';
 import { UserInfoContext } from '../../context/UserInfoContext';
-import { LoginForm, SignupForm } from '../../types/types';
-// import { nativeLogin } from '../../utils/firebase';
+import { LoginFormType, SignupFormType } from '../../types/types';
 import background from './background.jpeg';
 
 const Container = styled.div`
@@ -63,14 +62,14 @@ const SocialLogin = styled.button`
   }
 `;
 
-const FieldWrapper = styled.div`
-  display: flex;
+const FieldWrapper = styled.div<{ $isVisible: boolean }>`
+  display: ${({ $isVisible }) => ($isVisible ? 'flex' : 'none')};
   flex-direction: column;
   gap: 5px;
 `;
 
-const LastFieldWrapper = styled(FieldWrapper)`
-  margin-bottom: 30px;
+const ButtonWrapper = styled.div`
+  margin-top: 30px;
 `;
 
 const InputLabel = styled.label`
@@ -126,7 +125,7 @@ const PromptMessage = styled.p`
   cursor: default;
 `;
 
-const SignUpPrompt = styled.div`
+const RedirectPrompt = styled.div`
   display: flex;
   width: 100%;
   margin-top: 20px;
@@ -135,18 +134,18 @@ const SignUpPrompt = styled.div`
   gap: 5px;
 `;
 
-const SignUpMessage = styled.span`
+const RedirectMessage = styled.span`
   font-size: 1rem;
   cursor: default;
 `;
 
-const SignUpLink = styled.p`
+const RedirectLink = styled.p`
   position: relative;
   margin: 0;
   color: #000;
 `;
 
-const StartButton = styled.button`
+const RedirectButton = styled.button`
   position: relative;
   display: flex;
   width: fit-content;
@@ -170,7 +169,7 @@ const StartButton = styled.button`
     width: 100%;
   }
 
-  &:hover ${SignUpLink} {
+  &:hover ${RedirectLink} {
     color: #8d9ca4;
   }
   &:hover .arrow {
@@ -196,6 +195,29 @@ const BackgroundImage = styled.div`
   background: top / cover no-repeat url(${background});
 `;
 
+const fields = [
+  {
+    id: 'name',
+    label: '用戶名稱',
+    type: 'text',
+    maxLength: 30,
+    signUpOnly: true,
+  },
+  {
+    id: 'email',
+    label: '信箱',
+    type: 'email',
+    signUpOnly: false,
+  },
+  {
+    id: 'password',
+    label: '密碼',
+    type: 'password',
+    minLength: 6,
+    signUpOnly: false,
+  },
+];
+
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -204,12 +226,12 @@ const Login = () => {
     useContext(UserInfoContext);
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const [signUpForm, setSignUpForm] = useState<SignupForm>({
+  const [signUpForm, setSignUpForm] = useState<SignupFormType>({
     name: '',
     email: '',
     password: '',
   });
-  const [loginForm, setLoginForm] = useState<LoginForm>({
+  const [loginForm, setLoginForm] = useState<LoginFormType>({
     email: '',
     password: '',
   });
@@ -239,6 +261,18 @@ const Login = () => {
     }
   };
 
+  const handleEnterInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    isSignUp
+      ? setSignUpForm({
+          ...signUpForm,
+          [e.target.name]: e.target.value,
+        })
+      : setLoginForm({
+          ...loginForm,
+          [e.target.name]: e.target.value,
+        });
+  };
+
   return (
     <>
       {isPopout && authErrorMessage && (
@@ -259,105 +293,60 @@ const Login = () => {
 
       <Container>
         <Title>{isSignUp ? 'SIGN UP' : 'LOGIN'}</Title>
-        <SocialLogin
-          onClick={async () => {
-            await googleLogin();
-          }}
-        >
+        <SocialLogin onClick={async () => await googleLogin()}>
           Google 登入
         </SocialLogin>
-        {isSignUp && (
-          <FieldWrapper>
-            <InputLabel htmlFor="userName">用戶名稱</InputLabel>
+
+        {fields.map((field) => (
+          <FieldWrapper
+            key={field.id}
+            $isVisible={isSignUp || !field.signUpOnly}
+          >
+            <InputLabel htmlFor={field.id}>{field.label}</InputLabel>
             <InputWrapper>
               <Input
-                type="text"
-                id="userName"
-                minLength={1}
-                maxLength={30}
-                value={signUpForm.name}
-                onChange={(e) => {
-                  isSignUp &&
-                    setSignUpForm({
-                      ...signUpForm,
-                      name: e.target.value,
-                    });
-                }}
+                type={field.type}
+                id={field.id}
+                name={field.id}
+                minLength={field.minLength}
+                maxLength={field.maxLength}
+                value={isSignUp ? signUpForm[field.id] : loginForm[field.id]}
+                onChange={handleEnterInput}
               />
             </InputWrapper>
-            <PromptMessage>最多 30 字</PromptMessage>
+            <PromptMessage>
+              {field.maxLength && `最多 ${field.maxLength} 字`}
+              {field.minLength && `至少 ${field.minLength} 位`}
+            </PromptMessage>
           </FieldWrapper>
-        )}
-        <FieldWrapper>
-          <InputLabel htmlFor="email">信箱</InputLabel>
-          <InputWrapper>
-            <Input
-              type="email"
-              id="email"
-              value={isSignUp ? signUpForm.email : loginForm.email}
-              onChange={(e) => {
-                isSignUp
-                  ? setSignUpForm({ ...signUpForm, email: e.target.value })
-                  : setLoginForm({ ...loginForm, email: e.target.value });
-              }}
-            />
-          </InputWrapper>
-          <PromptMessage />
-        </FieldWrapper>
-        <LastFieldWrapper>
-          <InputLabel htmlFor="password">密碼</InputLabel>
-          <InputWrapper>
-            <Input
-              type="password"
-              id="password"
-              // minLength={6}
-              // pattern="[a-zA-Z0-9]+"
-              value={isSignUp ? signUpForm.password : loginForm.password}
-              onChange={(e) => {
-                isSignUp
-                  ? setSignUpForm({ ...signUpForm, password: e.target.value })
-                  : setLoginForm({ ...loginForm, password: e.target.value });
-              }}
-            />
-          </InputWrapper>
-          <PromptMessage>密碼應至少 6 位</PromptMessage>
-        </LastFieldWrapper>
-        <Button
-          buttonType="dark"
-          width="100%"
-          onClick={() => onSubmit()}
-          disabled={Object.values(isSignUp ? signUpForm : loginForm).some(
-            (form) => form === ''
-          )}
-        >
-          SUBMIT
-        </Button>
-        {isSignUp ? (
-          <SignUpPrompt>
-            <SignUpMessage>已經有帳號了？</SignUpMessage>
-            <StartButton>
-              <SignUpLink
-                onClick={() => {
-                  navigate('/login');
-                  // setIsSignUp(false);
-                }}
-              >
-                返回登入
-              </SignUpLink>
-              <TfiArrowRight className="arrow" />
-            </StartButton>
-          </SignUpPrompt>
-        ) : (
-          <SignUpPrompt>
-            <SignUpMessage>還沒有帳號？</SignUpMessage>
-            <StartButton>
-              <SignUpLink onClick={() => navigate('/sign-up')}>
-                立即註冊
-              </SignUpLink>
-              <TfiArrowRight className="arrow" />
-            </StartButton>
-          </SignUpPrompt>
-        )}
+        ))}
+
+        <ButtonWrapper>
+          <Button
+            buttonType="dark"
+            width="100%"
+            onClick={() => onSubmit()}
+            disabled={Object.values(isSignUp ? signUpForm : loginForm).some(
+              (form) => form === ''
+            )}
+          >
+            SUBMIT
+          </Button>
+        </ButtonWrapper>
+
+        <RedirectPrompt>
+          <RedirectMessage>
+            {isSignUp ? '已經有帳號了？' : '還沒有帳號？'}
+          </RedirectMessage>
+          <RedirectButton>
+            <RedirectLink
+              onClick={() => navigate(isSignUp ? '/login' : '/sign-up')}
+            >
+              {isSignUp ? '返回登入' : '立即註冊'}
+            </RedirectLink>
+            <TfiArrowRight className="arrow" />
+          </RedirectButton>
+        </RedirectPrompt>
       </Container>
     </>
   );
