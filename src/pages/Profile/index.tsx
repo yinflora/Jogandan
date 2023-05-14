@@ -573,7 +573,7 @@ const Profile = () => {
         <GameEntry $isVisible={items.length >= GAME_MIN_NUMBER}>
           <LinkToGame
             onClick={() =>
-              items.length >= GAME_MIN_NUMBER && navigate('/sparkJoy')
+              items.length >= GAME_MIN_NUMBER && navigate('/spark-joy')
             }
           >
             每日小遊戲

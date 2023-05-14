@@ -163,8 +163,6 @@ const uploadItem = async (form: FormInputsType) => {
     await updateDoc(uploadedItemRef, {
       id,
     });
-
-    // return id;
   } catch (error) {
     console.error(error);
   }

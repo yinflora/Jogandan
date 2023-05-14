@@ -134,7 +134,7 @@ export const UserInfoContextProvider = ({
         if (
           location.pathname !== '/' &&
           location.pathname !== '/login' &&
-          location.pathname !== '/signup'
+          location.pathname !== '/sign-up'
         ) {
           setPreviousPath(location.pathname);
         }
@@ -145,7 +145,7 @@ export const UserInfoContextProvider = ({
         if (
           location.pathname !== '/' &&
           location.pathname !== '/login' &&
-          location.pathname !== '/signup'
+          location.pathname !== '/sign-up'
         ) {
           setPreviousPath(location.pathname);
           navigate('/login');
