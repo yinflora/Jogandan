@@ -2,9 +2,11 @@ import { useContext, useEffect, useState } from 'react';
 import { TfiArrowRight } from 'react-icons/tfi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import Alert from '../../components/Alert';
 import Button from '../../components/Button/Button';
 import { UserInfoContext } from '../../context/UserInfoContext';
-import { nativeLogin } from '../../utils/firebase';
+import { LoginForm, SignupForm } from '../../types/types';
+// import { nativeLogin } from '../../utils/firebase';
 import background from './background.jpeg';
 
 const Container = styled.div`
@@ -198,42 +200,68 @@ const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { signUp, login, previousPath } = useContext(UserInfoContext);
+  const { signUp, nativeLogin, googleLogin, authErrorMessage, isPopout } =
+    useContext(UserInfoContext);
 
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const [signUpForm, setSignUpForm] = useState({
+  const [signUpForm, setSignUpForm] = useState<SignupForm>({
     name: '',
     email: '',
     password: '',
   });
-  const [loginForm, setLoginForm] = useState({
+  const [loginForm, setLoginForm] = useState<LoginForm>({
     email: '',
     password: '',
   });
 
   useEffect(() => {
-    if (location.pathname === '/signup') setIsSignUp(true);
-  }, [location]);
+    if (location.pathname === '/sign-up') setIsSignUp(true);
+    if (location.pathname === '/login') setIsSignUp(false);
+    if (!authErrorMessage) {
+      isSignUp
+        ? setSignUpForm({
+            name: '',
+            email: '',
+            password: '',
+          })
+        : setLoginForm({
+            email: '',
+            password: '',
+          });
+    }
+  }, [location, authErrorMessage]);
 
   const onSubmit = async () => {
     if (isSignUp) {
       await signUp(signUpForm);
     } else {
-      nativeLogin(loginForm);
+      await nativeLogin(loginForm);
     }
-    previousPath ? navigate(previousPath) : navigate('/');
   };
 
   return (
     <>
+      {isPopout && authErrorMessage && (
+        <Alert
+          type="sad"
+          title={authErrorMessage}
+          buttonConfig={[
+            {
+              buttonType: 'dark',
+              value: '重新嘗試',
+              action: () => {},
+            },
+          ]}
+        />
+      )}
+
       <BackgroundImage />
 
       <Container>
         <Title>{isSignUp ? 'SIGN UP' : 'LOGIN'}</Title>
         <SocialLogin
           onClick={async () => {
-            await login();
-            previousPath && navigate(previousPath);
+            await googleLogin();
           }}
         >
           Google 登入
@@ -282,8 +310,8 @@ const Login = () => {
             <Input
               type="password"
               id="password"
-              minLength={6}
-              pattern="[a-zA-Z0-9]+"
+              // minLength={6}
+              // pattern="[a-zA-Z0-9]+"
               value={isSignUp ? signUpForm.password : loginForm.password}
               onChange={(e) => {
                 isSignUp
@@ -292,24 +320,12 @@ const Login = () => {
               }}
             />
           </InputWrapper>
-          <PromptMessage>請輸入英文或數字做為密碼，最少 6 位</PromptMessage>
+          <PromptMessage>密碼應至少 6 位</PromptMessage>
         </LastFieldWrapper>
         <Button
           buttonType="dark"
           width="100%"
-          onClick={() => {
-            onSubmit();
-            isSignUp
-              ? setSignUpForm({
-                  name: '',
-                  email: '',
-                  password: '',
-                })
-              : setLoginForm({
-                  email: '',
-                  password: '',
-                });
-          }}
+          onClick={() => onSubmit()}
           disabled={Object.values(isSignUp ? signUpForm : loginForm).some(
             (form) => form === ''
           )}
@@ -323,7 +339,7 @@ const Login = () => {
               <SignUpLink
                 onClick={() => {
                   navigate('/login');
-                  setIsSignUp(false);
+                  // setIsSignUp(false);
                 }}
               >
                 返回登入
@@ -335,7 +351,7 @@ const Login = () => {
           <SignUpPrompt>
             <SignUpMessage>還沒有帳號？</SignUpMessage>
             <StartButton>
-              <SignUpLink onClick={() => navigate('/signup')}>
+              <SignUpLink onClick={() => navigate('/sign-up')}>
                 立即註冊
               </SignUpLink>
               <TfiArrowRight className="arrow" />
