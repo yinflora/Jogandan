@@ -433,6 +433,8 @@ const SparkJoy = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!items) return;
+
     const existingItems = items.filter((item) => item.status !== '已處理');
 
     const getRandomIndexes = (n: number) => {
