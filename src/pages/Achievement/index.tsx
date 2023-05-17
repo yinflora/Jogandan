@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components/macro';
-import { v4 as uuidv4 } from 'uuid';
 import UserInfoContext from '../../context/UserInfoContext';
 
 const NUM_OF_STYLES = 8;
@@ -129,7 +128,7 @@ const Achievement = () => {
             .filter((item) => item.status === '已處理')
             .map((item, index) => (
               <Image
-                key={uuidv4()}
+                key={index}
                 src={item.images[0]}
                 $index={index}
                 onClick={() => navigate(`/inventory/${item.id}`)}

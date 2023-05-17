@@ -4,8 +4,13 @@ import { RxCross1 } from 'react-icons/rx';
 import styled from 'styled-components';
 import { FormInputsType } from '../../types/types';
 import Button from '../Button/Button';
-import image from './image.png';
+import imageIcon from './image.png';
 import photo from './photo.png';
+
+type ImageFormProps = {
+  singleForm: FormInputsType;
+  setSingleForm: React.Dispatch<React.SetStateAction<FormInputsType>>;
+};
 
 const ImageInfoWrapper = styled.div`
   display: flex;
@@ -199,11 +204,6 @@ const Video = styled.video`
   border: 1px solid #fff;
 `;
 
-type ImageFormProps = {
-  singleForm: FormInputsType;
-  setSingleForm: React.Dispatch<React.SetStateAction<FormInputsType>>;
-};
-
 export const ImageForm = ({ singleForm, setSingleForm }: ImageFormProps) => {
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [showCamera, setShowCamera] = useState<boolean>(false);
@@ -225,7 +225,7 @@ export const ImageForm = ({ singleForm, setSingleForm }: ImageFormProps) => {
         });
         videoRef.current.srcObject = stream;
       } catch (error) {
-        console.error(error);
+        throw new Error(String(error));
       }
     };
     startCamera();
@@ -407,7 +407,11 @@ export const ImageForm = ({ singleForm, setSingleForm }: ImageFormProps) => {
         {showCamera ? (
           <VideoWrapper>
             <Video ref={videoRef} autoPlay />
-            <PhotoIcon src={photo} onClick={takePhoto} />
+            <PhotoIcon
+              src={photo}
+              alt="Photo button: Click this button to take a photo."
+              onClick={takePhoto}
+            />
             <CancelIcon onClick={stopCamera}>
               <RxCross1 className="close" />
             </CancelIcon>
@@ -416,7 +420,7 @@ export const ImageForm = ({ singleForm, setSingleForm }: ImageFormProps) => {
           <UploadInfoWrapper>
             <UploadInfo>
               <RemindWrapper>
-                <ImageIcon src={image} />
+                <ImageIcon src={imageIcon} alt="Image Icon" />
                 <Remind>最多上傳 {SINGLE_LIMIT} 張</Remind>
                 <Button buttonType="normal" onClick={() => setShowCamera(true)}>
                   拍照上傳

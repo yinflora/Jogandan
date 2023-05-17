@@ -16,17 +16,17 @@
   "extends": ["eslint:recommended"],
   "rules": {
     "camelcase": "error",
-    "consistent-return": "warn",
+    "consistent-return": "error",
     "dot-notation": "error",
     "eqeqeq": "error",
-    "no-console": "warn", //!改過
+    "no-console": "error",
     "no-else-return": "error",
-    "no-empty-function": "warn",
+    "no-empty-function": "error",
     "no-lonely-if": "error",
     "no-multi-assign": "error",
-    "no-negated-condition": "warn",
-    "no-nested-ternary": "warn",
-    "no-shadow": "warn", //!改過
+    "no-negated-condition": "error",
+    "no-nested-ternary": "error",
+    "no-shadow": "error",
     "no-undef": "error",
     "no-useless-return": "error",
     "no-var": "error",

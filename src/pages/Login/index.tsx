@@ -8,6 +8,29 @@ import { UserInfoContext } from '../../context/UserInfoContext';
 import { LoginFormType, SignupFormType } from '../../types/types';
 import background from './background.jpeg';
 
+const fields = [
+  {
+    id: 'name',
+    label: '用戶名稱',
+    type: 'text',
+    maxLength: 30,
+    signUpOnly: true,
+  },
+  {
+    id: 'email',
+    label: '信箱',
+    type: 'email',
+    signUpOnly: false,
+  },
+  {
+    id: 'password',
+    label: '密碼',
+    type: 'password',
+    minLength: 6,
+    signUpOnly: false,
+  },
+];
+
 const Container = styled.div`
   position: absolute;
   top: 0;
@@ -195,29 +218,6 @@ const BackgroundImage = styled.div`
   background: top / cover no-repeat url(${background});
 `;
 
-const fields = [
-  {
-    id: 'name',
-    label: '用戶名稱',
-    type: 'text',
-    maxLength: 30,
-    signUpOnly: true,
-  },
-  {
-    id: 'email',
-    label: '信箱',
-    type: 'email',
-    signUpOnly: false,
-  },
-  {
-    id: 'password',
-    label: '密碼',
-    type: 'password',
-    minLength: 6,
-    signUpOnly: false,
-  },
-];
-
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -283,6 +283,7 @@ const Login = () => {
             {
               buttonType: 'dark',
               value: '重新嘗試',
+              // eslint-disable-next-line no-empty-function
               action: () => {},
             },
           ]}

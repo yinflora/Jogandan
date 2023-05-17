@@ -235,11 +235,11 @@ const Upload = () => {
     const newForm = { ...form };
 
     await Promise.all(
-      newForm.images.map(async (image: string, index: number) => {
-        if (image === '') {
+      newForm.images.map(async (formImage: string, index: number) => {
+        if (formImage === '') {
           newForm.images[index] = '';
         } else {
-          const res = await fetch(image);
+          const res = await fetch(formImage);
           const blobImage = await res.blob();
 
           const storageRef = ref(

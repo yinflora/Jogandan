@@ -59,7 +59,7 @@ const googleLogin = async () => {
     const userInfo = await createUser(user, null);
     return userInfo;
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
 };
 
@@ -67,7 +67,7 @@ const logout = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
 };
 
@@ -111,21 +111,19 @@ const createUser = async (userAuth: User, name: string | null) => {
     await setDoc(userRef, userData);
     return userData;
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
 };
-
 const getUser = async () => {
   try {
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user) return null;
     const userRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userRef);
     return userDoc.data();
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
-  return null;
 };
 
 const updateUser = async (url: string) => {
@@ -138,7 +136,7 @@ const updateUser = async (url: string) => {
       image: url,
     });
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
 };
 
@@ -164,20 +162,19 @@ const uploadItem = async (form: FormInputsType) => {
       id,
     });
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
 };
 
 const getItems = async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return null;
   const itemsRef = collection(db, 'users', user.uid, 'items');
   const itemsQuery = query(itemsRef, orderBy('created', 'desc'));
   const items: DocumentData[] = [];
 
   const querySnapshot = await getDocs(itemsQuery);
   querySnapshot.forEach((document) => items.push(document.data()));
-
   return items;
 };
 
@@ -194,7 +191,7 @@ const updateItem = async (
       processedDate: newForm.status === '已處理' ? serverTimestamp() : '',
     });
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
 };
 
@@ -205,7 +202,7 @@ const getTemplate = async () => {
     const docSnap = await getDoc(templatesRef);
     return docSnap.data();
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
 };
 
@@ -223,7 +220,7 @@ const saveBoard = async (boardData: object, isEdited: boolean) => {
       },
     });
   } catch (error) {
-    console.error(error);
+    throw new Error(String(error));
   }
 };
 

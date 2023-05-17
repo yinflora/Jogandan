@@ -1,5 +1,11 @@
 import styled from 'styled-components';
 
+type LoginPropsType = {
+  color: string;
+  children: string;
+  onClick: () => void;
+};
+
 const LoginBtn = styled.button<LoginPropsType>`
   position: relative;
   width: 90px;
@@ -32,12 +38,6 @@ const LoginBtn = styled.button<LoginPropsType>`
     opacity: 1;
   }
 `;
-
-type LoginPropsType = {
-  color: string;
-  children: string;
-  onClick: () => void;
-};
 
 const Login = ({ color, children, onClick }: LoginPropsType) => {
   return (

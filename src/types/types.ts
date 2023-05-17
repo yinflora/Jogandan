@@ -84,6 +84,11 @@ type VisionBoardType = {
   lastModified: Timestamp | null;
 };
 
+type TextConfigType = {
+  color: string;
+  fontSize: number;
+};
+
 type FormInputsType = {
   name: string;
   category: CategoryType | '請選擇類別' | '';
@@ -106,5 +111,6 @@ export type {
   BoardTemplateType,
   BoardDataType,
   VisionBoardType,
+  TextConfigType,
   FormInputsType,
 };

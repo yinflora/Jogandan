@@ -1,3 +1,6 @@
+// Solve TypeScript and ESlint conflicts
+/* eslint-disable no-empty-function */
+/* eslint-disable no-unused-vars */
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -23,11 +26,12 @@ type UserInfoContextType = {
   isPopout: boolean;
   setIsPopout: React.Dispatch<React.SetStateAction<boolean>>;
   previousPath: string | null;
-  // eslint-disable-next-line no-unused-vars
   nativeLogin: (form: LoginFormType) => Promise<void>;
-  // eslint-disable-next-line no-unused-vars
   signUp: (form: SignupFormType) => Promise<void>;
   authErrorMessage: string | null;
+};
+type UserInfoContextProviderProp = {
+  children: React.ReactNode;
 };
 
 const INITIAL_BOARD_DATA: BoardDataType = {
@@ -71,16 +75,10 @@ export const UserInfoContext = createContext<UserInfoContextType>({
   isPopout: false,
   setIsPopout: () => {},
   previousPath: null,
-  // eslint-disable-next-line no-unused-vars
-  nativeLogin: async (form: LoginFormType) => {},
-  // eslint-disable-next-line no-unused-vars
+  nativeLogin: async (form) => {},
   signUp: async (form) => {},
   authErrorMessage: null,
 });
-
-type UserInfoContextProviderProp = {
-  children: React.ReactNode;
-};
 
 export const UserInfoContextProvider = ({
   children,

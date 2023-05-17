@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+type LevelPropType = {
+  percent: number;
+};
+
 const Container = styled.div`
   position: absolute;
   top: 150px;
@@ -54,10 +58,6 @@ const Title = styled.p`
   text-transform: uppercase;
   letter-spacing: 0.2rem;
 `;
-
-type LevelPropType = {
-  percent: number;
-};
 
 const Level = ({ percent }: LevelPropType) => {
   return (

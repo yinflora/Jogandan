@@ -7,6 +7,35 @@ import {
 } from '../../components/SingleForm/InputForm';
 import { FormInputsType } from '../../types/types';
 
+type BulkFormPropsType = {
+  bulkForms: FormInputsType[];
+  setBulkForms: React.Dispatch<React.SetStateAction<FormInputsType[]>>;
+};
+
+const formInputs = [
+  {
+    label: '名稱',
+    key: 'name',
+    type: 'input',
+    isRequire: true,
+  },
+  {
+    label: '分類',
+    key: 'category',
+    type: 'select',
+    isRequire: true,
+    options: categoryOptions,
+  },
+  {
+    label: '狀態',
+    key: 'status',
+    type: 'select',
+    isRequire: true,
+    options: statusOptions,
+  },
+  { label: '描述', key: 'description', type: 'textarea', isRequire: false },
+];
+
 const Container = styled.div`
   display: flex;
   width: 100%;
@@ -127,35 +156,6 @@ const Description = styled.textarea`
   background-color: transparent;
   color: #fff;
 `;
-
-type BulkFormPropsType = {
-  bulkForms: FormInputsType[];
-  setBulkForms: React.Dispatch<React.SetStateAction<FormInputsType[]>>;
-};
-
-const formInputs = [
-  {
-    label: '名稱',
-    key: 'name',
-    type: 'input',
-    isRequire: true,
-  },
-  {
-    label: '分類',
-    key: 'category',
-    type: 'select',
-    isRequire: true,
-    options: categoryOptions,
-  },
-  {
-    label: '狀態',
-    key: 'status',
-    type: 'select',
-    isRequire: true,
-    options: statusOptions,
-  },
-  { label: '描述', key: 'description', type: 'textarea', isRequire: false },
-];
 
 export const BulkForm = ({ bulkForms, setBulkForms }: BulkFormPropsType) => {
   const handleBulkDelete = (index: number) => {

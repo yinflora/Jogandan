@@ -4,7 +4,19 @@ import { CiTrash, CiUndo } from 'react-icons/ci';
 import { TfiSaveAlt, TfiText } from 'react-icons/tfi';
 import styled from 'styled-components';
 import { UserInfoContext } from '../../context/UserInfoContext';
-import { TextConfig } from './index';
+import { TextConfigType } from '../../types/types';
+
+type VisionBoardPropsType = {
+  bgColor: string;
+  setBgColor: React.Dispatch<React.SetStateAction<string>>;
+  activeItem: fabric.Object | null;
+  textConfig: TextConfigType;
+  setTextConfig: React.Dispatch<React.SetStateAction<TextConfigType>>;
+  setButtonAction: React.Dispatch<React.SetStateAction<string | null>>;
+  addText: () => void;
+  deleteActiveItem: () => void;
+  saveProject: () => Promise<void>;
+};
 
 const VisionBoardContainer = styled.div`
   display: flex;
@@ -125,18 +137,6 @@ const Board = styled.div`
   margin: 0 auto;
   box-shadow: 0px 4px 90px 10px rgba(0, 0, 0, 0.1);
 `;
-
-type VisionBoardPropsType = {
-  bgColor: string;
-  setBgColor: React.Dispatch<React.SetStateAction<string>>;
-  activeItem: fabric.Object | null;
-  textConfig: TextConfig;
-  setTextConfig: React.Dispatch<React.SetStateAction<TextConfig>>;
-  setButtonAction: React.Dispatch<React.SetStateAction<string | null>>;
-  addText: () => void;
-  deleteActiveItem: () => void;
-  saveProject: () => Promise<void>;
-};
 
 const VisionBoard = ({
   bgColor,
