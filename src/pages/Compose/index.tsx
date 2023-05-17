@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
 import Alert from '../../components/Alert';
 import UserInfoContext from '../../context/UserInfoContext';
-import { UserType, VisionBoardType } from '../../types/types';
+import { TextConfigType, UserType, VisionBoardType } from '../../types/types';
 import * as firebase from '../../utils/firebase';
 import ImageUpload from './ImageUpload';
 import VisionBoard from './VisionBoard';
@@ -84,11 +84,6 @@ const BoardContainer = styled.div`
   gap: 30px;
 `;
 
-export type TextConfig = {
-  color: string;
-  fontSize: number;
-};
-
 const useVisionBoard = (
   user: UserType,
   images: string[],
@@ -97,7 +92,7 @@ const useVisionBoard = (
   const [visionBoard, setVisionBoard] = useState<any | null>(null);
   const [activeItem, setActiveItem] = useState<fabric.Object | null>(null);
   const [bgColor, setBgColor] = useState<string>('#F4F3EF');
-  const [textConfig, setTextConfig] = useState<TextConfig>({
+  const [textConfig, setTextConfig] = useState<TextConfigType>({
     color: '#000',
     fontSize: 16,
   });
@@ -136,7 +131,7 @@ const useVisionBoard = (
         setVisionBoard(canvas);
         setBgColor(data.background);
       } catch (error) {
-        console.error(error);
+        throw new Error(String(error));
       }
     };
     setBoard();
@@ -284,7 +279,7 @@ const useImages = (user: UserType) => {
 
         startIndexRef.current = endIndex;
       } catch (error) {
-        console.error(error);
+        throw new Error(String(error));
       }
     };
 

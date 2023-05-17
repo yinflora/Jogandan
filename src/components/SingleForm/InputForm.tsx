@@ -2,6 +2,61 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { FormInputsType } from '../../types/types';
 
+type InputFormProps = {
+  singleForm: FormInputsType;
+  setSingleForm: React.Dispatch<React.SetStateAction<FormInputsType>>;
+  children: React.ReactNode;
+};
+
+export const categoryOptions = [
+  '請選擇類別',
+  '居家生活',
+  '服飾配件',
+  '美妝保養',
+  '3C產品',
+  '影音產品',
+  '書報雜誌',
+  '體育器材',
+  '寵物用品',
+  '食物及飲料',
+  '興趣及遊戲',
+  '紀念意義',
+  '其他',
+];
+export const statusOptions = ['請選擇狀態', '保留', '待處理', '已處理'];
+const formInputs = [
+  {
+    label: '名稱',
+    key: 'name',
+    type: 'input',
+    isRequire: true,
+    width: '100%',
+  },
+  {
+    label: '分類',
+    key: 'category',
+    type: 'select',
+    isRequire: true,
+    options: categoryOptions,
+    width: '47%',
+  },
+  {
+    label: '狀態',
+    key: 'status',
+    type: 'select',
+    isRequire: true,
+    options: statusOptions,
+    width: '47%',
+  },
+  {
+    label: '描述',
+    key: 'description',
+    type: 'textarea',
+    isRequire: false,
+    width: '100%',
+  },
+];
+
 const FormWrapper = styled.form`
   display: flex;
   padding: 5px 0 45px;
@@ -84,61 +139,6 @@ const Description = styled.textarea`
   background-color: transparent;
   color: #fff;
 `;
-
-export const categoryOptions = [
-  '請選擇類別',
-  '居家生活',
-  '服飾配件',
-  '美妝保養',
-  '3C產品',
-  '影音產品',
-  '書報雜誌',
-  '體育器材',
-  '寵物用品',
-  '食物及飲料',
-  '興趣及遊戲',
-  '紀念意義',
-  '其他',
-];
-export const statusOptions = ['請選擇狀態', '保留', '待處理', '已處理'];
-const formInputs = [
-  {
-    label: '名稱',
-    key: 'name',
-    type: 'input',
-    isRequire: true,
-    width: '100%',
-  },
-  {
-    label: '分類',
-    key: 'category',
-    type: 'select',
-    isRequire: true,
-    options: categoryOptions,
-    width: '47%',
-  },
-  {
-    label: '狀態',
-    key: 'status',
-    type: 'select',
-    isRequire: true,
-    options: statusOptions,
-    width: '47%',
-  },
-  {
-    label: '描述',
-    key: 'description',
-    type: 'textarea',
-    isRequire: false,
-    width: '100%',
-  },
-];
-
-type InputFormProps = {
-  singleForm: FormInputsType;
-  setSingleForm: React.Dispatch<React.SetStateAction<FormInputsType>>;
-  children: React.ReactNode;
-};
 
 export const InputForm = ({
   singleForm,

@@ -2,6 +2,48 @@ import { Fragment } from 'react';
 import styled from 'styled-components';
 import { CategoryType, ItemType } from '../../types/types';
 
+type QuantitiesType = number[];
+type ReportProp = {
+  items: ItemType[];
+};
+
+const CATEGORIES: CategoryType[] = [
+  '居家生活',
+  '服飾配件',
+  '美妝保養',
+  '3C產品',
+  '影音產品',
+  '書報雜誌',
+  '體育器材',
+  '寵物用品',
+  '食物及飲料',
+  '興趣及遊戲',
+  '紀念意義',
+  '其他',
+];
+const SPACING_UNIT_1: QuantitiesType = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const SPACING_UNIT_5: QuantitiesType = [
+  0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
+];
+const SPACING_UNIT_10: QuantitiesType = [
+  0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+];
+const SPACING_UNIT_1_HEIGHT = 50;
+const SPACING_UNIT_5_HEIGHT = 10;
+const SPACING_UNIT_10_HEIGHT = 5;
+const X_START_AXIS: number = 50;
+const X_END_AXIS: number = 1000;
+const Y_START_AXIS: number = 50;
+const Y_END_AXIS: number = 550;
+const XTAG_START_AXIS: number = 100;
+const XTAG_SPACE: number = 75;
+const XTAG_Y_AXIS: number = 570;
+const YTAG_START_AXIS: number = 550;
+const YTAG_SPACE: number = 50;
+const YTAG_X_AXIS: number = 30;
+const TEXT_SPACING: number = 12.5;
+const TEXT_TO_RECT: number = 10;
+
 const Svg = styled.svg`
   width: 1000px;
   height: 600px;
@@ -33,53 +75,6 @@ const Rect = styled.rect`
 const Qty = styled(Text)`
   text-anchor: middle;
 `;
-
-type QuantitiesType = number[];
-
-const CATEGORIES: CategoryType[] = [
-  '居家生活',
-  '服飾配件',
-  '美妝保養',
-  '3C產品',
-  '影音產品',
-  '書報雜誌',
-  '體育器材',
-  '寵物用品',
-  '食物及飲料',
-  '興趣及遊戲',
-  '紀念意義',
-  '其他',
-];
-
-const SPACING_UNIT_1: QuantitiesType = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const SPACING_UNIT_5: QuantitiesType = [
-  0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
-];
-const SPACING_UNIT_10: QuantitiesType = [
-  0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-];
-
-const SPACING_UNIT_1_HEIGHT = 50;
-const SPACING_UNIT_5_HEIGHT = 10;
-const SPACING_UNIT_10_HEIGHT = 5;
-
-const X_START_AXIS: number = 50;
-const X_END_AXIS: number = 1000;
-const Y_START_AXIS: number = 50;
-const Y_END_AXIS: number = 550;
-const XTAG_START_AXIS: number = 100;
-const XTAG_SPACE: number = 75;
-const XTAG_Y_AXIS: number = 570;
-const YTAG_START_AXIS: number = 550;
-const YTAG_SPACE: number = 50;
-const YTAG_X_AXIS: number = 30;
-
-const TEXT_SPACING: number = 12.5;
-const TEXT_TO_RECT: number = 10;
-
-type ReportProp = {
-  items: ItemType[];
-};
 
 const Report = ({ items }: ReportProp) => {
   const itemQty = items.reduce((acc, item) => {

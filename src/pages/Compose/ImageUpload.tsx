@@ -9,6 +9,14 @@ import { CiCircleInfo } from 'react-icons/ci';
 import styled from 'styled-components';
 import Button from '../../components/Button/Button';
 
+type ImageUploadProps = {
+  storageRef: StorageReference;
+  images: string[];
+  setImages: React.Dispatch<React.SetStateAction<string[]>>;
+  imageContainerRef: React.RefObject<HTMLDivElement>;
+  setDraggingIndex: React.Dispatch<React.SetStateAction<number | null>>;
+};
+
 const UploadContainer = styled.div`
   width: 30%;
   height: 100%;
@@ -56,14 +64,6 @@ const Image = styled.img`
   object-fit: cover;
   cursor: grab;
 `;
-
-type ImageUploadProps = {
-  storageRef: StorageReference;
-  images: string[];
-  setImages: React.Dispatch<React.SetStateAction<string[]>>;
-  imageContainerRef: React.RefObject<HTMLDivElement>;
-  setDraggingIndex: React.Dispatch<React.SetStateAction<number | null>>;
-};
 
 const ImageUpload = ({
   storageRef,

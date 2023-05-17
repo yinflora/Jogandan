@@ -4,13 +4,13 @@ type LoadingContextType = {
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
-
 type LoadingContextProviderPropType = {
   children: React.ReactNode;
 };
 
 export const LoadingContext = createContext<LoadingContextType>({
   isLoading: true,
+  // eslint-disable-next-line no-empty-function
   setIsLoading: () => {},
 });
 

@@ -11,6 +11,10 @@ import Button from '../Button/Button';
 import { ImageForm } from './ImageForm';
 import { InputForm } from './InputForm';
 
+type SingleFormProp = {
+  setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
 const Container = styled.div`
   display: flex;
   width: 100%;
@@ -51,10 +55,6 @@ const useSingleForm = (id: string | undefined) => {
   }, [items]);
 
   return { singleForm, setSingleForm };
-};
-
-type SingleFormProp = {
-  setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const SingleForm = ({ setIsEdit }: SingleFormProp) => {

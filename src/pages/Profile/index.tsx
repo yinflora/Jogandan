@@ -20,6 +20,30 @@ import {
   getThisYear,
 } from '../../utils/timeHelper';
 
+type Period = {
+  start: string;
+  end: string;
+};
+type ReportStatus = '目前持有' | '已處理';
+type FilterItem = {
+  value: string;
+  action: () => { startDate: string; endDate: string };
+};
+
+const STATUS: ReportStatus[] = ['目前持有', '已處理'];
+const FILTER: FilterItem[] = [
+  { value: '過去 7 天', action: getThisWeek },
+  { value: '本月', action: getThisMonth },
+  { value: '上個月', action: getLastMonth },
+  { value: '今年', action: getThisYear },
+  { value: '去年', action: getLastYear },
+];
+const GAME_MIN_NUMBER = 10;
+const BOARD_WIDTH = 980;
+const BOARD_HEIGHT = 748;
+const BOARD_ORIGIN_WIDTH = 625;
+const BOARD_ORIGIN_HEIGHT = 475;
+
 const Container = styled.div`
   width: 1000px;
   margin: 150px auto 60px;
@@ -406,32 +430,6 @@ const QtyTitle = styled.p`
   text-transform: uppercase;
   letter-spacing: 0.2rem;
 `;
-
-type Period = {
-  start: string;
-  end: string;
-};
-type ReportStatus = '目前持有' | '已處理';
-type FilterItem = {
-  value: string;
-  action: () => { startDate: string; endDate: string };
-};
-
-const STATUS: ReportStatus[] = ['目前持有', '已處理'];
-
-const FILTER: FilterItem[] = [
-  { value: '過去 7 天', action: getThisWeek },
-  { value: '本月', action: getThisMonth },
-  { value: '上個月', action: getLastMonth },
-  { value: '今年', action: getThisYear },
-  { value: '去年', action: getLastYear },
-];
-
-const GAME_MIN_NUMBER = 10;
-const BOARD_WIDTH = 980;
-const BOARD_HEIGHT = 748;
-const BOARD_ORIGIN_WIDTH = 625;
-const BOARD_ORIGIN_HEIGHT = 475;
 
 const useReportItems = (items: ItemType[]) => {
   const [reportItems, setReportItems] = useState<ItemType[] | []>([]);

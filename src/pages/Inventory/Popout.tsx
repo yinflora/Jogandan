@@ -8,6 +8,10 @@ import { ItemType } from '../../types/types';
 import * as firebase from '../../utils/firebase';
 import { ItemInfo } from './ItemInfo';
 
+type PopoutPropType = {
+  selectedItem: ItemType | null;
+};
+
 const StyledContainer = styled.div`
   position: fixed;
   top: 0;
@@ -52,10 +56,6 @@ const Container = styled.div<{ $isEdit: boolean }>`
     cursor: pointer;
   }
 `;
-
-type PopoutPropType = {
-  selectedItem: ItemType | null;
-};
 
 const Popout = ({ selectedItem }: PopoutPropType) => {
   const { user, setItems } = useContext(UserInfoContext);

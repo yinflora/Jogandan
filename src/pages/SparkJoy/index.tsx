@@ -17,6 +17,16 @@ import sparkJoy from './images/sparkJoy.png';
 import swipeIcon from './images/swipe.png';
 import undo from './images/undo.png';
 
+type Direction = 'left' | 'right' | 'up' | 'down';
+type API = {
+  // Solve TypeScript and ESlint conflicts
+  // eslint-disable-next-line no-unused-vars
+  swipe(direction?: Direction): Promise<void>;
+  restoreCard(): Promise<void>;
+};
+
+const CARD_QTY = 10;
+
 const Container = styled.div`
   display: flex;
   width: 100vw;
@@ -402,16 +412,6 @@ const GuideDescription = styled.p`
   letter-spacing: 0.1rem;
   text-align: center;
 `;
-
-type Direction = 'left' | 'right' | 'up' | 'down';
-
-type API = {
-  // eslint-disable-next-line no-unused-vars
-  swipe(direction?: Direction): Promise<void>; //!Fixme
-  restoreCard(): Promise<void>;
-};
-
-const CARD_QTY = 10;
 
 const SparkJoy = () => {
   const { items } = useContext(UserInfoContext);

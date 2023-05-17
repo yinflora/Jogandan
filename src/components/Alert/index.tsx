@@ -6,6 +6,19 @@ import Button from '../Button/Button';
 import Sad from '../Icon/Sad';
 import Success from '../Icon/Success';
 
+type ButtonConfigType = {
+  width?: string;
+  buttonType: 'dark' | 'normal' | 'light';
+  value: string;
+  action: () => void | {};
+};
+
+type AlertPropsType = {
+  type: string;
+  title: string;
+  buttonConfig: ButtonConfigType[];
+};
+
 const StyledContainer = styled.div`
   position: fixed;
   top: 0;
@@ -71,19 +84,6 @@ const ButtonWrapper = styled.div`
   display: flex;
   gap: 10px;
 `;
-
-type ButtonConfigType = {
-  width?: string;
-  buttonType: 'dark' | 'normal' | 'light';
-  value: string;
-  action: () => void | {};
-};
-
-type AlertPropsType = {
-  type: string;
-  title: string;
-  buttonConfig: ButtonConfigType[];
-};
 
 const Alert = ({ type, title, buttonConfig }: AlertPropsType) => {
   const { isPopout, setIsPopout } = useContext(UserInfoContext);

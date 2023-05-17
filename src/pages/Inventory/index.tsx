@@ -8,6 +8,27 @@ import { CategoryType, ItemType, StatusType } from '../../types/types';
 import * as firebase from '../../utils/firebase';
 import Popout from './Popout';
 
+type FilterType = {
+  category: CategoryType | '';
+  status: StatusType | '';
+};
+
+const SUBCATEGORY: CategoryType[] = [
+  '居家生活',
+  '服飾配件',
+  '美妝保養',
+  '3C產品',
+  '影音產品',
+  '書報雜誌',
+  '體育器材',
+  '寵物用品',
+  '食物及飲料',
+  '興趣及遊戲',
+  '紀念意義',
+  '其他',
+];
+const SUBSTATUS: StatusType[] = ['保留', '待處理', '已處理'];
+
 const Container = styled.div`
   width: 1000px;
   margin: 150px auto 60px;
@@ -251,27 +272,6 @@ const Name = styled.p`
   color: #707070;
   cursor: default;
 `;
-
-type FilterType = {
-  category: CategoryType | '';
-  status: StatusType | '';
-};
-
-const SUBCATEGORY: CategoryType[] = [
-  '居家生活',
-  '服飾配件',
-  '美妝保養',
-  '3C產品',
-  '影音產品',
-  '書報雜誌',
-  '體育器材',
-  '寵物用品',
-  '食物及飲料',
-  '興趣及遊戲',
-  '紀念意義',
-  '其他',
-];
-const SUBSTATUS: StatusType[] = ['保留', '待處理', '已處理'];
 
 const Inventory = () => {
   const { user, items, setItems } = useContext(UserInfoContext);

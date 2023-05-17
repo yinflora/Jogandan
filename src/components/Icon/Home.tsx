@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+type HomePropType = {
+  fill: string;
+};
+
 const HomeBtn = styled.svg`
   width: 25px;
   height: 25px;
@@ -8,10 +12,6 @@ const HomeBtn = styled.svg`
     cursor: pointer;
   }
 `;
-
-type HomePropType = {
-  fill: string;
-};
 
 const Home = ({ fill }: HomePropType) => {
   return (

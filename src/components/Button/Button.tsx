@@ -1,5 +1,13 @@
 import styled, { css } from 'styled-components';
 
+type ButtonPropsType = {
+  width?: string;
+  buttonType: 'dark' | 'normal' | 'light';
+  children: string;
+  disabled?: boolean;
+  onClick?: () => void;
+};
+
 const StyledButton = styled.button<ButtonPropsType>`
   position: relative;
   z-index: 0;
@@ -109,14 +117,6 @@ const StyledButton = styled.button<ButtonPropsType>`
     return null;
   }}
 `;
-
-type ButtonPropsType = {
-  width?: string;
-  buttonType: 'dark' | 'normal' | 'light';
-  children: string;
-  disabled?: boolean;
-  onClick?: () => void;
-};
 
 const Button = ({
   width,

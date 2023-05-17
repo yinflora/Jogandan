@@ -5,6 +5,11 @@ import Chevron from '../../components/Icon/Chevron';
 import { ItemType } from '../../types/types';
 import { formatTime } from '../../utils/timeHelper';
 
+type ItemInfoPropsType = {
+  selectedItem: ItemType;
+  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
 const ContentWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -184,11 +189,6 @@ const CreatedTime = styled.p`
   text-align: end;
   color: #959595;
 `;
-
-type ItemInfoPropsType = {
-  selectedItem: ItemType;
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-};
 
 export const ItemInfo = ({ selectedItem, setIsEdit }: ItemInfoPropsType) => {
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0);

@@ -228,6 +228,7 @@ const Feature = styled.div<{ $entering: string | null }>`
         }
       `;
     }
+    return null;
   }};
 `;
 
@@ -414,10 +415,10 @@ const Home = () => {
                 彈性編輯功能
               </FeatureDescription>
             </FeatureTextR>
-            <FeatureImage src={visionBoard} />
+            <FeatureImage src={visionBoard} alt="Feature of vision board" />
           </FeatureWrapperR>
           <FeatureWrapperL className="upload">
-            <FeatureImage src={singleUpload} />
+            <FeatureImage src={singleUpload} alt="Feature of single upload" />
             <FeatureText>
               <FeatureTitle>
                 單次/批次上傳
@@ -449,10 +450,10 @@ const Home = () => {
                 報表檢視物品數量/斷捨離成果
               </FeatureDescription>
             </FeatureTextR>
-            <FeatureImage src={inventory} />
+            <FeatureImage src={inventory} alt="Feature of inventory" />
           </FeatureWrapperR>
           <FeatureWrapperL className="achievement">
-            <FeatureImage src={achievement} />
+            <FeatureImage src={achievement} alt="Feature of achievement" />
             <FeatureText>
               <FeatureTitle>
                 斷捨離回顧
@@ -484,7 +485,7 @@ const Home = () => {
                 左右滑動更改物品狀態
               </FeatureDescription>
             </FeatureTextR>
-            <FeatureImage src={sparkJoy} />
+            <FeatureImage src={sparkJoy} alt="Feature of mini game" />
           </FeatureWrapperRSmall>
         </Feature>
       </ContainerS>
