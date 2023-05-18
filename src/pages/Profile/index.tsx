@@ -484,7 +484,7 @@ const Profile = () => {
   useEffect(() => {
     async function getCurrentUser() {
       const userData = (await firebase.getUser()) as UserType;
-      setUser(userData);
+      setUser({ ...userData, level: user.level });
     }
     getCurrentUser();
   }, []);
