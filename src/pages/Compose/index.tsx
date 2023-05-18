@@ -138,7 +138,7 @@ const useVisionBoard = (
   }, [user]);
 
   useEffect(() => {
-    if (!visionBoard) return;
+    if (!visionBoard) return undefined;
 
     const setActiveObject = () => {
       const activeObject = visionBoard.getActiveObject();
@@ -195,7 +195,6 @@ const useVisionBoard = (
     visionBoard.on('mouse:down', setActiveObject);
     visionBoard.on('drop', dropImage);
 
-    // eslint-disable-next-line consistent-return
     return () => {
       visionBoard.off('mouse:down', setActiveObject);
       visionBoard.off('drop', dropImage);
@@ -304,6 +303,10 @@ const useImages = (user: UserType) => {
     };
 
     imageContainerRef.current?.addEventListener('scroll', onScroll);
+
+    return () => {
+      imageContainerRef.current?.removeEventListener('scroll', onScroll);
+    };
   }, [imageContainerRef.current]);
 
   useEffect(() => {

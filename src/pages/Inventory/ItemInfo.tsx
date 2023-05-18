@@ -206,8 +206,12 @@ export const ItemInfo = ({ selectedItem, setIsEdit }: ItemInfoPropsType) => {
   };
 
   useEffect(() => {
-    if (!id || !selectedItem || hasUrlImages.length === 1) return;
+    if (!id || !selectedItem || hasUrlImages.length === 1) return undefined;
     setCarousel();
+
+    return () => {
+      intervalRef.current && clearInterval(intervalRef.current);
+    };
   }, [id, selectedItem]);
 
   return (
