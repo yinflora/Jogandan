@@ -336,6 +336,10 @@ const Inventory = () => {
           item.name.toLowerCase().includes(search.toLowerCase())
       );
     }
+  } else if (search !== '') {
+    userItems = items.filter((item: ItemType) =>
+      item.name.toLowerCase().includes(search.toLowerCase())
+    );
   }
 
   return (

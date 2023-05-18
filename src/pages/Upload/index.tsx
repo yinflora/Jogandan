@@ -235,10 +235,10 @@ const Upload = () => {
     const newForm = { ...form };
 
     await Promise.all(
-      newForm.images.map(async (formImage: string, index: number) => {
+      newForm.images.map(async (formImage: string, imageIndex: number) => {
         if (formImage === '') {
-          newForm.images[index] = '';
-        } else {
+          newForm.images[imageIndex] = '';
+        } else if (!formImage.includes('https://')) {
           const res = await fetch(formImage);
           const blobImage = await res.blob();
 
@@ -249,7 +249,7 @@ const Upload = () => {
           const snapshot = await uploadBytes(storageRef, blobImage);
           const url = await getDownloadURL(snapshot.ref);
 
-          newForm.images[index] = url;
+          newForm.images[imageIndex] = url;
         }
       })
     );
