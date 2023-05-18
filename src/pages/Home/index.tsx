@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled, { css, keyframes } from 'styled-components/macro';
+import styled, { css, keyframes } from 'styled-components';
 import Button from '../../components/Button/Button';
 import Chevron from '../../components/Icon/Chevron';
 import loginBackground from './images/LoginBackground.jpeg';

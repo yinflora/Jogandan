@@ -3,7 +3,7 @@ import { RxCross1 } from 'react-icons/rx';
 import { TfiArrowRight } from 'react-icons/tfi';
 import { useNavigate } from 'react-router-dom';
 import TinderCard from 'react-tinder-card';
-import styled, { keyframes } from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components';
 import Button from '../../components/Button/Button';
 import Cancel from '../../components/Icon/Cancel';
 import Check from '../../components/Icon/Check';

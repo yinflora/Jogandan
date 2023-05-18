@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import SingleForm from '../../components/SingleForm';
 import UserInfoContext from '../../context/UserInfoContext';
 import { ItemType } from '../../types/types';
