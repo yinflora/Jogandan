@@ -238,7 +238,7 @@ const Upload = () => {
       newForm.images.map(async (formImage: string, imageIndex: number) => {
         if (formImage === '') {
           newForm.images[imageIndex] = '';
-        } else if (!formImage.includes('https://')) {
+        } else if (formImage.includes('blob')) {
           const res = await fetch(formImage);
           const blobImage = await res.blob();
 

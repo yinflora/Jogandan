@@ -70,7 +70,7 @@ const SingleForm = ({ setIsEdit }: SingleFormProp) => {
       newForm.images.map(async (image: string, imageIndex: number) => {
         if (image === '') {
           newForm.images[imageIndex] = '';
-        } else if (!image.includes('https://')) {
+        } else if (image.includes('blob')) {
           const res = await fetch(image);
           const blobImage = await res.blob();
 
