@@ -2,7 +2,7 @@ import { fabric } from 'fabric';
 import { getDownloadURL, getMetadata, listAll, ref } from 'firebase/storage';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components';
 import Alert from '../../components/Alert';
 import UserInfoContext from '../../context/UserInfoContext';
 import { TextConfigType, UserType, VisionBoardType } from '../../types/types';

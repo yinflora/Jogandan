@@ -5,7 +5,7 @@ import { RxCross1 } from 'react-icons/rx';
 import { SlCloudUpload } from 'react-icons/sl';
 import { TfiArrowRight } from 'react-icons/tfi';
 import { useNavigate } from 'react-router-dom';
-import styled, { css } from 'styled-components/macro';
+import styled, { css } from 'styled-components';
 import Button from '../../components/Button/Button';
 import Level from '../../components/Level';
 import Report from '../../components/Report';

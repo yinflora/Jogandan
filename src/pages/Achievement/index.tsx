@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled, { css } from 'styled-components/macro';
+import styled, { css } from 'styled-components';
 import UserInfoContext from '../../context/UserInfoContext';
 
 const NUM_OF_STYLES = 8;

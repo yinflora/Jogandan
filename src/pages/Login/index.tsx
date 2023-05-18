@@ -37,7 +37,7 @@ const Container = styled.div`
   left: 55%;
   display: flex;
   width: 350px;
-  height: 100vh;
+  height: calc(100vh - 150px);
   margin-top: 10%;
   flex-direction: column;
 `;
@@ -232,8 +232,8 @@ const Login = () => {
     password: '',
   });
   const [loginForm, setLoginForm] = useState<LoginFormType>({
-    email: '',
-    password: '',
+    email: 'jogandanGuest@gmail.com',
+    password: 'jogandan2023',
   });
 
   useEffect(() => {
@@ -247,8 +247,8 @@ const Login = () => {
             password: '',
           })
         : setLoginForm({
-            email: '',
-            password: '',
+            email: 'jogandanGuest@gmail.com',
+            password: 'jogandan2023',
           });
     }
   }, [location, authErrorMessage]);
