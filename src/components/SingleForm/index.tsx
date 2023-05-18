@@ -126,13 +126,14 @@ const SingleForm = ({ setIsEdit }: SingleFormProp) => {
             onClick={() => {
               handleUploadItem();
               setIsPopout(!isPopout);
-              setSingleForm({
-                name: '',
-                category: '',
-                status: '',
-                description: '',
-                images: Array(SINGLE_LIMIT).fill(''),
-              });
+              !id &&
+                setSingleForm({
+                  name: '',
+                  category: '',
+                  status: '',
+                  description: '',
+                  images: Array(SINGLE_LIMIT).fill(''),
+                });
             }}
             disabled={
               singleForm.name === '' ||
