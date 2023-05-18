@@ -194,6 +194,12 @@ const useVisionBoard = (
 
     visionBoard.on('mouse:down', setActiveObject);
     visionBoard.on('drop', dropImage);
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      visionBoard.off('mouse:down', setActiveObject);
+      visionBoard.off('drop', dropImage);
+    };
   }, [visionBoard, draggingIndex]);
 
   useEffect(() => {
