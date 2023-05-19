@@ -36,32 +36,41 @@
 
 ### Vision Board
 Enabled vision board image collage and flexible editing features using Fabric.js (based on Canvas API), with automatic saving for an improved user experience.
-![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FvisionBoard.gif?alt=media&token=384cf365-8531-465f-8d6f-cb82a9d1f2dd)
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FvisionBoard01.gif?alt=media&token=1a9dc65c-831b-42a8-80df-219321dfbe4a)
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FvisionBoard02.gif?alt=media&token=d104bf53-15ee-4001-853d-26a5862a2b85)
 
 ### Upload
 Achieved effortless item uploading by supporting both single and batch uploads.
 - Single Upload: Conducted intuitive image order adjustment for items using the Drag and Drop API.
-![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FsingleUpload.gif?alt=media&token=608f84a9-4e7d-4a4a-8014-f33ebeb778f2)
-- Batch Upload
-![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FbatchUpload.gif?alt=media&token=3a9c1834-d3cc-4865-975c-4cae3bdb3412)
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FsingleUpload.gif?alt=media&token=4f28c837-cecc-4580-8c84-92e72c9aef81)
+- Batch Upload: Upload multiple items at once.
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FbatchUpload.gif?alt=media&token=68d6849f-9651-4370-8168-df74fc936f58)
 
 ### Inventory
 Managed items effortlessly and intuitively with a one-page completion.
 - Supported for search and multiple filters.
-![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Finventory.gif?alt=media&token=06d55903-bf8c-43c1-8228-88dddbb8de2b)
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Finventory.gif?alt=media&token=7f01443a-882f-4a4c-9eec-151219cfdd2b)
 - Generated a report with filtering capabilities using SVG API without libraries.
-![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Freport.gif?alt=media&token=e72f815e-4c5a-4f4f-b481-1139f1521702)
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Freport.gif?alt=media&token=4b2e6f98-2640-485f-82d3-eb901a642c23)
 
 ### Achievement
 Online gallery for declutter Results.
-![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Fachievement.gif?alt=media&token=8a2f0878-6f8b-4462-a837-645b3ba0f7c1)
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Fachievement.gif?alt=media&token=c1f4d235-ebdc-4ed8-9552-199fd789f052)
 
 ### Mini Game
 Enhanced item sensitivity through daily mini-games.
 - Created interactive swipeable components using React-Tinder-Card for mini-game.
-![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FsparkJoy.gif?alt=media&token=541adefc-f3c7-42b7-adcf-8c0fd194f6be)
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FsparkJoy.gif?alt=media&token=22d1dbbc-2f2b-46c7-b51f-740486e9376b)
+
+## Test Account
+
+Please go directly to the [login page](https://jogandan-2023.web.app/login) and click SUBMIT to use the test account.
+
+- Email: jogandanGuest@gmail.com
+- Password：jogandan2023
+
 
 ## Contact
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/florayin-yct/)
-[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](florayin.yct@gmail.com)
+[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:florayin.yct@gmail.com)
 
