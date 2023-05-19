@@ -32,9 +32,9 @@
 ![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/03.jpeg?alt=media&token=42af3d32-0b2b-454c-a0fa-b6b99a556835)
 
 
-## Flow Chart
+## Features
 
-#### Vision Board
+### Vision Board
 Enabled vision board image collage and flexible editing features using Fabric.js (based on Canvas API), with automatic saving for an improved user experience.
 ![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FvisionBoard.gif?alt=media&token=384cf365-8531-465f-8d6f-cb82a9d1f2dd)
 
