@@ -1,46 +1,67 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Jogandan
 
-## Available Scripts
+[Jogandan](https://jogandan-2023.web.app/) is an inventory management platform designed to simplify the organization of your items, helping you declutter effortlessly.
 
-In the project directory, you can run:
+## Tech
 
-### `npm start`
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white) ![Styled Components](https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white) ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Fundamentals
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- HTML / CSS
+- JavaScript (ES6+)
+- TypeScript
 
-### `npm test`
+### Libraries
+- React
+- React Router
+- Styled Components
+- Fabric.js
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Tools
+- ESLint
+- Prettier
+- Jest
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Flow Chart
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/03.jpeg?alt=media&token=42af3d32-0b2b-454c-a0fa-b6b99a556835)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Flow Chart
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+#### Vision Board
+Enabled vision board image collage and flexible editing features using Fabric.js (based on Canvas API), with automatic saving for an improved user experience.
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FvisionBoard.gif?alt=media&token=384cf365-8531-465f-8d6f-cb82a9d1f2dd)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Upload
+Achieved effortless item uploading by supporting both single and batch uploads.
+- Single Upload: Conducted intuitive image order adjustment for items using the Drag and Drop API.
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FsingleUpload.gif?alt=media&token=608f84a9-4e7d-4a4a-8014-f33ebeb778f2)
+- Batch Upload
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FbatchUpload.gif?alt=media&token=3a9c1834-d3cc-4865-975c-4cae3bdb3412)
 
-## Learn More
+### Inventory
+Managed items effortlessly and intuitively with a one-page completion.
+- Supported for search and multiple filters.
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Finventory.gif?alt=media&token=06d55903-bf8c-43c1-8228-88dddbb8de2b)
+- Generated a report with filtering capabilities using SVG API without libraries.
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Freport.gif?alt=media&token=e72f815e-4c5a-4f4f-b481-1139f1521702)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Achievement
+Online gallery for declutter Results.
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2Fachievement.gif?alt=media&token=8a2f0878-6f8b-4462-a837-645b3ba0f7c1)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Mini Game
+Enhanced item sensitivity through daily mini-games.
+- Created interactive swipeable components using React-Tinder-Card for mini-game.
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/jogandan-2023.appspot.com/o/ReadmeGif%2FsparkJoy.gif?alt=media&token=541adefc-f3c7-42b7-adcf-8c0fd194f6be)
+
+## Contact
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/florayin-yct/)
+[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](florayin.yct@gmail.com)
+
