@@ -298,47 +298,22 @@ const Inventory = () => {
 
   let userItems: ItemType[] = items;
 
-  if (filter.category !== '' && filter.status !== '') {
-    if (search === '') {
-      userItems = items.filter(
-        (item: ItemType) =>
-          item.category === filter.category && item.status === filter.status
-      );
-    } else {
-      userItems = items.filter(
-        (item: ItemType) =>
-          item.category === filter.category &&
-          item.status === filter.status &&
-          item.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-  } else if (filter.category !== '') {
-    if (search === '') {
-      userItems = items.filter(
-        (item: ItemType) => item.category === filter.category
-      );
-    } else {
-      userItems = items.filter(
-        (item: ItemType) =>
-          item.category === filter.category &&
-          item.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-  } else if (filter.status !== '') {
-    if (search === '') {
-      userItems = items.filter(
-        (item: ItemType) => item.status === filter.status
-      );
-    } else {
-      userItems = items.filter(
-        (item: ItemType) =>
-          item.status === filter.status &&
-          item.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-  } else if (search !== '') {
-    userItems = items.filter((item: ItemType) =>
-      item.name.toLowerCase().includes(search.toLowerCase())
+  if (filter.category !== '') {
+    userItems = userItems.filter(
+      (item: ItemType) => item.category === filter.category
+    );
+  }
+
+  if (filter.status !== '') {
+    userItems = userItems.filter(
+      (item: ItemType) => item.status === filter.status
+    );
+  }
+
+  if (search !== '') {
+    const searchQuery = search.toLowerCase();
+    userItems = userItems.filter((item: ItemType) =>
+      item.name.toLowerCase().includes(searchQuery)
     );
   }
 

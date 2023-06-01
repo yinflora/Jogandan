@@ -114,19 +114,17 @@ const ImageUpload = ({
         <CiCircleInfo className="info" />
         <Remind>請拖拉照片至格子調整</Remind>
       </RemindWrapper>
-      {images.length > 0 && (
-        <ImageWrapper ref={imageContainerRef}>
-          {images.map((item, index) => (
-            <Image
-              key={index}
-              src={item}
-              draggable
-              onDragStart={() => setDraggingIndex(index)}
-              onDragEnd={() => setDraggingIndex(null)}
-            />
-          ))}
-        </ImageWrapper>
-      )}
+      <ImageWrapper ref={imageContainerRef}>
+        {images.map((item, index) => (
+          <Image
+            key={index}
+            src={item}
+            draggable
+            onDragStart={() => setDraggingIndex(index)}
+            onDragEnd={() => setDraggingIndex(null)}
+          />
+        ))}
+      </ImageWrapper>
     </UploadContainer>
   );
 };

@@ -116,16 +116,17 @@ const useVisionBoard = (
   };
 
   useEffect(() => {
-    if (!user) return;
+    const canvas = new fabric.Canvas('canvas', {
+      width: 625,
+      height: 475,
+      backgroundColor: bgColor,
+    });
+
     const setBoard = async () => {
       try {
-        const canvas = new fabric.Canvas('canvas', {
-          width: 625,
-          height: 475,
-          backgroundColor: bgColor,
-        });
-
         const { data } = user.visionBoard;
+
+        if (data.objects.length === 0) return;
         canvas.loadFromJSON(data, () => null);
 
         setVisionBoard(canvas);
@@ -181,23 +182,26 @@ const useVisionBoard = (
           if (isFullHeight) image.scaleToHeight(target.getScaledHeight());
           image.lockMovementY = isFullHeight;
           image.lockMovementX = !isFullHeight;
-
           image.clipPath = clipPath;
 
           visionBoard.add(image);
+
+          saveProject();
         },
         { crossOrigin: 'anonymous' }
       );
-
-      saveProject();
     };
 
     visionBoard.on('mouse:down', setActiveObject);
     visionBoard.on('drop', dropImage);
+    visionBoard.on('object:modified', saveProject);
+    visionBoard.on('text:changed', saveProject);
 
     return () => {
       visionBoard.off('mouse:down', setActiveObject);
       visionBoard.off('drop', dropImage);
+      visionBoard.off('object:modified', saveProject);
+      visionBoard.off('text:changed', saveProject);
     };
   }, [visionBoard, draggingIndex]);
 
@@ -219,7 +223,7 @@ const useVisionBoard = (
     }
 
     saveProject();
-  }, [visionBoard, bgColor, textConfig, activeItem]);
+  }, [bgColor, textConfig]);
 
   return {
     visionBoard,
@@ -307,7 +311,7 @@ const useImages = (user: UserType) => {
     return () => {
       imageContainerRef.current?.removeEventListener('scroll', onScroll);
     };
-  }, [imageContainerRef.current]);
+  }, []);
 
   useEffect(() => {
     const setNewImages = async () => {
@@ -318,7 +322,6 @@ const useImages = (user: UserType) => {
         images.length >= imagesRef.current.length
       )
         return;
-
       const startIndex = startIndexRef.current;
       const endIndex = startIndexRef.current + MAX_IMAGES;
 
